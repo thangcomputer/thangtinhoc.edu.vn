@@ -25,7 +25,9 @@ const recruitmentRoutes = require('./routes/recruitment');
 
 // Security Middleware
 const {
-  globalLimiter, authLimiter, formLimiter, uploadLimiter,
+  globalLimiter, authLimiter,
+  contactFormLimiter, registrationFormLimiter, recruitmentFormLimiter,
+  uploadLimiter,
   sanitizeMiddleware, httpsRedirect, extraSecurityHeaders, auditLog
 } = require('./middleware/security');
 
@@ -164,9 +166,9 @@ app.use('/api/upload', uploadLimiter, uploadRoutes);
 app.use('/api/media', require('./routes/media'));
 app.use('/api/notifications', notificationRoutes);
 app.use('/api/comments', commentRoutes);
-app.use('/api/contacts', formLimiter, contactRoutes);
-app.use('/api/registrations', formLimiter, registrationRoutes);
-app.use('/api/recruitment', formLimiter, recruitmentRoutes);
+app.use('/api/contacts', contactFormLimiter, contactRoutes);
+app.use('/api/registrations', registrationFormLimiter, registrationRoutes);
+app.use('/api/recruitment', recruitmentFormLimiter, recruitmentRoutes);
 app.use('/api', require('./routes/materials'));
 app.use('/api/ai', require('./routes/ai'));
 

@@ -389,17 +389,40 @@ export default function PostForm() {
       setAiStep(`✍️ AI đang viết phiên bản ${aiResults.length + 1}...`);
 
       const res = await api.post('/ai/generate-post', { topic: aiTopic });
-      const { data: d, source, sourceInfo, elapsed } = res.data;
+      const { data: d, source, sourceInfo, elapsed, message, wordCount: serverWords, hasTables, success } = res.data;
 
-      const wordCount = (d.content || '').replace(/<[^>]*>/g, '').trim().split(/\s+/).length;
-      const newResult = { ...d, source, sourceInfo, elapsed, wordCount, createdAt: new Date().toLocaleTimeString('vi-VN') };
+      if (success === false) {
+        toast.error(message || 'Chưa cấu hình API AI. Thêm GEMINI_API_KEY hoặc GROQ_API_KEY vào server/.env', { duration: 8000 });
+        if (d?.content) {
+          const wc = serverWords || (d.content || '').replace(/<[^>]*>/g, '').trim().split(/\s+/).filter(Boolean).length;
+          setAiResults(prev => [...prev, { ...d, source: 'template', wordCount: wc, hasTables, elapsed, createdAt: new Date().toLocaleTimeString('vi-VN') }]);
+          setAiSelectedIdx(aiResults.length);
+        }
+        return;
+      }
+
+      const wordCount = serverWords || (d.content || '').replace(/<[^>]*>/g, '').trim().split(/\s+/).filter(Boolean).length;
+      const newResult = { ...d, source, sourceInfo, elapsed, wordCount, hasTables, createdAt: new Date().toLocaleTimeString('vi-VN') };
 
       setAiResults(prev => [...prev, newResult]);
       setAiSelectedIdx(aiResults.length);
       setAiStep('');
-      toast.success(`✅ Phiên bản ${aiResults.length + 1} đã sẵn sàng!`);
+      if (source === 'template') {
+        toast(message || 'Đã dùng bài mẫu (AI quá tải). Thử lại sau hoặc thêm GROQ_API_KEY.', { icon: '⚠️', duration: 7000 });
+      } else {
+        toast.success(`✅ Bài AI sẵn sàng — ~${wordCount} từ${hasTables ? ', có bảng minh họa' : ''} (${source})`);
+      }
     } catch (err) {
-      toast.error(err.response?.data?.message || 'Lỗi khi tạo bài viết, vui lòng thử lại');
+      const msg = err.response?.data?.message;
+      const partial = err.response?.data?.data;
+      if (partial?.content) {
+        toast.error(msg || 'API AI chưa cấu hình — đã tải bài mẫu thay thế', { duration: 7000 });
+        const wc = (partial.content || '').replace(/<[^>]*>/g, '').trim().split(/\s+/).filter(Boolean).length;
+        setAiResults(prev => [...prev, { ...partial, source: 'template', wordCount: wc, createdAt: new Date().toLocaleTimeString('vi-VN') }]);
+        setAiSelectedIdx(aiResults.length);
+      } else {
+        toast.error(msg || 'Lỗi khi tạo bài viết, vui lòng thử lại');
+      }
     } finally {
       setAiGenerating(false);
       setAiStep('');

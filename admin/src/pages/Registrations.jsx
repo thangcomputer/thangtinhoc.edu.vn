@@ -59,7 +59,7 @@ export default function Registrations() {
   if (loading) return <Loading fullPage message="Đang tải..." />;
 
   return (
-    <div className="animate-fade-in">
+    <div className="animate-fade-in admin-list-page registrations-page">
       <div className="page-header">
         <div className="page-title">
           <h1>Quản Lý Ghi Danh</h1>
@@ -68,19 +68,19 @@ export default function Registrations() {
       </div>
 
       {/* Filters */}
-      <div style={{ display: 'flex', gap: '10px', marginBottom: '16px', flexWrap: 'wrap', alignItems: 'center' }}>
-        <div style={{ position: 'relative', flex: '1', maxWidth: '280px' }}>
+      <div className="admin-list-filters registrations-filters">
+        <div className="admin-list-search registrations-search">
           <Search size={16} style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', color: 'var(--text-muted)' }} />
           <input type="text" className="form-control" placeholder="Tìm theo tên, SĐT..."
             value={search} onChange={e => setSearch(e.target.value)}
             style={{ paddingLeft: '36px' }} />
         </div>
-        <select className="form-control" value={typeFilter} onChange={e => setTypeFilter(e.target.value)} style={{ width: 'auto' }}>
+        <select className="form-control admin-list-filter-select registrations-filter-select" value={typeFilter} onChange={e => setTypeFilter(e.target.value)}>
           <option value="all">Tất cả loại</option>
           <option value="course">Đăng ký học</option>
           <option value="exam">Đăng ký thi</option>
         </select>
-        <select className="form-control" value={filter} onChange={e => setFilter(e.target.value)} style={{ width: 'auto' }}>
+        <select className="form-control admin-list-filter-select registrations-filter-select" value={filter} onChange={e => setFilter(e.target.value)}>
           <option value="all">Tất cả trạng thái</option>
           <option value="pending">Chờ xử lý</option>
           <option value="contacted">Đã liên hệ</option>
@@ -88,10 +88,11 @@ export default function Registrations() {
         </select>
       </div>
 
-      <div style={{ display: 'grid', gridTemplateColumns: selected ? '1fr 1fr' : '1fr', gap: '16px' }}>
+      <div className={`admin-list-layout registrations-layout${selected ? ' has-detail' : ''}`}>
         {/* List */}
-        <div className="card">
+        <div className="card admin-list-card registrations-list-card">
           <div className="card-body" style={{ padding: 0 }}>
+            <div className="table-wrap">
             <table className="table">
               <thead>
                 <tr>
@@ -109,14 +110,14 @@ export default function Registrations() {
                     cursor: 'pointer',
                     background: selected?.id === item.id ? 'var(--bg-subtle)' : item.isRead ? 'transparent' : 'rgba(99,102,241,0.03)',
                   }} onClick={() => setSelected(item)}>
-                    <td>
+                    <td data-label="Họ tên">
                       <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                         {!item.isRead && <span style={{ width: '6px', height: '6px', borderRadius: '50%', background: '#6366f1', flexShrink: 0 }} />}
                         <strong>{item.fullName}</strong>
                       </div>
                     </td>
-                    <td>{item.phone}</td>
-                    <td>
+                    <td data-label="SĐT">{item.phone}</td>
+                    <td data-label="Loại">
                       <span style={{
                         padding: '3px 10px', borderRadius: '99px', fontSize: '0.72rem', fontWeight: 700,
                         background: item.type === 'course' ? '#6366f115' : '#f59e0b15',
@@ -125,16 +126,16 @@ export default function Registrations() {
                         {item.type === 'course' ? 'Học' : 'Thi'}
                       </span>
                     </td>
-                    <td>
+                    <td data-label="Trạng thái">
                       <span style={{
                         padding: '3px 10px', borderRadius: '99px', fontSize: '0.72rem', fontWeight: 600,
                         background: STATUS_MAP[item.status]?.bg, color: STATUS_MAP[item.status]?.color,
                       }}>{STATUS_MAP[item.status]?.label}</span>
                     </td>
-                    <td style={{ fontSize: '0.78rem', color: 'var(--text-muted)' }}>
+                    <td data-label="Ngày" style={{ fontSize: '0.78rem', color: 'var(--text-muted)' }}>
                       {new Date(item.createdAt).toLocaleDateString('vi-VN')}
                     </td>
-                    <td>
+                    <td className="actions-cell" data-label="">
                       <button className="btn btn-ghost btn-sm" onClick={e => { e.stopPropagation(); deleteItem(item.id); }}
                         style={{ color: 'var(--danger)' }} aria-label="Xóa ghi danh"><Trash2 size={14} /></button>
                     </td>
@@ -145,18 +146,19 @@ export default function Registrations() {
                 )}
               </tbody>
             </table>
+            </div>
           </div>
         </div>
 
         {/* Detail Panel */}
         {selected && (
-          <div className="card">
+          <div className="card admin-detail-card registrations-detail-card">
             <div className="card-header">
               <h3 className="card-title"><Eye size={16} /> Chi Tiết Đăng Ký</h3>
               <button className="btn btn-ghost btn-sm" onClick={() => setSelected(null)}>✕</button>
             </div>
             <div className="card-body" style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
+              <div className="admin-detail-grid">
                 <div>
                   <label style={{ fontSize: '0.72rem', color: 'var(--text-muted)', fontWeight: 600 }}>Họ tên</label>
                   <p style={{ margin: '2px 0', fontWeight: 700 }}>{selected.fullName}</p>
@@ -194,7 +196,7 @@ export default function Registrations() {
 
               {selected.type === 'exam' && (
                 <>
-                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
+                  <div className="admin-detail-grid">
                     <div>
                       <label style={{ fontSize: '0.72rem', color: 'var(--text-muted)', fontWeight: 600 }}>Ngày sinh</label>
                       <p style={{ margin: '2px 0' }}>{selected.birthDate || '—'}</p>

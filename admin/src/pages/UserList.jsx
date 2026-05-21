@@ -170,7 +170,7 @@ export default function UserList() {
             <option value="admin">Admin</option>
           </select>
         </div>
-        <div className="table-wrap responsive-table">
+        <div className="table-wrap">
           <table>
             <thead>
               <tr>
@@ -189,7 +189,7 @@ export default function UserList() {
                 <tr><td colSpan="6"><EmptyState title="Không có người dùng" message="Thử đổi từ khóa hoặc bộ lọc." actionLabel="Tạo người dùng" onAction={() => { setCreatingUser(true); setCreateForm(emptyCreate); }} /></td></tr>
               ) : users.map(user => (
                 <tr key={user.id}>
-                  <td>
+                  <td data-label="Họ tên">
                     <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
                       <div style={{
                         width: '34px', height: '34px', borderRadius: 'var(--radius-sm)',
@@ -202,24 +202,24 @@ export default function UserList() {
                       <span style={{ fontWeight: 600 }}>{user.fullName}</span>
                     </div>
                   </td>
-                  <td>
+                  <td data-label="Email / SĐT">
                     <div>
-                      <div style={{ fontSize: '0.875rem' }}>{user.email}</div>
+                      <div style={{ fontSize: '0.875rem', wordBreak: 'break-all' }}>{user.email}</div>
                       <div style={{ fontSize: '0.78rem', color: 'var(--text-muted)' }}>{user.phone || 'Chưa cập nhật'}</div>
                     </div>
                   </td>
-                  <td>
+                  <td data-label="Vai trò">
                     {user.role === 'admin'
                       ? <span className="badge badge-primary"><ShieldAlert size={11} /> Admin</span>
                       : <span className="badge badge-secondary">Học viên</span>}
                   </td>
-                  <td>
+                  <td data-label="Trạng thái">
                     {user.isActive
                       ? <span className="status-pill pill-success">Hoạt động</span>
                       : <span className="status-pill pill-danger">Bị khóa</span>}
                   </td>
-                  <td style={{ color: 'var(--text-secondary)' }}>{new Date(user.createdAt).toLocaleDateString('vi-VN')}</td>
-                  <td>
+                  <td data-label="Đăng ký" style={{ color: 'var(--text-secondary)' }}>{new Date(user.createdAt).toLocaleDateString('vi-VN')}</td>
+                  <td data-label="Thao tác" className="actions-cell">
                     <div style={{ display: 'flex', gap: '6px' }}>
                       <button type="button" onClick={() => setEditingUser({ ...user })} className="btn btn-secondary btn-sm btn-icon" title="Sửa">
                         <Edit size={14} style={{ color: 'var(--primary)' }} />

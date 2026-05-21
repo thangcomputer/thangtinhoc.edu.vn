@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { CheckCircle, XCircle, Eye, Search, Trash2, ShieldCheck, Download } from 'lucide-react';
+import { CheckCircle, XCircle, Eye, Search, Trash2, ShieldCheck, Download, X } from 'lucide-react';
 import toast from 'react-hot-toast';
 import api from '../lib/api';
 import Loading from '../components/Loading';
@@ -266,7 +266,7 @@ export default function OrderList() {
               </button>
             </div>
             <div style={{ padding: '0 24px 24px' }}>
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '24px', marginBottom: '24px' }}>
+              <div className="admin-detail-grid" style={{ gap: '24px', marginBottom: '24px' }}>
                 <div>
                   <h4 style={{ fontSize: '0.8rem', color: 'var(--text-muted)', fontWeight: 600, marginBottom: '8px', textTransform: 'uppercase' }}>Khách Hàng</h4>
                   <p style={{ fontWeight: 600 }}>{selectedOrder.user?.fullName}</p>

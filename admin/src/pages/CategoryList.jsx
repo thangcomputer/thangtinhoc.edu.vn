@@ -106,7 +106,7 @@ export default function CategoryList() {
                 <tr><td colSpan="5"><EmptyState message="Chưa có danh mục nào" /></td></tr>
               ) : categories.map(cat => (
                 <tr key={cat.id}>
-                  <td>
+                  <td data-label="Tên danh mục">
                     <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
                       <div style={{
                         width: '32px', height: '32px', borderRadius: 'var(--radius-sm)',
@@ -120,14 +120,14 @@ export default function CategoryList() {
                       <span style={{ fontWeight: 600 }}>{cat.name}</span>
                     </div>
                   </td>
-                  <td><code style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', background: 'var(--bg-subtle)', padding: '2px 8px', borderRadius: '4px' }}>{cat.slug}</code></td>
-                  <td>
+                  <td data-label="Slug"><code style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', background: 'var(--bg-subtle)', padding: '2px 8px', borderRadius: '4px' }}>{cat.slug}</code></td>
+                  <td data-label="Loại">
                     <span className={`badge ${cat.type === 'course' ? 'badge-primary' : 'badge-success'}`}>
                       {cat.type === 'course' ? 'Khóa học' : 'Bài viết'}
                     </span>
                   </td>
-                  <td style={{ fontWeight: 600 }}>{cat.type === 'course' ? cat._count?.courses : cat._count?.posts}</td>
-                  <td>
+                  <td data-label="Số lượng" style={{ fontWeight: 600 }}>{cat.type === 'course' ? cat._count?.courses : cat._count?.posts}</td>
+                  <td data-label="Thao tác" className="actions-cell">
                     <div style={{ display: 'flex', gap: '6px' }}>
                       <button className="btn btn-secondary btn-sm btn-icon" onClick={() => openForm(cat)} title="Sửa">
                         <Edit size={14} />

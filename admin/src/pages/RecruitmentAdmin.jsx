@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Briefcase, Eye, Trash2, Search, Phone, Mail, MapPin, Award, Clock, CheckCircle, XCircle, AlertCircle } from 'lucide-react';
+import { Briefcase, Eye, Trash2, Search, Phone, Mail, MapPin, Award, CheckCircle, XCircle, AlertCircle } from 'lucide-react';
 import toast from 'react-hot-toast';
 import api from '../lib/api';
 import Loading from '../components/Loading';
@@ -84,7 +84,7 @@ export default function RecruitmentAdmin() {
   if (loading) return <Loading fullPage message="Đang tải..." />;
 
   return (
-    <div className="animate-fade-in">
+    <div className="animate-fade-in admin-list-page">
       <div className="page-header">
         <div className="page-title">
           <h1>Quản Lý Tuyển Dụng</h1>
@@ -92,15 +92,14 @@ export default function RecruitmentAdmin() {
         </div>
       </div>
 
-      {/* Filters */}
-      <div style={{ display: 'flex', gap: '10px', marginBottom: '16px', flexWrap: 'wrap', alignItems: 'center' }}>
-        <div style={{ position: 'relative', flex: '1', maxWidth: '300px' }}>
+      <div className="admin-list-filters">
+        <div className="admin-list-search">
           <Search size={16} style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', color: 'var(--text-muted)' }} />
           <input type="text" className="form-control" placeholder="Tìm theo tên, SĐT, email..."
             value={search} onChange={e => setSearch(e.target.value)}
             style={{ paddingLeft: '36px' }} />
         </div>
-        <select className="form-control" value={filter} onChange={e => setFilter(e.target.value)} style={{ width: 'auto' }}>
+        <select className="form-control admin-list-filter-select" value={filter} onChange={e => setFilter(e.target.value)}>
           <option value="all">Tất cả trạng thái</option>
           <option value="pending">Chờ duyệt</option>
           <option value="reviewing">Đang xem</option>
@@ -109,89 +108,88 @@ export default function RecruitmentAdmin() {
         </select>
       </div>
 
-      <div style={{ display: 'grid', gridTemplateColumns: selected ? '1fr 1.2fr' : '1fr', gap: '16px' }}>
-        {/* List */}
-        <div className="card">
+      <div className={`admin-list-layout${selected ? ' has-detail' : ''}`}>
+        <div className="card admin-list-card">
           <div className="card-body" style={{ padding: 0 }}>
-            <table className="table">
-              <thead>
-                <tr>
-                  <th>Họ tên</th>
-                  <th>SĐT / Email</th>
-                  <th>Chuyên môn</th>
-                  <th>Trạng thái</th>
-                  <th></th>
-                </tr>
-              </thead>
-              <tbody>
-                {filtered.map(item => {
-                  const expertise = parseSafe(item.expertise);
-                  return (
-                    <tr key={item.id} style={{
-                      cursor: 'pointer',
-                      background: selected?.id === item.id ? 'var(--bg-subtle)' : item.isRead ? 'transparent' : 'rgba(99,102,241,0.03)',
-                    }} onClick={() => setSelected(item)}>
-                      <td>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                          {!item.isRead && <span style={{ width: '6px', height: '6px', borderRadius: '50%', background: '#6366f1', flexShrink: 0 }} />}
-                          <div>
-                            <strong>{item.fullName}</strong>
-                            <div style={{ fontSize: '0.72rem', color: 'var(--text-muted)' }}>
-                              {DEGREE_LABELS[item.degree] || item.degree}
+            <div className="table-wrap">
+              <table className="table">
+                <thead>
+                  <tr>
+                    <th>Họ tên</th>
+                    <th>SĐT / Email</th>
+                    <th>Chuyên môn</th>
+                    <th>Trạng thái</th>
+                    <th></th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {filtered.map(item => {
+                    const expertise = parseSafe(item.expertise);
+                    return (
+                      <tr key={item.id} style={{
+                        cursor: 'pointer',
+                        background: selected?.id === item.id ? 'var(--bg-subtle)' : item.isRead ? 'transparent' : 'rgba(99,102,241,0.03)',
+                      }} onClick={() => setSelected(item)}>
+                        <td data-label="Họ tên">
+                          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                            {!item.isRead && <span style={{ width: '6px', height: '6px', borderRadius: '50%', background: '#6366f1', flexShrink: 0 }} />}
+                            <div>
+                              <strong>{item.fullName}</strong>
+                              <div style={{ fontSize: '0.72rem', color: 'var(--text-muted)' }}>
+                                {DEGREE_LABELS[item.degree] || item.degree}
+                              </div>
                             </div>
                           </div>
-                        </div>
-                      </td>
-                      <td>
-                        <div style={{ fontSize: '0.82rem' }}>{item.phone}</div>
-                        <div style={{ fontSize: '0.72rem', color: 'var(--text-muted)' }}>{item.email}</div>
-                      </td>
-                      <td>
-                        <div style={{ display: 'flex', flexWrap: 'wrap', gap: '3px' }}>
-                          {expertise.slice(0, 2).map((e, i) => (
-                            <span key={i} style={{
-                              padding: '2px 8px', borderRadius: '4px', fontSize: '0.65rem', fontWeight: 600,
-                              background: 'var(--primary)', color: '#fff',
-                            }}>{EXPERTISE_LABELS[e] || e}</span>
-                          ))}
-                          {expertise.length > 2 && <span style={{ fontSize: '0.65rem', color: 'var(--text-muted)' }}>+{expertise.length - 2}</span>}
-                        </div>
-                      </td>
-                      <td>
-                        <span style={{
-                          padding: '3px 10px', borderRadius: '99px', fontSize: '0.72rem', fontWeight: 600,
-                          background: STATUS_MAP[item.status]?.bg, color: STATUS_MAP[item.status]?.color,
-                        }}>{STATUS_MAP[item.status]?.label}</span>
-                      </td>
-                      <td>
-                        <button className="btn btn-ghost btn-sm" onClick={e => { e.stopPropagation(); deleteItem(item.id); }}
-                          style={{ color: 'var(--danger)' }} aria-label="Xóa hồ sơ"><Trash2 size={14} /></button>
-                      </td>
-                    </tr>
-                  );
-                })}
-                {filtered.length === 0 && (
-                  <tr><td colSpan={5}><EmptyState icon={Briefcase} title="Chưa có ứng viên" message="Thử đổi bộ lọc hoặc từ khóa." /></td></tr>
-                )}
-              </tbody>
-            </table>
+                        </td>
+                        <td data-label="SĐT / Email">
+                          <div style={{ fontSize: '0.82rem' }}>{item.phone}</div>
+                          <div style={{ fontSize: '0.72rem', color: 'var(--text-muted)' }}>{item.email}</div>
+                        </td>
+                        <td data-label="Chuyên môn">
+                          <div style={{ display: 'flex', flexWrap: 'wrap', gap: '3px', justifyContent: 'flex-end' }}>
+                            {expertise.slice(0, 2).map((e, i) => (
+                              <span key={i} style={{
+                                padding: '2px 8px', borderRadius: '4px', fontSize: '0.65rem', fontWeight: 600,
+                                background: 'var(--primary)', color: '#fff',
+                              }}>{EXPERTISE_LABELS[e] || e}</span>
+                            ))}
+                            {expertise.length > 2 && <span style={{ fontSize: '0.65rem', color: 'var(--text-muted)' }}>+{expertise.length - 2}</span>}
+                          </div>
+                        </td>
+                        <td data-label="Trạng thái">
+                          <span style={{
+                            padding: '3px 10px', borderRadius: '99px', fontSize: '0.72rem', fontWeight: 600,
+                            background: STATUS_MAP[item.status]?.bg, color: STATUS_MAP[item.status]?.color,
+                          }}>{STATUS_MAP[item.status]?.label}</span>
+                        </td>
+                        <td className="actions-cell" data-label="">
+                          <button className="btn btn-ghost btn-sm" onClick={e => { e.stopPropagation(); deleteItem(item.id); }}
+                            style={{ color: 'var(--danger)' }} aria-label="Xóa hồ sơ"><Trash2 size={14} /></button>
+                        </td>
+                      </tr>
+                    );
+                  })}
+                  {filtered.length === 0 && (
+                    <tr><td colSpan={5}><EmptyState icon={Briefcase} title="Chưa có ứng viên" message="Thử đổi bộ lọc hoặc từ khóa." /></td></tr>
+                  )}
+                </tbody>
+              </table>
+            </div>
           </div>
         </div>
 
-        {/* Detail Panel */}
         {selected && (
-          <div className="card">
+          <div className="card admin-detail-card">
             <div className="card-header">
               <h3 className="card-title"><Eye size={16} /> Hồ Sơ Ứng Viên</h3>
               <button className="btn btn-ghost btn-sm" onClick={() => setSelected(null)}>✕</button>
             </div>
             <div className="card-body" style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
-              {/* Personal */}
               <div style={{ padding: '14px', borderRadius: '8px', background: 'var(--bg-subtle)', border: '1px solid var(--border)' }}>
                 <h4 style={{ fontSize: '0.82rem', fontWeight: 700, margin: '0 0 10px', display: 'flex', alignItems: 'center', gap: '6px' }}>
                   <Briefcase size={14} /> Thông Tin Cá Nhân
                 </h4>
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}>
+                <div className="admin-detail-grid">
                   <div>
                     <label style={{ fontSize: '0.68rem', color: 'var(--text-muted)', fontWeight: 600 }}>Họ tên</label>
                     <p style={{ margin: '2px 0', fontWeight: 700, fontSize: '0.9rem' }}>{selected.fullName}</p>
@@ -206,7 +204,7 @@ export default function RecruitmentAdmin() {
                   </div>
                   <div>
                     <label style={{ fontSize: '0.68rem', color: 'var(--text-muted)', fontWeight: 600 }}><Mail size={10} /> Email</label>
-                    <p style={{ margin: '2px 0', fontSize: '0.9rem' }}>{selected.email}</p>
+                    <p style={{ margin: '2px 0', fontSize: '0.9rem', wordBreak: 'break-all' }}>{selected.email}</p>
                   </div>
                   <div style={{ gridColumn: '1 / -1' }}>
                     <label style={{ fontSize: '0.68rem', color: 'var(--text-muted)', fontWeight: 600 }}><MapPin size={10} /> Quê quán</label>
@@ -215,12 +213,11 @@ export default function RecruitmentAdmin() {
                 </div>
               </div>
 
-              {/* Professional */}
               <div style={{ padding: '14px', borderRadius: '8px', background: 'var(--bg-subtle)', border: '1px solid var(--border)' }}>
                 <h4 style={{ fontSize: '0.82rem', fontWeight: 700, margin: '0 0 10px', display: 'flex', alignItems: 'center', gap: '6px' }}>
                   <Award size={14} /> Trình Độ & Kinh Nghiệm
                 </h4>
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}>
+                <div className="admin-detail-grid">
                   <div>
                     <label style={{ fontSize: '0.68rem', color: 'var(--text-muted)', fontWeight: 600 }}>Bằng cấp</label>
                     <p style={{ margin: '2px 0', fontWeight: 600 }}>{DEGREE_LABELS[selected.degree] || selected.degree}</p>
@@ -238,7 +235,6 @@ export default function RecruitmentAdmin() {
                 </div>
               </div>
 
-              {/* Expertise */}
               <div>
                 <label style={{ fontSize: '0.72rem', color: 'var(--text-muted)', fontWeight: 600, marginBottom: '6px', display: 'block' }}>Chuyên môn</label>
                 <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px' }}>
@@ -251,7 +247,6 @@ export default function RecruitmentAdmin() {
                 </div>
               </div>
 
-              {/* Schedule */}
               <div>
                 <label style={{ fontSize: '0.72rem', color: 'var(--text-muted)', fontWeight: 600, marginBottom: '6px', display: 'block' }}>Thời gian dạy</label>
                 <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px' }}>
@@ -271,7 +266,6 @@ export default function RecruitmentAdmin() {
                 </div>
               )}
 
-              {/* Status Actions */}
               <div style={{ borderTop: '1px solid var(--border)', paddingTop: '12px', marginTop: '4px' }}>
                 <label style={{ fontSize: '0.72rem', color: 'var(--text-muted)', fontWeight: 600, marginBottom: '8px', display: 'block' }}>Cập nhật trạng thái</label>
                 <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>

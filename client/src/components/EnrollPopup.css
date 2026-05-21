@@ -217,10 +217,40 @@
 .enroll-success p { font-size: 0.9rem; color: #94a3b8; margin: 0 0 24px; }
 .enroll-success .enroll-btn { max-width: 200px; }
 
+/* Ẩn chat nổi khi mở popup ghi danh — tránh chồng layout */
+body:has(.enroll-overlay) .chat-widget-container {
+  visibility: hidden;
+  pointer-events: none;
+}
+
 /* ===== Responsive ===== */
 @media (max-width: 600px) {
+  .enroll-overlay {
+    padding: 8px;
+    padding-top: max(8px, env(safe-area-inset-top));
+    padding-bottom: max(8px, env(safe-area-inset-bottom));
+    align-items: flex-end;
+  }
+  .enroll-wrapper {
+    padding-top: 12px;
+    max-height: calc(100dvh - 16px);
+    display: flex;
+    flex-direction: column;
+  }
+  .enroll-popup {
+    max-width: 100%;
+    max-height: calc(100dvh - 28px);
+    border-radius: 14px 14px 0 0;
+  }
   .enroll-grid-2 { grid-template-columns: 1fr; }
-  .enroll-popup { max-width: 100%; border-radius: 12px; }
   .enroll-body { padding: 16px; }
+  .enroll-tab { padding: 12px 8px; font-size: 0.78rem; }
+  .enroll-close { right: 8px; }
   .exam-option-subs { grid-template-columns: 1fr; }
+  .exam-sub-radios { flex-wrap: wrap; }
+  .enroll-btn { padding: 12px; font-size: 0.88rem; }
+}
+
+@media (max-width: 380px) {
+  .enroll-tab { letter-spacing: 0; font-size: 0.72rem; }
 }

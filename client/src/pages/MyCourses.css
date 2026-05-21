@@ -30,3 +30,9 @@
 .progress-text { font-size: 0.75rem; color: var(--text-muted); white-space: nowrap; }
 
 .enrolled-footer { margin-top: auto; }
+
+@media (max-width: 640px) {
+  .enrolled-grid { grid-template-columns: 1fr; }
+  .enrolled-card { flex-direction: column; }
+  .enrolled-img { width: 100%; height: 140px; }
+}

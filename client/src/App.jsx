@@ -89,7 +89,19 @@ function LayoutWrapper() {
   return (
     <>
       <ScrollToTop />
-      <Toaster position="top-right" containerStyle={{ zIndex: 999999 }} toastOptions={{ style: { zIndex: 999999 } }} />
+      <Toaster
+        position="top-right"
+        containerStyle={{
+          zIndex: 999999,
+          top: 'max(12px, env(safe-area-inset-top))',
+          right: 'max(12px, env(safe-area-inset-right))',
+          left: 'auto',
+        }}
+        toastOptions={{
+          style: { zIndex: 999999, maxWidth: 'min(360px, calc(100vw - 24px))' },
+          duration: 4500,
+        }}
+      />
       <Navbar settings={settings} />
       <main style={{ flex: 1, paddingTop: '100px', minHeight: 'calc(100vh - 300px)' }}>
         <Outlet context={{ settings }} />

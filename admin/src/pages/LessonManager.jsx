@@ -153,7 +153,7 @@ export default function LessonManager() {
                 <tr><td colSpan="7"><EmptyState icon={BookOpen} title="Chưa có bài học" message="Nhấn Thêm Bài Mới để bắt đầu." actionLabel="Thêm bài mới" onAction={() => openForm()} /></td></tr>
               ) : lessons.map(lesson => (
                 <tr key={lesson.id}>
-                  <td>
+                  <td data-label="STT">
                     <span style={{ 
                       width: '28px', height: '28px', borderRadius: 'var(--radius-sm)',
                       background: 'var(--bg-subtle)', display: 'inline-flex',
@@ -161,27 +161,27 @@ export default function LessonManager() {
                       fontWeight: 700, fontSize: '0.8rem', color: 'var(--text-secondary)',
                     }}>{lesson.order}</span>
                   </td>
-                  <td>
+                  <td data-label="Tên bài học">
                     <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                       <BookOpen size={15} color="var(--text-muted)" />
                       <span style={{ fontWeight: 600 }}>{lesson.title}</span>
                     </div>
                   </td>
-                  <td>
+                  <td data-label="Video">
                     {lesson.videoUrl ? (
                       <span style={{ color: 'var(--primary)', display: 'flex', alignItems: 'center', gap: '4px', fontWeight: 500, fontSize: '0.8rem' }}>
                         <Play size={13} /> Có video
                       </span>
                     ) : <span style={{ color: 'var(--text-muted)' }}>—</span>}
                   </td>
-                  <td>{lesson.duration ? `${lesson.duration} phút` : '—'}</td>
-                  <td>{lesson.isPreview ? <span className="badge badge-success">Có</span> : <span style={{ color: 'var(--text-muted)' }}>—</span>}</td>
-                  <td>
+                  <td data-label="Thời lượng">{lesson.duration ? `${lesson.duration} phút` : '—'}</td>
+                  <td data-label="Xem trước">{lesson.isPreview ? <span className="badge badge-success">Có</span> : <span style={{ color: 'var(--text-muted)' }}>—</span>}</td>
+                  <td data-label="Tài liệu">
                     <button className="btn btn-secondary btn-sm" onClick={() => openMatModal(lesson)} style={{ fontSize: '0.75rem' }}>
                       <Upload size={12} /> Tài liệu
                     </button>
                   </td>
-                  <td>
+                  <td data-label="Thao tác" className="actions-cell">
                     <div style={{ display: 'flex', gap: '6px' }}>
                       <button className="btn btn-secondary btn-sm btn-icon" onClick={() => openForm(lesson)} title="Sửa" aria-label="Sửa bài học">
                         <Edit size={14} />

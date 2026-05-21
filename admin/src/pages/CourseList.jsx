@@ -107,7 +107,7 @@ export default function CourseList() {
                 <tr><td colSpan="7"><EmptyState title="Không có khóa học" message="Thử đổi từ khóa hoặc thêm khóa mới." actionLabel="Thêm khóa học" onAction={() => navigate('/courses/new')} /></td></tr>
               ) : pagedCourses.map(course => (
                 <tr key={course.id}>
-                  <td>
+                  <td data-label="Khóa học">
                     <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
                       <div style={{ 
                         width: '44px', height: '32px', 
@@ -122,20 +122,20 @@ export default function CourseList() {
                       <span style={{ fontWeight: 600 }}>{course.title}</span>
                     </div>
                   </td>
-                  <td><span className="badge badge-primary">{course.category?.name || '-'}</span></td>
-                  <td>{getLevelBadge(course.level)}</td>
-                  <td style={{ fontWeight: 600 }}>{new Intl.NumberFormat('vi-VN').format(course.price)}</td>
-                  <td>
+                  <td data-label="Danh mục"><span className="badge badge-primary">{course.category?.name || '-'}</span></td>
+                  <td data-label="Cấp độ">{getLevelBadge(course.level)}</td>
+                  <td data-label="Giá" style={{ fontWeight: 600 }}>{new Intl.NumberFormat('vi-VN').format(course.price)}</td>
+                  <td data-label="Học viên">
                     <span className="badge badge-secondary">
                       <UsersIcon size={11} /> {course._count?.enrollments || 0}
                     </span>
                   </td>
-                  <td>
+                  <td data-label="Trạng thái">
                     {course.isPublished 
                       ? <span className="status-pill pill-success">Công khai</span> 
                       : <span className="badge badge-secondary">Bản nháp</span>}
                   </td>
-                  <td>
+                  <td data-label="Thao tác" className="actions-cell">
                     <div style={{ display: 'flex', gap: '6px' }}>
                       <Link to={`/courses/${course.id}/lessons`} className="btn btn-secondary btn-sm btn-icon" title="Bài học">
                         <BookOpen size={14} />

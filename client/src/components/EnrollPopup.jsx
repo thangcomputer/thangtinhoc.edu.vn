@@ -82,7 +82,21 @@ export default function EnrollPopup({ isOpen, onClose }) {
     }));
   };
 
+  const showSubmitError = (err) => {
+    const status = err?.response?.status;
+    const msg = err?.response?.data?.message;
+    if (status === 429) {
+      toast.error(
+        msg || 'Bạn đã gửi quá nhiều lần. Vui lòng đợi vài phút hoặc liên hệ trực tiếp qua Zalo/Messenger.',
+        { id: 'enroll-submit-error', duration: 6000 }
+      );
+      return;
+    }
+    toast.error(msg || 'Lỗi gửi đăng ký, vui lòng thử lại', { id: 'enroll-submit-error' });
+  };
+
   const handleSubmit = async () => {
+    if (sending) return;
     if (tab === 'course') {
       if (!courseForm.fullName.trim()) return toast.error('Vui lòng nhập họ và tên');
       if (!courseForm.phone.trim()) return toast.error('Vui lòng nhập số điện thoại');
@@ -98,13 +112,16 @@ export default function EnrollPopup({ isOpen, onClose }) {
           schedule: courseForm.schedule, note: courseForm.note,
         });
         setSuccess(true);
-      } catch { toast.error('Lỗi gửi đăng ký, vui lòng thử lại'); }
+      } catch (err) { showSubmitError(err); }
       finally { setSending(false); }
     } else {
       if (!examForm.fullName.trim()) return toast.error('Vui lòng nhập họ và tên');
       if (!examForm.phone.trim()) return toast.error('Vui lòng nhập số điện thoại');
       if (examForm.phone.length < 9) return toast.error('Số điện thoại không hợp lệ');
       if (!examForm.birthDate) return toast.error('Vui lòng chọn ngày tháng năm sinh');
+      if (examForm.birthDate && new Date(examForm.birthDate) > new Date()) {
+        return toast.error('Ngày sinh không hợp lệ');
+      }
       if (!examForm.idNumber.trim()) return toast.error('Vui lòng nhập số CCCD');
       if (examForm.examType.length === 0) return toast.error('Vui lòng chọn ít nhất 1 chứng chỉ thi');
       setSending(true);
@@ -120,7 +137,7 @@ export default function EnrollPopup({ isOpen, onClose }) {
           examType: JSON.stringify(examData),
         });
         setSuccess(true);
-      } catch { toast.error('Lỗi gửi đăng ký, vui lòng thử lại'); }
+      } catch (err) { showSubmitError(err); }
       finally { setSending(false); }
     }
   };
@@ -284,7 +301,7 @@ export default function EnrollPopup({ isOpen, onClose }) {
                 </>
               )}
 
-              <button className="enroll-btn" onClick={handleSubmit} disabled={sending}>
+              <button type="button" className="enroll-btn" onClick={handleSubmit} disabled={sending}>
                 {sending ? <><Loader2 size={18} className="spin" /> Đang gửi...</> :
                   <><Send size={18} /> {tab === 'course' ? 'ĐĂNG KÝ HỌC NGAY' : 'ĐĂNG KÝ THI NGAY'}</>}
               </button>

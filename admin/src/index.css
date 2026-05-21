@@ -1699,12 +1699,94 @@ input[type="checkbox"] {
   display: none !important;
 }
 
-/* Responsive data tables → cards on mobile */
+/* Trang admin dạng danh sách + chi tiết (ghi danh, tuyển dụng, tư vấn…) */
+.page-container:has(.admin-list-page),
+.page-container:has(.registrations-page) {
+  max-width: none;
+}
+
+.admin-list-page .admin-list-filters,
+.registrations-page .registrations-filters {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 16px;
+  flex-wrap: wrap;
+  align-items: center;
+}
+.admin-list-page .admin-list-search,
+.registrations-page .registrations-search {
+  position: relative;
+  flex: 1 1 200px;
+  min-width: 0;
+  max-width: 360px;
+}
+.admin-list-page .admin-list-filter-select,
+.registrations-page .registrations-filter-select {
+  width: auto;
+  min-width: 140px;
+  flex: 0 1 auto;
+}
+.admin-list-page .admin-list-layout,
+.registrations-page .registrations-layout {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 16px;
+  width: 100%;
+}
+.admin-list-page .admin-list-layout.has-detail,
+.registrations-page .registrations-layout.has-detail {
+  grid-template-columns: minmax(0, 1fr) minmax(280px, 420px);
+}
+.admin-list-page .admin-list-card,
+.admin-list-page .admin-detail-card,
+.registrations-page .registrations-list-card,
+.registrations-page .registrations-detail-card {
+  min-width: 0;
+}
+.admin-detail-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+@media (max-width: 1024px) {
+  .admin-list-page .admin-list-layout.has-detail,
+  .registrations-page .registrations-layout.has-detail {
+    grid-template-columns: 1fr;
+  }
+}
 @media (max-width: 768px) {
-  .table-wrap.responsive-table table thead {
+  .admin-list-page .admin-list-search,
+  .registrations-page .registrations-search {
+    max-width: none;
+    flex: 1 1 100%;
+  }
+  .admin-list-page .admin-list-filter-select,
+  .registrations-page .registrations-filter-select {
+    flex: 1 1 calc(50% - 5px);
+    min-width: 0;
+  }
+  .admin-detail-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Form / CMS 2 cột → 1 cột trên mobile */
+@media (max-width: 900px) {
+  .admin-form-split {
+    grid-template-columns: 1fr !important;
+  }
+}
+
+/* Bảng admin → card trên mobile (mọi .table-wrap) */
+.table-wrap td {
+  word-break: break-word;
+  overflow-wrap: anywhere;
+}
+@media (max-width: 768px) {
+  .table-wrap table thead {
     display: none;
   }
-  .table-wrap.responsive-table tbody tr {
+  .table-wrap tbody tr {
     display: block;
     margin-bottom: 12px;
     padding: 14px 16px;
@@ -1712,7 +1794,7 @@ input[type="checkbox"] {
     border-radius: var(--radius);
     background: var(--bg-card);
   }
-  .table-wrap.responsive-table tbody td {
+  .table-wrap tbody td {
     display: flex;
     justify-content: space-between;
     align-items: flex-start;
@@ -1720,8 +1802,9 @@ input[type="checkbox"] {
     padding: 8px 0;
     border: none;
     text-align: right;
+    max-width: none;
   }
-  .table-wrap.responsive-table tbody td::before {
+  .table-wrap tbody td::before {
     content: attr(data-label);
     font-weight: 700;
     font-size: 0.72rem;
@@ -1729,12 +1812,35 @@ input[type="checkbox"] {
     color: var(--text-muted);
     text-align: left;
     flex-shrink: 0;
+    max-width: 42%;
   }
-  .table-wrap.responsive-table tbody td.actions-cell {
-    justify-content: flex-end;
-  }
-  .table-wrap.responsive-table tbody td.actions-cell::before {
+  .table-wrap tbody td[data-label=""]::before,
+  .table-wrap tbody td:not([data-label])::before {
     display: none;
+  }
+  .table-wrap tbody td.actions-cell,
+  .table-wrap tbody td[colspan] {
+    display: block;
+    text-align: center;
+  }
+  .table-wrap tbody td.actions-cell::before,
+  .table-wrap tbody td[colspan]::before {
+    display: none;
+  }
+  .table-wrap tbody td.actions-cell {
+    padding-top: 4px;
+  }
+  .card-header {
+    flex-wrap: wrap;
+  }
+  .card-header .form-control,
+  .card-header select {
+    width: 100% !important;
+    max-width: none;
+  }
+  .card-header .search-input-wrap {
+    flex: 1 1 100% !important;
+    min-width: 0;
   }
 }
 

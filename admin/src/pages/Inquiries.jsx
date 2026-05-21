@@ -83,7 +83,7 @@ export default function Inquiries() {
   if (loading && messages.length === 0) return <Loading fullPage message="Đang tải tin nhắn..." />;
 
   return (
-    <div className="animate-fade-in">
+    <div className="animate-fade-in admin-list-page">
       {/* Header */}
       <div className="page-header">
         <div className="page-title">
@@ -99,14 +99,14 @@ export default function Inquiries() {
       </div>
 
       {/* Filters */}
-      <div style={{ display: 'flex', gap: '10px', marginBottom: '16px', flexWrap: 'wrap', alignItems: 'center' }}>
-        <div style={{ position: 'relative', flex: '1', maxWidth: '280px' }}>
+      <div className="admin-list-filters">
+        <div className="admin-list-search">
           <Search size={16} style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', color: 'var(--text-muted)' }} />
           <input type="text" className="form-control" placeholder="Tìm theo tên, SĐT..."
             value={search} onChange={e => setSearch(e.target.value)}
             style={{ paddingLeft: '36px' }} />
         </div>
-        <select className="form-control" value={filter} onChange={e => setFilter(e.target.value)} style={{ width: 'auto' }}>
+        <select className="form-control admin-list-filter-select" value={filter} onChange={e => setFilter(e.target.value)}>
           <option value="all">Tất cả</option>
           <option value="new">Chưa đọc</option>
           <option value="read">Đã đọc</option>
@@ -114,12 +114,12 @@ export default function Inquiries() {
       </div>
 
       {/* Split Panel */}
-      <div style={{ display: 'grid', gridTemplateColumns: selected ? '1fr 1fr' : '1fr', gap: '16px' }}>
+      <div className={`admin-list-layout${selected ? ' has-detail' : ''}`}>
 
         {/* List */}
-        <div className="card">
+        <div className="card admin-list-card">
           <div className="card-body" style={{ padding: 0 }}>
-            <div className="table-wrap responsive-table">
+            <div className="table-wrap">
             <table className="table">
               <thead>
                 <tr>
@@ -142,7 +142,7 @@ export default function Inquiries() {
                     }}
                     onClick={() => handleSelect(m)}
                   >
-                    <td>
+                    <td data-label="Khách hàng">
                       <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                         {!m.isRead && (
                           <span style={{ width: '7px', height: '7px', borderRadius: '50%', background: '#6366f1', flexShrink: 0 }} />
@@ -158,13 +158,13 @@ export default function Inquiries() {
                         <strong style={{ fontWeight: m.isRead ? 500 : 700 }}>{m.name || 'Khách vãng lai'}</strong>
                       </div>
                     </td>
-                    <td style={{ fontSize: '0.85rem', color: 'var(--primary)', fontWeight: 600 }}>{m.phone}</td>
-                    <td style={{ maxWidth: '200px' }}>
-                      <p style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', margin: 0, fontSize: '0.82rem', opacity: 0.75 }}>
+                    <td data-label="SĐT" style={{ fontSize: '0.85rem', color: 'var(--primary)', fontWeight: 600 }}>{m.phone}</td>
+                    <td data-label="Nội dung">
+                      <p style={{ margin: 0, fontSize: '0.82rem', opacity: 0.75, textAlign: 'right' }}>
                         {m.content}
                       </p>
                     </td>
-                    <td>
+                    <td data-label="Trạng thái">
                       <span style={{
                         padding: '3px 10px', borderRadius: '99px', fontSize: '0.72rem', fontWeight: 700,
                         background: m.isRead ? '#10b98115' : '#6366f115',
@@ -173,10 +173,10 @@ export default function Inquiries() {
                         {m.isRead ? 'Đã xem' : 'Mới'}
                       </span>
                     </td>
-                    <td style={{ fontSize: '0.78rem', color: 'var(--text-muted)' }}>
+                    <td data-label="Ngày gửi" style={{ fontSize: '0.78rem', color: 'var(--text-muted)' }}>
                       {new Date(m.createdAt).toLocaleDateString('vi-VN')}
                     </td>
-                    <td>
+                    <td className="actions-cell" data-label="">
                       <button type="button" className="btn btn-ghost btn-sm"
                         onClick={e => { e.stopPropagation(); deleteMessage(m.id); }}
                         style={{ color: 'var(--danger)' }}
@@ -201,7 +201,7 @@ export default function Inquiries() {
 
         {/* Detail Panel */}
         {selected && (
-          <div className="card">
+          <div className="card admin-detail-card">
             <div className="card-header">
               <h3 className="card-title"><Eye size={16} /> Chi Tiết Tin Nhắn</h3>
               <button className="btn btn-ghost btn-sm" onClick={() => setSelected(null)}>✕</button>

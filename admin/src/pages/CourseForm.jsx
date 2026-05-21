@@ -78,7 +78,7 @@ export default function CourseForm() {
         </button>
       </div>
 
-      <div style={{ display: 'grid', gridTemplateColumns: '1.5fr 1fr', gap: '20px' }}>
+      <div className="admin-form-split" style={{ display: 'grid', gridTemplateColumns: '1.5fr 1fr', gap: '20px' }}>
         {/* Left */}
         <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
           <div className="card">

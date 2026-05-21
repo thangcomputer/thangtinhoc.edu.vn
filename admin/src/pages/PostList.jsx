@@ -98,7 +98,7 @@ export default function PostList() {
                 <tr><td colSpan="6"><EmptyState title="Không có bài viết" message="Thử đổi từ khóa hoặc viết bài mới." actionLabel="Viết bài mới" onAction={() => navigate('/posts/new')} /></td></tr>
               ) : pagedPosts.map(post => (
                 <tr key={post.id}>
-                  <td>
+                  <td data-label="Bài viết">
                     <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
                       <div style={{
                         width: '44px', height: '32px',
@@ -113,15 +113,15 @@ export default function PostList() {
                       <span style={{ fontWeight: 600 }}>{post.title}</span>
                     </div>
                   </td>
-                  <td><span className="badge badge-primary">{post.category?.name || '-'}</span></td>
-                  <td style={{ fontWeight: 500 }}>{post.views?.toLocaleString() || 0}</td>
-                  <td>
+                  <td data-label="Danh mục"><span className="badge badge-primary">{post.category?.name || '-'}</span></td>
+                  <td data-label="Lượt xem" style={{ fontWeight: 500 }}>{post.views?.toLocaleString() || 0}</td>
+                  <td data-label="Trạng thái">
                     {post.isPublished
                       ? <span className="status-pill pill-success">Công khai</span>
                       : <span className="badge badge-secondary">Bản nháp</span>}
                   </td>
-                  <td style={{ color: 'var(--text-secondary)' }}>{new Date(post.createdAt).toLocaleDateString('vi-VN')}</td>
-                  <td>
+                  <td data-label="Ngày đăng" style={{ color: 'var(--text-secondary)' }}>{new Date(post.createdAt).toLocaleDateString('vi-VN')}</td>
+                  <td data-label="Thao tác" className="actions-cell">
                     <div style={{ display: 'flex', gap: '6px' }}>
                       <Link to={`/posts/edit/${post.id}`} className="btn btn-secondary btn-sm btn-icon" title="Sửa">
                         <Edit size={14} />

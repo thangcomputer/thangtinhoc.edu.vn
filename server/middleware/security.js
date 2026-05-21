@@ -2,7 +2,7 @@
  * Security Middleware — Thắng Tin Học
  * Rate Limiting, Input Sanitization, HTTPS Redirect, Audit Logging
  */
-const rateLimit = require('express-rate-limit');
+const { rateLimit, ipKeyGenerator } = require('express-rate-limit');
 
 // ============================================================
 // 1. RATE LIMITING — Chống brute-force & DDoS
@@ -26,13 +26,47 @@ const authLimiter = rateLimit({
   skip: () => process.env.NODE_ENV === 'development',
 });
 
-/** Contact/Registration: max 10 submissions / 15 phút per IP */
-const formLimiter = rateLimit({
-  windowMs: 15 * 60 * 1000,
+/** Tạo limiter riêng theo loại form — tránh dùng chung quota giữa contact / ghi danh / tuyển dụng */
+function makeFormLimiter({ name, max = 10, windowMs = 15 * 60 * 1000, message }) {
+  return rateLimit({
+    windowMs,
+    max,
+    standardHeaders: true,
+    legacyHeaders: false,
+    skip: () => process.env.NODE_ENV === 'development',
+    skipFailedRequests: true,
+    keyGenerator: (req) => `${ipKeyGenerator(req.ip || 'unknown')}:${name}`,
+    message: message || { success: false, message: 'Bạn đã gửi quá nhiều lần, vui lòng thử lại sau.' },
+  });
+}
+
+/** Liên hệ / tư vấn */
+const contactFormLimiter = makeFormLimiter({
+  name: 'contact',
   max: 10,
-  message: { success: false, message: 'Bạn đã gửi quá nhiều lần, vui lòng thử lại sau.' },
-  skip: () => process.env.NODE_ENV === 'development',
+  message: { success: false, message: 'Bạn đã gửi quá nhiều tin nhắn, vui lòng thử lại sau 15 phút.' },
 });
+
+/** Ghi danh học / thi — quota riêng, thoáng hơn cho người dùng thật */
+const registrationFormLimiter = makeFormLimiter({
+  name: 'registration',
+  max: 30,
+  windowMs: 60 * 60 * 1000,
+  message: {
+    success: false,
+    message: 'Bạn đã gửi quá nhiều đăng ký trong 1 giờ. Vui lòng gọi hotline hoặc thử lại sau.',
+  },
+});
+
+/** Tuyển dụng giáo viên */
+const recruitmentFormLimiter = makeFormLimiter({
+  name: 'recruitment',
+  max: 10,
+  message: { success: false, message: 'Bạn đã gửi quá nhiều đơn, vui lòng thử lại sau 15 phút.' },
+});
+
+/** @deprecated — dùng contactFormLimiter / registrationFormLimiter / recruitmentFormLimiter */
+const formLimiter = contactFormLimiter;
 
 /** Upload: max 50 uploads / 15 phút */
 const uploadLimiter = rateLimit({
@@ -121,6 +155,9 @@ module.exports = {
   globalLimiter,
   authLimiter,
   formLimiter,
+  contactFormLimiter,
+  registrationFormLimiter,
+  recruitmentFormLimiter,
   uploadLimiter,
   sanitizeMiddleware,
   httpsRedirect,
