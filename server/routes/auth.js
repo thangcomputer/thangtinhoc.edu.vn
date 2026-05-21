@@ -262,8 +262,23 @@ router.post('/forgot-password', async (req, res) => {
       }
     });
 
-    const resetUrl = `${process.env.SITE_URL || 'http://localhost:5173'}/reset-password?token=${token}&email=${email}`;
-    await sendPasswordResetEmail(user, resetUrl);
+    const siteUrl = (process.env.SITE_URL || 'http://localhost:5173').replace(/\/+$/, '');
+    const resetUrl = `${siteUrl}/reset-password?token=${encodeURIComponent(token)}&email=${encodeURIComponent(email)}`;
+    const mailResult = await sendPasswordResetEmail(user, resetUrl);
+
+    if (!mailResult?.ok) {
+      const isDev = process.env.NODE_ENV !== 'production';
+      if (isDev) {
+        console.warn('[forgot-password] DEV — link reset (email chưa gửi):', resetUrl);
+      }
+      console.error('[forgot-password] Gửi email thất bại:', mailResult?.error);
+      return res.status(503).json({
+        success: false,
+        message: isDev
+          ? `Không gửi được email: ${mailResult?.error || 'lỗi không xác định'}. Kiểm tra RESEND_API_KEY trong server/.env`
+          : 'Hệ thống email tạm thời không khả dụng. Vui lòng liên hệ hỗ trợ hoặc thử lại sau.',
+      });
+    }
 
     res.json({ success: true, message: 'Liên kết khôi phục đã được gửi đến email của bạn.' });
   } catch (err) {

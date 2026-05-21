@@ -94,7 +94,7 @@ export default function Courses() {
 
         {/* Grid */}
         {loading ? (
-          <div className="loader"><div className="spinner" /></div>
+          <div className="loader loader--section"><div className="spinner" /></div>
         ) : courses.length === 0 ? (
           <div className="empty-state">
             <Search size={48} />

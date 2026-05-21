@@ -145,7 +145,7 @@ export default function CourseDetail() {
     }
   };
 
-  if (loading) return <div className="loader" style={{ height: '100vh' }}><div className="spinner" /></div>;
+  if (loading) return <div className="loader loader--page"><div className="spinner" /></div>;
   if (!course) return null;
 
   const discount = course.originalPrice && course.originalPrice > course.price

@@ -9,24 +9,31 @@ const siteUrl = process.env.SITE_URL || 'http://localhost:5173';
 const adminUrl = process.env.ADMIN_URL || 'http://localhost:5174';
 
 const sendEmail = async ({ to, subject, html }) => {
+  if (!RESEND_API_KEY?.trim()) {
+    console.error('[mailer] RESEND_API_KEY chưa cấu hình — không gửi được email tới', to);
+    return { ok: false, error: 'RESEND_API_KEY chưa cấu hình trên server' };
+  }
+
   try {
     const res = await fetch('https://api.resend.com/emails', {
       method: 'POST',
       headers: {
-        'Authorization': `Bearer ${RESEND_API_KEY}`,
+        Authorization: `Bearer ${RESEND_API_KEY.trim()}`,
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({ from: FROM, to, subject, html }),
     });
     const data = await res.json();
     if (!res.ok) {
-      console.error('Email error:', data);
-      return null;
+      const msg = data?.message || data?.error || `HTTP ${res.status}`;
+      console.error('[mailer] Gửi email thất bại:', msg, data);
+      return { ok: false, error: msg, status: res.status };
     }
-    console.log('Email sent:', data.id);
-    return data;
+    console.log('[mailer] Email sent:', data.id, '→', to);
+    return { ok: true, id: data.id };
   } catch (err) {
-    console.error('Email error:', err.message);
+    console.error('[mailer] Email error:', err.message);
+    return { ok: false, error: err.message };
   }
 };
 

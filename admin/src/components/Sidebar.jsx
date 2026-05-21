@@ -249,24 +249,6 @@ export default function Sidebar({ isOpen, closeSidebar, collapsed, onToggleColla
         </button>
       </div>
 
-      <style>{`
-        @keyframes badgePulse {
-          0%, 100% { box-shadow: 0 0 0 0 rgba(239,68,68,0.5); }
-          50% { box-shadow: 0 0 0 4px rgba(239,68,68,0); }
-        }
-        .spin-icon { animation: spinAnim 1s linear infinite; }
-        @keyframes spinAnim { to { transform: rotate(360deg); } }
-        .sidebar-link-cache {
-          color: #22d3ee !important;
-          transition: all 0.2s;
-        }
-        .sidebar-link-cache:hover {
-          background: rgba(34,211,238,0.08) !important;
-        }
-        .sidebar-link-cache:disabled {
-          cursor: not-allowed;
-        }
-      `}</style>
     </aside>
   );
 }

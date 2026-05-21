@@ -422,7 +422,7 @@ export default function Home({ settings }) {
           </ScrollReveal>
 
           {loading ? (
-            <div className="loader"><div className="spinner" /></div>
+            <div className="loader loader--section"><div className="spinner" /></div>
           ) : (
             <StaggerReveal animation="fade-up" staggerDelay={150} className="grid-3">
               {featuredCourses.map(course => (

@@ -1,13 +1,13 @@
 import { useState, useEffect } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
-import { Eye, EyeOff, BookOpen, Mail, Lock } from 'lucide-react';
+import { Eye, EyeOff, Mail, Lock } from 'lucide-react';
 import toast from 'react-hot-toast';
+import { GoogleLogin } from '@react-oauth/google';
 import api from '../lib/api';
 import { getDeviceId } from '../lib/deviceId';
 import useAuthStore from '../store/authStore';
+import AuthShell, { AuthField, AuthDivider, AuthSwitch } from '../components/AuthShell';
 import './Auth.css';
-
-import { GoogleLogin } from '@react-oauth/google';
 
 export default function Login() {
   const [form, setForm] = useState({ email: '', password: '' });
@@ -21,7 +21,7 @@ export default function Login() {
   const [siteName, setSiteName] = useState('Thắng Tin Học');
 
   useEffect(() => {
-    api.get('/settings').then(res => {
+    api.get('/settings').then((res) => {
       const s = res.data.data;
       if (s?.site_logo) setSiteLogo(s.site_logo);
       if (s?.site_name) setSiteName(s.site_name);
@@ -50,9 +50,7 @@ export default function Login() {
 
   const handleGoogleSuccess = async (credentialResponse) => {
     try {
-      const res = await api.post('/auth/google', {
-        credential: credentialResponse.credential
-      });
+      const res = await api.post('/auth/google', { credential: credentialResponse.credential });
       const { user, token, sessionWarning } = res.data.data;
       login(user, token);
       if (sessionWarning) toast(sessionWarning, { icon: '⚠️', duration: 6000 });
@@ -64,84 +62,81 @@ export default function Login() {
   };
 
   return (
-    <div className="auth-page">
-      <div className="auth-bg">
-        <div className="auth-orb orb1" />
-        <div className="auth-orb orb2" />
-      </div>
-      <div className="auth-card">
-        <div className="auth-brand">
-          {siteLogo ? (
-            <img src={siteLogo} alt={siteName} className="auth-brand-logo" />
-          ) : (
-            <div className="brand-icon"><BookOpen size={22} /></div>
-          )}
-        </div>
-        <h1 className="auth-title">Chào Mừng Trở Lại!</h1>
-        <p className="auth-subtitle">Đăng nhập để tiếp tục học tập</p>
-
-        <form onSubmit={handleSubmit} className="auth-form">
-          <div className="form-group">
-            <label>Email</label>
-            <div className="input-icon-wrap">
-              <Mail size={16} className="input-icon" />
-              <input
-                type="email" required
-                className="form-control"
-                placeholder="email@example.com"
-                value={form.email}
-                onChange={e => setForm({...form, email: e.target.value})}
-                style={{ paddingLeft: '2.5rem' }}
-              />
-            </div>
-          </div>
-
-          <div className="form-group">
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-              <label>Mật Khẩu</label>
-              <Link to="/forgot-password" style={{ fontSize: '0.85rem', color: 'var(--primary-light)' }}>Quên mật khẩu?</Link>
-            </div>
-            <div className="input-icon-wrap">
-              <Lock size={16} className="input-icon" />
-              <input
-                type={showPass ? 'text' : 'password'} required
-                className="form-control"
-                placeholder="Nhập mật khẩu"
-                value={form.password}
-                onChange={e => setForm({...form, password: e.target.value})}
-                style={{ paddingLeft: '2.5rem', paddingRight: '3rem' }}
-              />
-              <button type="button" className="input-eye" onClick={() => setShowPass(!showPass)}>
-                {showPass ? <EyeOff size={16} /> : <Eye size={16} />}
-              </button>
-            </div>
-          </div>
-
-          <button type="submit" className="btn btn-primary" style={{width:'100%'}} disabled={loading}>
-            {loading ? 'Đang đăng nhập...' : 'Đăng Nhập'}
-          </button>
-
-          <div style={{ margin: '1.5rem 0', display: 'flex', alignItems: 'center', gap: '1rem' }}>
-            <div style={{ flex: 1, height: '1px', background: 'var(--border)' }} />
-            <span style={{ fontSize: '0.85rem', color: 'var(--text-muted)' }}>HOẶC</span>
-            <div style={{ flex: 1, height: '1px', background: 'var(--border)' }} />
-          </div>
-
-          <div className="google-auth-btn" style={{ display: 'flex', justifyContent: 'center' }}>
-            <GoogleLogin
-              onSuccess={handleGoogleSuccess}
-              onError={() => toast.error('Đăng nhập Google thất bại')}
-              useOneTap
-              theme="filled_blue"
-              shape="pill"
-            />
-          </div>
-        </form>
-
-        <p className="auth-switch" style={{ marginTop: '2rem' }}>
+    <AuthShell
+      siteLogo={siteLogo}
+      siteName={siteName}
+      title="Đăng nhập"
+      subtitle="Tiếp tục hành trình học tập"
+      panelTitle="Chào mừng trở lại!"
+      panelItems={[
+        'Tiếp tục khóa học đang học',
+        'Đồng bộ tiến độ trên mọi thiết bị',
+        'Quản lý tài khoản & chứng chỉ',
+      ]}
+      footer={
+        <AuthSwitch>
           Chưa có tài khoản? <Link to="/register">Đăng ký ngay</Link>
-        </p>
+        </AuthSwitch>
+      }
+    >
+      <div className="auth-google-wrap">
+        <GoogleLogin
+          onSuccess={handleGoogleSuccess}
+          onError={() => toast.error('Đăng nhập Google thất bại')}
+          useOneTap
+          theme="filled_blue"
+          shape="pill"
+          locale="vi"
+        />
       </div>
-    </div>
+
+      <AuthDivider />
+
+      <form onSubmit={handleSubmit} className="auth-form">
+        <AuthField label="Email" icon={Mail}>
+          <input
+            type="email"
+            required
+            className="auth-input"
+            placeholder="email@example.com"
+            value={form.email}
+            onChange={(e) => setForm({ ...form, email: e.target.value })}
+            autoComplete="email"
+          />
+        </AuthField>
+
+        <AuthField
+          label="Mật khẩu"
+          icon={Lock}
+          labelExtra={
+            <Link to="/forgot-password" className="auth-link-muted">
+              Quên mật khẩu?
+            </Link>
+          }
+        >
+          <input
+            type={showPass ? 'text' : 'password'}
+            required
+            className="auth-input auth-input--eye"
+            placeholder="Nhập mật khẩu"
+            value={form.password}
+            onChange={(e) => setForm({ ...form, password: e.target.value })}
+            autoComplete="current-password"
+          />
+          <button
+            type="button"
+            className="auth-input-eye"
+            onClick={() => setShowPass(!showPass)}
+            aria-label={showPass ? 'Ẩn mật khẩu' : 'Hiện mật khẩu'}
+          >
+            {showPass ? <EyeOff size={16} /> : <Eye size={16} />}
+          </button>
+        </AuthField>
+
+        <button type="submit" className="btn btn-primary auth-submit" disabled={loading}>
+          {loading ? 'Đang đăng nhập...' : 'Đăng nhập'}
+        </button>
+      </form>
+    </AuthShell>
   );
 }

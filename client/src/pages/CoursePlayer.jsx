@@ -367,7 +367,7 @@ export default function CoursePlayer() {
     finally { setReviewSubmitting(false); }
   };
 
-  if (loading) return <div className="loader"><div className="spinner" /></div>;
+  if (loading) return <div className="loader loader--page"><div className="spinner" /></div>;
   if (!course || !activeLesson) return <div>Không tìm thấy nội dung</div>;
 
   const isCompleted = progress.find(p => p.lessonId === activeLesson.id)?.completed;

@@ -29,7 +29,7 @@ export default function MyCourses() {
 
       <div className="container" style={{ padding: '3rem 1.5rem' }}>
         {loading ? (
-          <div className="loader"><div className="spinner" /></div>
+          <div className="loader loader--section"><div className="spinner" /></div>
         ) : enrollments.length === 0 ? (
           <div className="empty-enrolled">
             <GraduationCap size={64} />

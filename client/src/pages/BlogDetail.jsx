@@ -178,7 +178,7 @@ export default function BlogDetail() {
     return () => observer.disconnect();
   }, [post]);
 
-  if (loading) return <div className="loader" style={{ height: '100vh' }}><div className="spinner" /></div>;
+  if (loading) return <div className="loader loader--page"><div className="spinner" /></div>;
   if (!post) return <div style={{ padding: '10rem', textAlign: 'center' }}>Không tìm thấy bài viết</div>;
 
   const toc = parseTOC(post);

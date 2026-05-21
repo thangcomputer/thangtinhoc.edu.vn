@@ -356,23 +356,77 @@ a { color: inherit; text-decoration: none; }
   flex-shrink: 0;
 }
 
-.sidebar-link-external {
-  color: rgba(255, 255, 255, 0.4) !important;
-}
-
-.sidebar-link-logout {
+/* Reset nút <button> — tránh nền trắng mặc định của trình duyệt khi hover */
+.sidebar-footer .sidebar-link,
+.sidebar-footer button.sidebar-link {
+  appearance: none;
+  -webkit-appearance: none;
   width: 100%;
-  background: none;
-  border: 1px solid transparent !important;
+  text-align: left;
+  background: transparent;
+  border: 1px solid transparent;
   cursor: pointer;
   font-family: inherit;
   font-size: inherit;
-  color: rgba(255, 255, 255, 0.4);
+  line-height: inherit;
 }
 
-.sidebar-link-logout:hover {
-  color: var(--danger) !important;
-  background: rgba(239, 68, 68, 0.1) !important;
+.sidebar-footer .sidebar-link:hover,
+.sidebar-footer button.sidebar-link:hover {
+  background: rgba(255, 255, 255, 0.08) !important;
+  color: var(--sidebar-text-hover) !important;
+  border-color: transparent !important;
+}
+
+.sidebar-footer .sidebar-link:hover svg,
+.sidebar-footer button.sidebar-link:hover svg {
+  color: inherit;
+}
+
+.sidebar-link-external {
+  color: rgba(255, 255, 255, 0.55) !important;
+}
+
+.sidebar-footer .sidebar-link-external:hover {
+  color: rgba(255, 255, 255, 0.92) !important;
+  background: rgba(255, 255, 255, 0.08) !important;
+}
+
+.sidebar-link-logout {
+  color: rgba(255, 255, 255, 0.55);
+}
+
+.sidebar-footer .sidebar-link-logout:hover {
+  color: #fca5a5 !important;
+  background: rgba(239, 68, 68, 0.14) !important;
+}
+
+.sidebar-link-cache {
+  color: #22d3ee !important;
+}
+
+.sidebar-footer .sidebar-link-cache:hover {
+  color: #67e8f9 !important;
+  background: rgba(34, 211, 238, 0.14) !important;
+}
+
+.sidebar-footer .sidebar-link-cache:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+.sidebar-footer .sidebar-link-cache:disabled:hover {
+  background: transparent !important;
+  color: #22d3ee !important;
+}
+
+@keyframes badgePulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.5); }
+  50% { box-shadow: 0 0 0 4px rgba(239, 68, 68, 0); }
+}
+
+.spin-icon {
+  animation: spin 0.8s linear infinite;
 }
 
 /* Sidebar Overlay */

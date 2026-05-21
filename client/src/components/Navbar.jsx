@@ -30,9 +30,18 @@ export default function Navbar({ settings }) {
     if (isOpen) {
       document.body.style.overflow = 'hidden';
     } else {
-      document.body.style.overflow = 'unset';
+      document.body.style.overflow = '';
     }
-    return () => { document.body.style.overflow = 'unset'; };
+    return () => { document.body.style.overflow = ''; };
+  }, [isOpen]);
+
+  useEffect(() => {
+    if (!isOpen) return;
+    const onKey = (e) => {
+      if (e.key === 'Escape') setIsOpen(false);
+    };
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
   }, [isOpen]);
 
   useEffect(() => {
@@ -71,10 +80,23 @@ export default function Navbar({ settings }) {
     { to: '/lien-he', label: 'Liên Hệ' },
   ];
 
+  const closeDrawer = () => setIsOpen(false);
+
+  const handleNavClick = () => {
+    closeDrawer();
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  const handleEnrollClick = () => {
+    closeDrawer();
+    setEnrollOpen(true);
+  };
+
   return (
-    <nav className={`navbar ${scrolled ? 'scrolled' : ''}`}>
+    <>
+    <nav className={`navbar ${scrolled ? 'scrolled' : ''} ${isOpen ? 'menu-open' : ''}`}>
       <div className="container navbar-inner">
-        <Link to="/" className="navbar-brand">
+        <Link to="/" className="navbar-brand" onClick={closeDrawer}>
           {settings?.site_logo ? (
             <img src={settings.site_logo} alt={settings?.site_name || 'Thắng Tin Học'} className="site-logo-img" />
           ) : (
@@ -90,7 +112,7 @@ export default function Navbar({ settings }) {
           )}
         </Link>
 
-        <div className={`navbar-links ${isOpen ? 'open' : ''}`}>
+        <div className="navbar-links navbar-links--desktop">
           {navLinks.map((link) => (
             <Link
               key={link.to}
@@ -101,7 +123,7 @@ export default function Navbar({ settings }) {
               {link.label}
             </Link>
           ))}
-          <button className="nav-link enroll-nav-btn" onClick={() => setEnrollOpen(true)}>
+          <button type="button" className="nav-link enroll-nav-btn" onClick={() => setEnrollOpen(true)}>
             <PenTool size={14} /> Ghi Danh
           </button>
         </div>
@@ -160,12 +182,61 @@ export default function Navbar({ settings }) {
             </div>
           )}
 
-          <button className="hamburger" onClick={() => setIsOpen(!isOpen)}>
+          <button
+            type="button"
+            className="hamburger"
+            aria-label={isOpen ? 'Đóng menu' : 'Mở menu'}
+            aria-expanded={isOpen}
+            onClick={() => setIsOpen(!isOpen)}
+          >
             {isOpen ? <X size={22} /> : <Menu size={22} />}
           </button>
         </div>
       </div>
       <EnrollPopup isOpen={enrollOpen} onClose={() => setEnrollOpen(false)} />
     </nav>
+
+    <div
+      className={`nav-drawer-backdrop ${isOpen ? 'open' : ''}`}
+      onClick={closeDrawer}
+      aria-hidden={!isOpen}
+    />
+
+    <aside className={`nav-drawer ${isOpen ? 'open' : ''}`} aria-hidden={!isOpen}>
+      <div className="nav-drawer-header">
+        <span className="nav-drawer-title">Menu</span>
+        <button type="button" className="nav-drawer-close" aria-label="Đóng menu" onClick={closeDrawer}>
+          <X size={22} />
+        </button>
+      </div>
+
+      <nav className="nav-drawer-body">
+        {navLinks.map((link) => (
+          <Link
+            key={link.to}
+            to={link.to}
+            className={`nav-drawer-link ${location.pathname === link.to ? 'active' : ''}`}
+            onClick={handleNavClick}
+          >
+            {link.label}
+          </Link>
+        ))}
+        <button type="button" className="nav-drawer-link nav-drawer-enroll" onClick={handleEnrollClick}>
+          <PenTool size={18} /> Ghi Danh
+        </button>
+      </nav>
+
+      {!isAuthenticated && (
+        <div className="nav-drawer-auth">
+          <Link to="/login" className="btn btn-ghost btn-block" onClick={handleNavClick}>
+            Đăng Nhập
+          </Link>
+          <Link to="/register" className="btn btn-primary btn-block" onClick={handleNavClick}>
+            Đăng Ký
+          </Link>
+        </div>
+      )}
+    </aside>
+    </>
   );
 }

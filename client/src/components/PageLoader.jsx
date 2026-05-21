@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { createPortal } from 'react-dom';
 import './PageLoader.css';
 
 /**
@@ -28,8 +29,8 @@ export default function PageLoader({ mode = 'spinner', siteName = 'Thắng Tin H
 
   const currentMode = MODES.includes(mode) ? mode : 'spinner';
 
-  return (
-    <div className="page-loader">
+  const ui = (
+    <div className="page-loader" role="status" aria-live="polite" aria-label="Đang tải trang">
       <div className="page-loader-bg" />
 
       {/* Mode 1: Gradient Spinner */}
@@ -91,4 +92,8 @@ export default function PageLoader({ mode = 'spinner', siteName = 'Thắng Tin H
       <p className="loader-label">{siteName}</p>
     </div>
   );
+
+  return typeof document !== 'undefined'
+    ? createPortal(ui, document.body)
+    : ui;
 }
