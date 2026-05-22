@@ -31,6 +31,7 @@ router.get('/admin/all', authenticate, authorize('admin'), async (req, res) => {
     const regs = await prisma.registration.findMany({ where, orderBy: { createdAt: 'desc' } });
     res.json({ success: true, data: regs });
   } catch (err) {
+    console.error('[registrations] GET admin/all', err);
     res.status(500).json({ success: false, message: 'Lỗi server' });
   }
 });

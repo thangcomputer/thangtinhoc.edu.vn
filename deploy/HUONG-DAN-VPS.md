@@ -42,6 +42,32 @@ bash deploy/rebuild-frontend.sh
 
 Sau do trinh duyet: **Ctrl+Shift+R** (hard refresh).
 
+### Loi `vite: command not found` khi build
+
+Code da pull dung nhung chua cai npm trong `client/` va `admin/`. Chay:
+
+```bash
+cd /www/wwwroot/thangtinhoc
+(cd client && npm ci || npm install)
+(cd admin && npm ci || npm install)
+bash deploy/rebuild-frontend.sh
+```
+
+(Script `rebuild-frontend.sh` tu ban moi se tu chay `npm install` truoc build.)
+
+### Loi lightningcss `Unexpected token` tai `.cookie-consent`
+
+File CSS bi luu UTF-16 (thuong `CookieConsent.css`). Tren may dev:
+
+```bash
+npm run fix:encoding
+git add client/src/components/CookieConsent.css
+git commit -m "fix: CookieConsent.css UTF-8 encoding for Vite build"
+git push
+```
+
+Tren VPS: `git pull` roi `bash deploy/rebuild-frontend.sh`
+
 Kiem tra da pull dung commit:
 ```bash
 git log -1 --oneline
@@ -67,6 +93,33 @@ git log -1 --oneline
    ```
 6. aaPanel: **Allow .htaccess** / bat **Rewrite** cho site
 7. Reload web server, Ctrl+Shift+R
+
+## PM2 logs — giai thich nhanh
+
+| Log | Y nghia | Cach xu ly |
+|-----|---------|------------|
+| `GOOGLE_CLIENT_ID not set` | Chua co Google login tren VPS | Them vao `server/.env` (xem ben duoi) |
+| `API key is invalid` (Resend) | `RESEND_API_KEY` sai hoac trong | Lay key moi tai resend.com → `server/.env` |
+| `[AUDIT-FAIL] AUTH FAILED` | Sai mat khau khi dang nhap | Binh thuong; khong phai loi server |
+| `Admin SPA: .../admin/dist` | Node dang serve SPA (aaPanel nen dung `site_dist`) | Dat `SERVE_FRONTEND=false` trong `server/.env` |
+
+Sau khi sua `.env`:
+
+```bash
+pm2 restart thangtinhoc-api
+pm2 logs thangtinhoc-api --lines 20
+```
+
+### server/.env tren VPS (vi du)
+
+```env
+GOOGLE_CLIENT_ID=472584566291-hh7r4rpo8tedqvfb10qgpv27a71a3hds.apps.googleusercontent.com
+RESEND_API_KEY=re_xxxxxxxx
+EMAIL_FROM=noreply@thangtinhoc.vn
+SERVE_FRONTEND=false
+```
+
+**Luu y:** Khong commit file `.env` len GitHub. Chi sua tren VPS.
 
 ## Dang nhap admin
 - Email: `admin@thangtinhoc.vn`

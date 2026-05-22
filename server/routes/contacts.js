@@ -16,6 +16,7 @@ router.post('/', async (req, res) => {
     });
     res.status(201).json({ success: true, data: message });
   } catch (error) {
+    console.error('[contacts] POST', error);
     res.status(500).json({ success: false, message: 'Lỗi server' });
   }
 });
@@ -28,7 +29,12 @@ router.get('/', authenticate, authorize('admin'), async (req, res) => {
     });
     res.json({ success: true, data: messages });
   } catch (error) {
-    res.status(500).json({ success: false, message: 'Lỗi server' });
+    console.error('[contacts] GET admin', error);
+    const hint =
+      error?.code === 'P2021' || /does not exist|no such table/i.test(String(error?.message))
+        ? 'Chạy trên VPS: cd server && npx prisma migrate deploy'
+        : undefined;
+    res.status(500).json({ success: false, message: 'Lỗi server', hint });
   }
 });
 

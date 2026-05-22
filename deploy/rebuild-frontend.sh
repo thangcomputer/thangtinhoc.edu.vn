@@ -18,6 +18,10 @@ EOF
   echo "==> client/.env: VITE_GOOGLE_CLIENT_ID da gan"
 fi
 
+echo "==> npm install client + admin (vite, ...)..."
+(cd client && npm install)
+(cd admin && npm install)
+
 echo "==> build:merged..."
 npm run build:merged
 

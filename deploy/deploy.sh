@@ -44,6 +44,20 @@ else
 fi
 
 echo "==> Cau hinh server/.env..."
+# Giu secret cu neu deploy.conf de trong (tranh mat key sau khi chay lai deploy.sh)
+if [ -f server/.env ]; then
+  _old_jwt=$(grep -E '^JWT_SECRET=' server/.env 2>/dev/null | cut -d= -f2- | tr -d '\r" ')
+  _old_google=$(grep -E '^GOOGLE_CLIENT_ID=' server/.env 2>/dev/null | cut -d= -f2- | tr -d '\r" ')
+  _old_resend=$(grep -E '^RESEND_API_KEY=' server/.env 2>/dev/null | cut -d= -f2- | tr -d '\r" ')
+  [ -z "$JWT_SECRET" ] && [ -n "$_old_jwt" ] && JWT_SECRET="$_old_jwt"
+  [ -z "$GOOGLE_CLIENT_ID" ] && [ -n "$_old_google" ] && GOOGLE_CLIENT_ID="$_old_google"
+  [ -z "$RESEND_API_KEY" ] && [ -n "$_old_resend" ] && RESEND_API_KEY="$_old_resend"
+fi
+if [ -d "/www/server/panel" ]; then
+  SERVE_FRONTEND="${SERVE_FRONTEND:-false}"
+else
+  SERVE_FRONTEND="${SERVE_FRONTEND:-true}"
+fi
 cat > server/.env <<EOF
 DATABASE_URL=file:./prod.db
 JWT_SECRET=${JWT_SECRET}
@@ -55,6 +69,7 @@ SITE_URL=https://${DOMAIN}
 GOOGLE_CLIENT_ID=${GOOGLE_CLIENT_ID:-}
 RESEND_API_KEY=${RESEND_API_KEY:-}
 EMAIL_FROM=${EMAIL_FROM:-noreply@thangtinhoc.vn}
+SERVE_FRONTEND=${SERVE_FRONTEND}
 GEMINI_API_KEY=
 GROQ_API_KEY=
 MAX_FILE_SIZE=104857600

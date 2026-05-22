@@ -65,6 +65,14 @@ const recruitmentFormLimiter = makeFormLimiter({
   message: { success: false, message: 'Bạn đã gửi quá nhiều đơn, vui lòng thử lại sau 15 phút.' },
 });
 
+/** Chỉ giới hạn POST (form công khai) — GET admin không bị 429 */
+function limitPostOnly(limiter) {
+  return (req, res, next) => {
+    if (req.method !== 'POST') return next();
+    return limiter(req, res, next);
+  };
+}
+
 /** @deprecated — dùng contactFormLimiter / registrationFormLimiter / recruitmentFormLimiter */
 const formLimiter = contactFormLimiter;
 
@@ -154,6 +162,7 @@ const auditLog = (action) => (req, res, next) => {
 module.exports = {
   globalLimiter,
   authLimiter,
+  limitPostOnly,
   formLimiter,
   contactFormLimiter,
   registrationFormLimiter,
