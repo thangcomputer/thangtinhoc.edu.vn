@@ -12,5 +12,7 @@ export default defineConfig(({ mode }) => ({
   },
   build: {
     emptyOutDir: false,
+    // Trinh duyet cu hon: giu @media (max-width) thay vi (width<=)
+    cssTarget: 'chrome87',
   },
 }))

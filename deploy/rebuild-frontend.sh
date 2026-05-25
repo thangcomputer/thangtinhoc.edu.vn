@@ -25,6 +25,9 @@ echo "==> npm install client + admin (vite, ...)..."
 echo "==> build:merged..."
 npm run build:merged
 
+echo "==> verify admin responsive CSS..."
+node scripts/verify-admin-css-build.cjs
+
 if grep -rq "127.0.0.1" client/dist/assets/ 2>/dev/null; then
   echo "CANH BAO: client build van con 127.0.0.1"
   exit 1

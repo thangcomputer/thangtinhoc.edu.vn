@@ -6,5 +6,6 @@ export default defineConfig({
   plugins: [react()],
   build: {
     emptyOutDir: false,
+    cssTarget: 'chrome87',
   },
 })

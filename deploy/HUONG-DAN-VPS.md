@@ -54,7 +54,15 @@ bash deploy/rebuild-frontend.sh
 
 Kiem tra aaPanel: **Thu muc web** = `.../site_dist` (KHONG `admin/dist` hay `client/dist`).
 
-Trinh duyet: Ctrl+Shift+R hoac xoa cache. DevTools → Network → file `index-*.css` phai **Status 200**, khong phai file cu cache.
+Trinh duyet: Ctrl+Shift+R hoac xoa cache. DevTools → Network → file `index-*.css` phai **Status 200**, **ten file hash phai doi** sau moi lan build (vd `index-BnlWFTR0.css` → ten khac).
+
+Neu van giong cu: aaPanel → site → **Xoa cache** (hoac tat CDN cache tam thoi).
+
+Kiem tra build tren VPS:
+```bash
+node scripts/verify-admin-css-build.cjs
+# Phai thay: OK table-wrap + max-width 1024
+```
 
 ### Loi `vite: command not found` khi build
 

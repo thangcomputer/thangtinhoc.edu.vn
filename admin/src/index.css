@@ -878,9 +878,19 @@ a { color: inherit; text-decoration: none; }
 
 .table-wrap table {
   width: 100%;
-  min-width: 720px;
+  min-width: 640px;
   border-collapse: collapse;
   table-layout: auto;
+}
+
+.table-wrap th:nth-child(1),
+.table-wrap td:nth-child(1) {
+  min-width: 140px;
+}
+
+.table-wrap th:nth-child(2),
+.table-wrap td:nth-child(2) {
+  min-width: 160px;
 }
 
 table {
@@ -1839,9 +1849,15 @@ input[type="checkbox"] {
   }
 }
 
-/* Bảng admin → card trên mobile (mọi .table-wrap) */
-@media (max-width: 768px) {
+/* Bảng admin → card khi sidebar drawer (cùng breakpoint 1024px) */
+@media (max-width: 1024px) {
   .table-wrap table {
+    min-width: 0;
+  }
+  .table-wrap th:nth-child(1),
+  .table-wrap td:nth-child(1),
+  .table-wrap th:nth-child(2),
+  .table-wrap td:nth-child(2) {
     min-width: 0;
   }
   .table-wrap td {
