@@ -104,7 +104,12 @@ git log -1 --oneline
      -d '{"email":"admin@thangtinhoc.vn","password":"admin123","deviceId":"0123456789abcdef"}' | head -c 120
    ```
 
-   Neu van HTML: **Cau hinh** (Configuration) → chen noi dung file `deploy/apache/aapanel-api-proxy.conf` → luu → reload.
+   Neu van HTML: xem chi tiet `deploy/FIX-PROXY-AAPANEL.md` hoac chen `deploy/apache/aapanel-api-proxy.conf` vao **Cau hinh** Apache → luu → reload.
+
+   Chay script kiem tra:
+   ```bash
+   bash deploy/check-vps.sh
+   ```
 3. Bat **Allow .htaccess** / rewrite (Apache: `mod_rewrite` on)
 4. File rewrite (sau `bash deploy/rebuild-frontend.sh`):
    - `site_dist/.htaccess`

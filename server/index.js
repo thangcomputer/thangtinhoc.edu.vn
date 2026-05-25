@@ -112,6 +112,10 @@ app.use(sanitizeMiddleware);
 
 // 8b. Sửa path khi aaPanel reverse proxy gửi sai (/auth/... hoặc /api/api/...)
 app.use((req, res, next) => {
+  if (/\/\/+/.test(req.path)) {
+    const q = req.url.includes('?') ? req.url.slice(req.url.indexOf('?')) : '';
+    req.url = req.path.replace(/\/+/g, '/') + q;
+  }
   let p = req.path;
   if (p.startsWith('/api/api/')) {
     req.url = req.url.replace(/^\/api\/api/, '/api');
@@ -177,9 +181,11 @@ app.post('/api/cache/purge', authenticate, authorize('admin'), async (req, res) 
 });
 
 // Routes — Với Rate Limiting cụ thể
-const authStack = [authLimiter, auditLog('AUTH'), authRoutes];
-app.use('/api/auth', ...authStack);
-app.use('/auth', ...authStack); // fallback khi proxy cat /api
+app.get('/api/auth/ping', (req, res) => {
+  res.json({ ok: true, path: req.path, version: 'auth-routes-v2' });
+});
+app.use('/api/auth', authLimiter, auditLog('AUTH'), authRoutes);
+app.use('/auth', authLimiter, auditLog('AUTH'), authRoutes); // fallback khi proxy cat /api
 app.use('/api/courses', courseRoutes);
 app.use('/api/posts', postRoutes);
 app.use('/api/orders', orderRoutes);
@@ -238,7 +244,9 @@ app.use((req, res) => {
     success: false,
     message: 'Route not found',
     path: req.path,
-    hint: 'Kiem tra aaPanel proxy: /api -> http://127.0.0.1:5001 (http, khong https)',
+    hint: req.path.includes('//')
+      ? 'Proxy URL co slash thua (path /api//...). Sua: Proxy dir /api -> http://127.0.0.1:5001 (khong slash cuoi, khong them /api)'
+      : 'Kiem tra aaPanel proxy: /api -> http://127.0.0.1:5001 (http, khong https)',
   });
 });
 
