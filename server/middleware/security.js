@@ -87,20 +87,27 @@ const uploadLimiter = rateLimit({
 // ============================================================
 // 2. INPUT SANITIZATION — Chống XSS injection vào DB
 // ============================================================
-const sanitizeInput = (obj) => {
+/** Trường lưu HTML (Quill/editor) — không escape &lt; &gt; (sẽ làm blog hiện raw HTML) */
+const RICH_HTML_KEYS = new Set(['content', 'requirements']);
+
+const stripDangerousHtml = (str) =>
+  str
+    .replace(/javascript:/gi, '')
+    .replace(/on\w+\s*=/gi, '')
+    .replace(/data:text\/html/gi, '');
+
+const sanitizeInput = (obj, parentKey = '') => {
   if (typeof obj === 'string') {
-    return obj
+    if (RICH_HTML_KEYS.has(parentKey)) return stripDangerousHtml(obj);
+    return stripDangerousHtml(obj)
       .replace(/</g, '&lt;')
-      .replace(/>/g, '&gt;')
-      .replace(/javascript:/gi, '')
-      .replace(/on\w+\s*=/gi, '')  // onload=, onclick=, etc.
-      .replace(/data:text\/html/gi, '');
+      .replace(/>/g, '&gt;');
   }
-  if (Array.isArray(obj)) return obj.map(sanitizeInput);
+  if (Array.isArray(obj)) return obj.map((item) => sanitizeInput(item, parentKey));
   if (obj && typeof obj === 'object') {
     const sanitized = {};
     for (const [key, val] of Object.entries(obj)) {
-      sanitized[key] = sanitizeInput(val);
+      sanitized[key] = sanitizeInput(val, key);
     }
     return sanitized;
   }
