@@ -110,6 +110,20 @@ app.use(hpp());
 // 8. Input Sanitization — chống XSS injection
 app.use(sanitizeMiddleware);
 
+// 8b. aaPanel proxy đôi khi gửi /api/auth/... thành /auth/... — khôi phục prefix /api
+app.use((req, res, next) => {
+  const p = req.path;
+  if (p.startsWith('/api') || p.startsWith('/uploads')) return next();
+  const needsApi =
+    /^\/(auth|courses|posts|orders|users|stats|categories|settings|upload|media|notifications|comments|contacts|registrations|recruitment|ai|health|cache|lessons|materials|submissions)(\/|$)/.test(
+      p
+    );
+  if (needsApi) {
+    req.url = `/api${req.url}`;
+  }
+  next();
+});
+
 // Static files — chặn thư mục nhạy cảm (tài liệu/bài nộp qua API có auth)
 app.use('/uploads', (req, res, next) => {
   const p = req.path.replace(/\\/g, '/');

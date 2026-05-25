@@ -80,9 +80,18 @@ git log -1 --oneline
 2. **Reverse proxy /api** (BAT BUOC — khong co thi admin khong dang nhap duoc):
    - aaPanel: **Trang web** → site → **Proxy ngược** → **Thêm**
    - **Duong dan:** `/api`
-   - **URL dich:** `http://127.0.0.1:5001` (port trong `deploy/deploy.conf`)
+   - **URL dich:** `http://127.0.0.1:5001/api` (PHAI co `/api` — neu chi `5001` se loi `Route not found`)
    - Bat **Gui hostname**, **Ho tro WebSocket** (neu co)
-   - Lap lai cho `/uploads` → `http://127.0.0.1:5001`
+   - Lap lai cho `/uploads` → `http://127.0.0.1:5001/uploads`
+
+   Neu `curl https://.../api/auth/login` tra `Route not found` nhung `curl http://127.0.0.1:5001/api/...` OK:
+   proxy dang cat mat tien to `/api` — sua URL dich thanh `http://127.0.0.1:5001/api`.
+   Hoac `git pull` ban moi (server tu them lai prefix `/api` khi proxy cat).
+
+   Sau khi sua proxy hoac pull code:
+   ```bash
+   cd /www/wwwroot/thangtinhoc && git pull && pm2 restart thangtinhoc-api
+   ```
    - **Luu** → reload Apache
 
    Kiem tra (phai thay JSON co `"token"`, KHONG phai HTML):
