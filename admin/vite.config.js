@@ -11,7 +11,7 @@ export default defineConfig(({ mode }) => ({
     port: 5174,
   },
   build: {
-    emptyOutDir: false,
+    emptyOutDir: true,
     // Trinh duyet cu hon: giu @media (max-width) thay vi (width<=)
     cssTarget: 'chrome87',
   },

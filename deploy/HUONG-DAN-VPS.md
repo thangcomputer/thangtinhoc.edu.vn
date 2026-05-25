@@ -49,8 +49,12 @@ Code moi da co CSS responsive trong `admin/src/index.css`. **VPS phai build lai*
 ```bash
 cd /www/wwwroot/thangtinhoc
 git pull origin main
+rm -rf admin/dist/assets client/dist/assets
 bash deploy/rebuild-frontend.sh
+node scripts/verify-admin-css-build.cjs
 ```
+
+Neu verify FAIL: build chua dung — xem loi npm, chay lai `bash deploy/rebuild-frontend.sh`.
 
 Kiem tra aaPanel: **Thu muc web** = `.../site_dist` (KHONG `admin/dist` hay `client/dist`).
 
