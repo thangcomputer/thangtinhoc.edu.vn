@@ -50,7 +50,7 @@ export default function Blog() {
 
       <div className="container" style={{ padding: '3rem 1.5rem' }}>
         {/* Featured posts */}
-        {featured.length > 0 && (
+        {featured.length > 0 && featured[0].slug && (
           <div className="featured-posts">
             <Link to={`/blog/${featured[0].slug}`} className="featured-main" aria-label={featured[0].title}>
               <div className="feat-img-wrap">

@@ -151,9 +151,13 @@ export default function BlogDetail() {
             }).catch(() => {});
         }
       })
-      .catch(() => {
+      .catch((err) => {
         setPost(null);
-        toast.error('Không tải được bài viết');
+        const msg = err.response?.data?.message;
+        const hint = err.code === 'ERR_NETWORK'
+          ? 'Chưa chạy API — mở terminal: cd server && npm run dev'
+          : (msg || `Lỗi ${err.response?.status || 'kết nối'}`);
+        toast.error(`Không tải được bài viết. ${hint}`);
       })
       .finally(() => setLoading(false));
     window.scrollTo(0, 0);

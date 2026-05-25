@@ -88,8 +88,37 @@ function testLoginApi() {
   });
 }
 
+function testGet(path, label) {
+  return new Promise((resolve) => {
+    http.get({ hostname: "127.0.0.1", port: 5000, path, timeout: 8000 }, (res) => {
+      let data = "";
+      res.on("data", (c) => { data += c; });
+      res.on("end", () => {
+        if (res.statusCode === 200) {
+          try {
+            const j = JSON.parse(data);
+            if (j.success && j.data) ok(label);
+            else fail(label + " bad JSON");
+          } catch (e) {
+            fail(label + " parse error");
+          }
+        } else {
+          fail(label + " HTTP " + res.statusCode);
+        }
+        resolve();
+      });
+    }).on("error", () => {
+      fail("API not on :5000. Run: cd server && npm run dev");
+      resolve();
+    });
+  });
+}
+
 console.log("\n=== 3. Login API (server :5000) ===");
-testLoginApi().then(() => {
+testLoginApi()
+  .then(() => testGet("/api/posts?limit=1", "GET /api/posts"))
+  .then(() => testGet("/api/posts/10-ham-excel-quan-trong", "GET /api/posts/:slug"))
+  .then(() => {
   if (withBuild) {
     console.log("\n=== 4. Build ===");
     if (spawnSync("npm", ["run", "build", "--prefix", "client"], { cwd: root, stdio: "inherit", shell: true }).status !== 0) fail("client build");

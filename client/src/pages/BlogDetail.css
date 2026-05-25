@@ -211,12 +211,17 @@
   color: inherit;
   cursor: pointer;
   position: relative;
-  z-index: 2;
   transition: transform 0.22s, box-shadow 0.22s;
 }
-/* Click toàn card — tránh phần tử con chặn Link */
+.bd-related-card::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+}
 .bd-related-card > * {
-  pointer-events: none;
+  position: relative;
+  z-index: 1;
 }
 .bd-related-card:hover {
   transform: translateY(-4px);
