@@ -177,7 +177,9 @@ app.post('/api/cache/purge', authenticate, authorize('admin'), async (req, res) 
 });
 
 // Routes — Với Rate Limiting cụ thể
-app.use('/api/auth', authLimiter, auditLog('AUTH'), authRoutes);
+const authStack = [authLimiter, auditLog('AUTH'), authRoutes];
+app.use('/api/auth', ...authStack);
+app.use('/auth', ...authStack); // fallback khi proxy cat /api
 app.use('/api/courses', courseRoutes);
 app.use('/api/posts', postRoutes);
 app.use('/api/orders', orderRoutes);
