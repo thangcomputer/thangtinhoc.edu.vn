@@ -3,6 +3,13 @@ const router = express.Router();
 const { GoogleGenerativeAI } = require('@google/generative-ai');
 const https = require('https');
 const { authenticate, authorize } = require('../middleware/auth');
+const {
+  MIN_ARTICLE_WORDS,
+  TARGET_ARTICLE_WORDS,
+  EDITORIAL_STYLE_PROMPT,
+  buildExpandStyleNote,
+  buildLongFormFallback,
+} = require('../lib/articleQuality');
 
 const sleep = (ms) => new Promise(r => setTimeout(r, ms));
 
@@ -31,9 +38,9 @@ function callGroqAPI(prompt, temperature = 0.75) {
       messages: [
         {
           role: 'system',
-          content: `You are an expert SEO strategist and senior Vietnamese content writer.
-Write like a real expert. Include HTML tables for data comparison and step-by-step guides.
-Output ONLY valid JSON when asked — no markdown fences.`,
+          content: `You are an expert Vietnamese SEO educator at Thắng Tin Học.
+Write long-form articles (${MIN_ARTICLE_WORDS}+ words): multi-paragraph sections, numbered h2, MOS/IC3, shortcuts, 1-on-1 remote learning.
+Include HTML tables. Output ONLY valid JSON when asked — no markdown fences.`,
         },
         { role: 'user', content: prompt },
       ],
@@ -215,11 +222,13 @@ Năm: ${year}
 ═══ DỮ LIỆU THAM KHẢO ═══
 ${dataContext || `Dựa trên chuyên môn sâu về "${cleanTopic}".`}
 
+${EDITORIAL_STYLE_PROMPT}
+
 ═══ BẮT BUỘC VỀ ĐỘ DÀI & CẤU TRÚC ═══
-- Nội dung HTML: TỐI THIỂU 1800 từ (không tính thẻ HTML), tối đa ~2800 từ
-- Tối thiểu 6 thẻ <h2>, mỗi h2 có 1-3 <h3> con
-- Mở bài hook 100+ từ, nhắc từ khóa trong 2 câu đầu
-- Kết bài + CTA đăng ký khóa học tại Thắng Tin Học
+- Nội dung HTML: TỐI THIỂU ${MIN_ARTICLE_WORDS} từ (không tính thẻ HTML), mục tiêu ${TARGET_ARTICLE_WORDS} từ
+- Tối thiểu 5 thẻ <h2>, mỗi h2 có 1–3 <h3> và ≥2 đoạn <p> trước list/bảng
+- Mở bài 180+ từ (2–3 đoạn <p>), nhắc từ khóa trong 2 câu đầu
+- Kết bài + CTA Zalo / khóa học Thắng Tin Học
 
 ═══ BẮT BUỘC CÓ BẢNG MINH HỌA (quan trọng) ═══
 Phải có ÍT NHẤT 2 bảng <table> với <thead><tr><th>...</th></tr></thead><tbody>...</tbody>:
@@ -239,13 +248,13 @@ KHÔNG dùng: h1, div, span, class, style, script
 
 ═══ OUTPUT ═══
 CHỈ trả về JSON hợp lệ (không markdown, không giải thích):
-{"title":"50-70 ký tự","excerpt":"120-160 ký tự","content":"<h2>...</h2>...đủ 1800+ từ và 2+ bảng table...","focusKeyword":"...","metaTitle":"≤60 ký tự","metaDescription":"120-160 ký tự","tags":["tag1","tag2","tag3","tag4","tag5"],"slug":"slug-khong-dau","suggestions":[{"title":"...","snippet":"..."},{"title":"...","snippet":"..."},{"title":"...","snippet":"..."}]}`;
+{"title":"50-70 ký tự","excerpt":"120-160 ký tự","content":"<h2>...</h2>...đủ ${MIN_ARTICLE_WORDS}+ từ và 2+ bảng table...","focusKeyword":"...","metaTitle":"≤60 ký tự","metaDescription":"120-160 ký tự","tags":["tag1","tag2","tag3","tag4","tag5"],"slug":"slug-khong-dau","suggestions":[{"title":"...","snippet":"..."},{"title":"...","snippet":"..."},{"title":"...","snippet":"..."}]}`;
 }
 
 function buildExpandPrompt(cleanTopic, postData) {
-  return `Bài viết tiếng Việt về "${cleanTopic}" còn QUÁ NGẮN hoặc THIẾU BẢNG.
-Hãy MỞ RỘNG nội dung HTML hiện tại lên ít nhất 2000 từ và thêm ít nhất 2 bảng <table> minh họa (so sánh + bảng dữ liệu tham khảo).
-Giữ nguyên tone chuyên gia Thắng Tin Học. Trả về JSON cùng format với các field: title, excerpt, content, focusKeyword, metaTitle, metaDescription, tags, slug, suggestions.
+  return `Bài viết tiếng Việt về "${cleanTopic}" còn QUÁ NGẮN hoặc THIẾU BẢNG / thiếu đoạn văn dài.
+${buildExpandStyleNote()}
+Thêm ít nhất 2 bảng <table>. Trả về JSON: title, excerpt, content, focusKeyword, metaTitle, metaDescription, tags, slug, suggestions.
 
 Nội dung hiện tại:
 ${(postData.content || '').substring(0, 12000)}`;
@@ -330,9 +339,9 @@ Liệt kê bullet chi tiết:
 async function ensureQualityContent(postData, cleanTopic, writerLabel) {
   const words = countWords(postData.content);
   const tables = hasDataTable(postData.content);
-  if (words >= 1200 && tables) return postData;
+  if (words >= MIN_ARTICLE_WORDS && tables) return postData;
 
-  console.log(`  ⚠️ Content thin (${words} words, tables=${tables}) — expanding...`);
+  console.log(`  ⚠️ Content thin (${words}/${MIN_ARTICLE_WORDS} words, tables=${tables}) — expanding...`);
   const expandPrompt = buildExpandPrompt(cleanTopic, postData);
 
   if (process.env.GROQ_API_KEY?.trim()) {
@@ -392,197 +401,18 @@ function buildResponsePayload(postData, cleanTopic, usedSources, startTime, writ
   };
 }
 
-/** Nội dung HTML bài mẫu — mỗi variantIndex một cấu trúc khác */
-function buildTemplateContent(topic, variantIndex) {
-  const year = new Date().getFullYear();
-  const v = variantIndex % 4;
-
-  if (v === 1) {
-    return `
-<p>Bạn đang đi làm và cần nắm <strong>${topic}</strong> để xử lý công việc hàng ngày? Bài viết này tập trung <strong>thực chiến văn phòng ${year}</strong> — không lan man lý thuyết.</p>
-
-<h2>5 Tình Huống ${topic} Gặp Mỗi Tuần Tại Công Ty</h2>
-<ol>
-<li>Tổng hợp số liệu cuối tuần gửi sếp trước 17h thứ Sáu</li>
-<li>Chuẩn hóa danh sách khách hàng từ nhiều file Excel khác nhau</li>
-<li>Làm slide/biểu đồ cho họp team 15 phút</li>
-<li>Đối chiếu báo cáo kế toán với số liệu bộ phận</li>
-<li>Lưu trữ template email + báo cáo dùng lại hàng tháng</li>
-</ol>
-
-<h2>Quy Trình Xử Lý Báo Cáo Trong 45 Phút</h2>
-<p>Mở file mẫu → dán dữ liệu mới → kiểm tra định dạng cột → cập nhật công thức tổng → xuất PDF. Ghi chú phiên bản file theo ngày để tránh gửi nhầm bản cũ.</p>
-
-<h3>Bảng checklist trước khi gửi sếp</h3>
-<table>
-<thead><tr><th>Bước</th><th>Kiểm tra</th><th>Thời gian</th></tr></thead>
-<tbody>
-<tr><td>1</td><td>Đúng kỳ báo cáo (tuần/tháng)</td><td>2 phút</td></tr>
-<tr><td>2</td><td>Tổng cột khớp chi tiết</td><td>5 phút</td></tr>
-<tr><td>3</td><td>Biểu đồ đúng đơn vị (triệu, %)</td><td>5 phút</td></tr>
-<tr><td>4</td><td>Tên file: BaoCao_2026-03_TenBan</td><td>1 phút</td></tr>
-<tr><td>5</td><td>Đính kèm ghi chú thay đổi so với kỳ trước</td><td>10 phút</td></tr>
-</tbody>
-</table>
-
-<h2>Case Study: Nhân Viên Hành Chính Tăng Tốc 40%</h2>
-<p>Sau 3 tuần học có lộ trình tại Thắng Tin Học, học viên rút thời gian làm bảng chấm công từ 2 giờ xuống ~1 giờ nhờ template + phím tắt + bảng tra công thức in sẵn.</p>
-
-<h3>Bảng so sánh: Tự mò vs Có người hướng dẫn</h3>
-<table>
-<thead><tr><th></th><th>Tự học online</th><th>Khóa có giảng viên</th></tr></thead>
-<tbody>
-<tr><td>Sửa lỗi trên file thật</td><td>Chậm, dễ bỏ cuộc</td><td>Trực tiếp trên máy học viên</td></tr>
-<tr><td>Lịch học</td><td>Linh hoạt</td><td>Ca tối / cuối tuần</td></tr>
-<tr><td>Chứng chỉ</td><td>Tùy nền tảng</td><td>Lộ trình MOS/IC3</td></tr>
-</tbody>
-</table>
-
-<h2>Câu Hỏi Người Đi Làm Hay Hỏi</h2>
-<h3>Tôi bận, học buổi tối được không?</h3>
-<p>Có — lớp Thắng Tin Học có ca tối và học kèm theo dự án công ty bạn đang làm.</p>
-<h3>Công ty dùng Google Sheets, khóa Excel có ích không?</h3>
-<p>Có — tư duy dữ liệu và thao tác bảng tính chuyển sang Sheets rất nhanh.</p>
-
-<h2>Kết Luận — Áp Dụng ${topic} Ngay Tuần Sau</h2>
-<p>Chọn <strong>một báo cáo bạn đang làm</strong> làm bài tập tuần này. Liên hệ Thắng Tin Học để được gợi ý khóa phù hợp người đi làm.</p>`.trim();
-  }
-
-  if (v === 2) {
-    return `
-<p>Chủ đề <strong>${topic}</strong> có nhiều cách tiếp cận — bài viết này trả lời thẳng các thắc mắc phổ biến và so sánh lựa chọn học/làm việc năm ${year}.</p>
-
-<h2>Câu Hỏi Thường Gặp Về ${topic}</h2>
-<h3>${topic} khác gì “biết dùng máy tính”?</h3>
-<p>Biết dùng máy là thao tác chung; ${topic} là quy trình xử lý số liệu, văn bản, báo cáo theo chuẩn công việc.</p>
-<h3>Nên học Excel trước hay Word trước?</h3>
-<p>Ưu tiên Excel nếu công việc nhiều số liệu; Word trước nếu soạn thảo văn bản là chính. Khóa tổng hợp tại Thắng Tin Học gộp cả hai.</p>
-<h3>Học bao lâu thì đủ đi làm?</h3>
-<p>4–6 tuần (1–2h/ngày) cho nền tảng văn phòng; thành thạo cần thêm thực hành trên file thật.</p>
-
-<h2>So Sánh Hình Thức Học ${topic}</h2>
-<table>
-<thead><tr><th>Hình thức</th><th>Ưu điểm</th><th>Nhược điểm</th><th>Phù hợp</th></tr></thead>
-<tbody>
-<tr><td>YouTube miễn phí</td><td>0 đồng, đa dạng</td><td>Dễ lạc đề, không sửa lỗi file bạn</td><td>Tự giác cao</td></tr>
-<tr><td>Khóa online có bài tập</td><td>Có lộ trình</td><td>Ít tương tác trực tiếp</td><td>Bận, ở xa</td></tr>
-<tr><td>Lớp trực tiếp</td><td>Sửa lỗi ngay</td><td>Cố định lịch</td><td>Người mới cần kèm</td></tr>
-<tr><td>1 kèm 1</td><td>Tùy chỉnh 100%</td><td>Chi phí cao hơn</td><td>Leader, trưởng nhóm</td></tr>
-</tbody>
-</table>
-
-<h2>So Sánh Công Cụ Phần Mềm</h2>
-<table>
-<thead><tr><th>Nhu cầu</th><th>Gợi ý</th><th>Ghi chú</th></tr></thead>
-<tbody>
-<tr><td>Báo cáo phức tạp, macro</td><td>Microsoft Excel</td><td>Phổ biến doanh nghiệp</td></tr>
-<tr><td>Làm việc nhóm online</td><td>Google Sheets</td><td>Chia sẻ realtime</td></tr>
-<tr><td>Soạn hợp đồng, CV</td><td>Microsoft Word</td><td>Định dạng chuẩn</td></tr>
-<tr><td>Thuyết trình</td><td>PowerPoint / Canva</td><td>Tùy brand công ty</td></tr>
-</tbody>
-</table>
-
-<h2>Lộ Trình Gợi Ý Sau Khi Chọn Công Cụ</h2>
-<p>Tuần 1–2: thao tác cơ bản. Tuần 3–4: công thức + biểu đồ. Tuần 5+: template báo cáo tái sử dụng.</p>
-
-<h2>Kết Luận</h2>
-<p>Chọn hình thức học phù hợp lịch và ngân sách — <strong>Thắng Tin Học</strong> tư vấn miễn phí lộ trình ${topic} cho từng đối tượng.</p>`.trim();
-  }
-
-  if (v === 3) {
-    return `
-<p>Muốn làm nhanh hơn với <strong>${topic}</strong>? Tập hợp <strong>mẹo chuyên gia</strong>, phím tắt và lỗi hay gặp — áp dụng ngay trong ca làm ${year}.</p>
-
-<h2>12 Mẹo Tăng Tốc Khi Làm ${topic}</h2>
-<ul>
-<li>Dùng template có sẵn thay vì tạo file mới mỗi lần</li>
-<li>Đặt tên sheet/tab theo quy ước: Input, Calc, Report</li>
-<li>Khóa vùng tham chiếu (F4) khi kéo công thức</li>
-<li>Format Painter cho đồng bộ giao diện báo cáo</li>
-<li>Tách file nặng: dữ liệu thô / báo cáo tóm tắt</li>
-</ul>
-
-<h3>Bảng phím tắt nên nhớ (Excel / bảng tính)</h3>
-<table>
-<thead><tr><th>Thao tác</th><th>Phím tắt</th><th>Tiết kiệm</th></tr></thead>
-<tbody>
-<tr><td>Lưu nhanh</td><td>Ctrl + S</td><td>Tránh mất file</td></tr>
-<tr><td>Điền xuống</td><td>Ctrl + D</td><td>Nhập liệu lặp</td></tr>
-<tr><td>Tìm thay thế</td><td>Ctrl + H</td><td>Sửa hàng loạt</td></tr>
-<tr><td>Chọn cột</td><td>Ctrl + Space</td><td>Format nhanh</td></tr>
-</tbody>
-</table>
-
-<h2>7 Lỗi Thường Gặp & Cách Sửa</h2>
-<h3>#VALUE! hoặc #REF!</h3>
-<p>Kiểm tra kiểu dữ liệu cột và vùng tham chiếu sau khi xóa dòng/cột.</p>
-<h3>Gửi nhầm file cũ</h3>
-<p>Đặt tên có ngày; dùng thư mục “Đã gửi”.</p>
-
-<h3>Bảng lỗi theo mức độ nghiêm trọng</h3>
-<table>
-<thead><tr><th>Lỗi</th><th>Mức</th><th>Xử lý nhanh</th></tr></thead>
-<tbody>
-<tr><td>Sai tổng do text</td><td>Cao</td><td>Text to Columns / VALUE()</td></tr>
-<tr><td>Biểu đồ sai trục</td><td>Trung bình</td><td>Chọn lại range, đơn vị</td></tr>
-<tr><td>Link file đứt</td><td>Cao</td><td>Cập nhật đường dẫn nguồn</td></tr>
-</tbody>
-</table>
-
-<h2>Kết Luận — Thói Quen Pro</h2>
-<p>Áp dụng 2–3 mẹo mỗi tuần. Học có hướng dẫn tại <strong>Thắng Tin Học</strong> để sửa đúng file công việc của bạn.</p>`.trim();
-  }
-
-  return `
-<p><strong>${topic}</strong> là kỹ năng nền tảng năm ${year}. Bài viết này chia <strong>lộ trình học theo tuần</strong>, kèm bảng so sánh và bài tập thực hành.</p>
-
-<h2>${topic} Là Gì? Ai Cần Học Trước?</h2>
-<p>Sinh viên sắp thực tập, nhân viên mới vào làm, hoặc người chuyển ngành đều nên học sớm — nhiều JD ghi rõ yêu cầu tin học văn phòng.</p>
-
-<h2>Lộ Trình 4 Tuần (Gợi Ý)</h2>
-<h3>Tuần 1 — Làm quen</h3>
-<p>Giao diện, lưu file, định dạng cơ bản, 10 phím tắt.</p>
-<h3>Tuần 2 — Dữ liệu</h3>
-<p>Nhập liệu, lọc, sort, công thức SUM, AVERAGE, IF.</p>
-<h3>Tuần 3 — Báo cáo</h3>
-<p>Biểu đồ, in ấn, PDF, template báo cáo.</p>
-<h3>Tuần 4 — Ôn tập</h3>
-<p>Làm 1 dự án tổng hợp 90 phút, checklist tự chấm.</p>
-
-<h3>Bảng lộ trình chi tiết</h3>
-<table>
-<thead><tr><th>Tuần</th><th>Mục tiêu</th><th>Sản phẩm</th><th>Giờ học</th></tr></thead>
-<tbody>
-<tr><td>1</td><td>Thao tác cơ bản</td><td>File mẫu định dạng</td><td>3–5h</td></tr>
-<tr><td>2</td><td>Công thức</td><td>Bảng tính mini</td><td>4–6h</td></tr>
-<tr><td>3</td><td>Trình bày</td><td>1 biểu đồ + báo cáo</td><td>4–6h</td></tr>
-<tr><td>4</td><td>Dự án</td><td>Bài tập tổng hợp</td><td>5–8h</td></tr>
-</tbody>
-</table>
-
-<h3>Bảng so sánh Office vs Google</h3>
-<table>
-<thead><tr><th>Tiêu chí</th><th>Microsoft Office</th><th>Google Workspace</th></tr></thead>
-<tbody>
-<tr><td>Học tại Thắng Tin Học</td><td>Có lớp MOS</td><td>Có module Sheets</td></tr>
-<tr><td>Offline</td><td>Mạnh</td><td>Hạn chế</td></tr>
-<tr><td>Cộng tác online</td><td>Teams/OneDrive</td><td>Drive realtime</td></tr>
-</tbody>
-</table>
-
-<h2>Kết Luận — Bắt Đầu Tuần Này</h2>
-<p>Đăng ký học thử tại <strong>Thắng Tin Học</strong> để được chẩn đoán trình độ và nhận lộ trình ${topic} cá nhân hóa.</p>`.trim();
-}
-
-/** Template phong phú khi AI không khả dụng — mỗi variant khác nội dung */
+/** Template dài (~1400+ từ) khi AI không khả dụng */
 function generateRichTemplate(topic, variantIndex = 0) {
   const year = new Date().getFullYear();
   const variant = getVariantMeta(variantIndex);
   const slug = makeSlug(topic, variantIndex);
-  const content = buildTemplateContent(topic, variantIndex);
+  const content = buildLongFormFallback(topic, variantIndex);
+  const title = variantIndex % 4 === 0
+    ? `${topic} Có Khó Không? ${variant.titleSuffix} (${year})`
+    : `${topic} — ${variant.titleSuffix} (${year})`;
 
   return {
-    title: `${topic} — ${variant.titleSuffix} (${year})`,
+    title,
     slug,
     excerpt: `${topic} ${year}: ${variant.excerptHint}. Khóa học Thắng Tin Học — học thử miễn phí.`,
     content,

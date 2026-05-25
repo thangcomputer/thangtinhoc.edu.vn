@@ -427,7 +427,12 @@ export default function PostForm() {
       if (source === 'template') {
         toast(message || 'Đã dùng bài mẫu (AI quá tải). Thử lại sau hoặc thêm GROQ_API_KEY.', { icon: '⚠️', duration: 7000 });
       } else {
-        toast.success(`✅ Bài AI sẵn sàng — ~${wordCount} từ${hasTables ? ', có bảng minh họa' : ''} (${source})`);
+        const minWords = 1400;
+        if (wordCount < minWords) {
+          toast(`⚠️ Bài ~${wordCount} từ (chuẩn tối thiểu ${minWords}). Có GROQ_API_KEY sẽ dài và sâu hơn.`, { icon: 'ℹ️', duration: 6000 });
+        } else {
+          toast.success(`✅ Bài AI sẵn sàng — ~${wordCount} từ${hasTables ? ', có bảng minh họa' : ''} (${source})`);
+        }
       }
     } catch (err) {
       const msg = err.response?.data?.message;
