@@ -2,6 +2,7 @@ const express = require('express');
 const fs = require('fs');
 const path = require('path');
 const { authenticate, authorize } = require('../middleware/auth');
+const { buildPublicFileUrl } = require('../lib/publicUrl');
 
 const router = express.Router();
 
@@ -39,9 +40,8 @@ function resolveUploadPath(filename) {
   return filePath;
 }
 
-// Helper to build URL for a file
-function fileUrl(req, filename) {
-  return `${req.protocol}://${req.get('host')}/uploads/${filename}`;
+function fileUrl(_req, filename) {
+  return buildPublicFileUrl(filename);
 }
 
 // GET /api/media – list all uploaded images (admin only)

@@ -2,8 +2,13 @@ const express = require('express');
 const prisma = require('../lib/db');
 const { authenticate, authorize } = require('../middleware/auth');
 const { decodeRichHtmlFields } = require('../lib/htmlContent');
+const { normalizePostMedia } = require('../lib/publicUrl');
 
 const router = express.Router();
+
+function enrichPost(post) {
+  return normalizePostMedia(decodeRichHtmlFields(post));
+}
 
 function normalizeSlug(raw) {
   return String(raw || '')
@@ -38,8 +43,9 @@ router.get('/admin/all', authenticate, authorize('admin'), async (req, res) => {
       include: { category: true, author: { select: { fullName: true } } },
       orderBy: { createdAt: 'desc' },
     });
-    res.json({ success: true, data: posts.map(decodeRichHtmlFields) });
+    res.json({ success: true, data: posts.map(enrichPost) });
   } catch (err) {
+    console.error('[posts] GET /admin/all', err);
     res.status(500).json({ success: false, message: 'Lỗi server' });
   }
 });
@@ -52,8 +58,9 @@ router.get('/admin/:id', authenticate, authorize('admin'), async (req, res) => {
       include: { category: true },
     });
     if (!post) return res.status(404).json({ success: false, message: 'Không tìm thấy bài viết' });
-    res.json({ success: true, data: decodeRichHtmlFields(post) });
+    res.json({ success: true, data: enrichPost(post) });
   } catch (err) {
+    console.error('[posts] GET /admin/:id', err);
     res.status(500).json({ success: false, message: 'Lỗi server' });
   }
 });
@@ -79,7 +86,7 @@ router.get('/', async (req, res) => {
 
     res.json({
       success: true,
-      data: posts.map(decodeRichHtmlFields),
+      data: posts.map(enrichPost),
       pagination: { page: parseInt(page), limit: parseInt(limit), total, totalPages: Math.ceil(total / parseInt(limit)) },
     });
   } catch (err) {
@@ -100,8 +107,9 @@ router.get('/:slug', async (req, res) => {
     }
     // Increment views
     await prisma.post.update({ where: { id: post.id }, data: { views: post.views + 1 } });
-    res.json({ success: true, data: decodeRichHtmlFields(post) });
+    res.json({ success: true, data: enrichPost(post) });
   } catch (err) {
+    console.error('[posts] GET /:slug', err);
     res.status(500).json({ success: false, message: 'Lỗi server' });
   }
 });

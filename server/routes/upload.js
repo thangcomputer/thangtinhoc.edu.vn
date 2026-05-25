@@ -3,6 +3,7 @@ const multer = require('multer');
 const path = require('path');
 const fs = require('fs');
 const { authenticate, authorize } = require('../middleware/auth');
+const { buildPublicFileUrl } = require('../lib/publicUrl');
 
 const router = express.Router();
 
@@ -47,18 +48,11 @@ const uploadMedia = multer({
   },
 });
 
-/** URL tuong doi — hoat dong qua reverse proxy /uploads */
-function buildPublicFileUrl(req, filename) {
-  const siteUrl = (process.env.SITE_URL || '').replace(/\/+$/, '');
-  if (siteUrl) return `${siteUrl}/uploads/${filename}`;
-  return `/uploads/${filename}`;
-}
-
 function sendUploadResponse(req, res) {
   if (!req.file) {
     return res.status(400).json({ success: false, message: 'Khong co file' });
   }
-  const url = buildPublicFileUrl(req, req.file.filename);
+  const url = buildPublicFileUrl(req.file.filename);
   res.json({ success: true, url, data: { url, filename: req.file.filename } });
 }
 
