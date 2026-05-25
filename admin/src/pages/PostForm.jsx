@@ -388,7 +388,15 @@ export default function PostForm() {
       await new Promise(r => setTimeout(r, 600));
       setAiStep(`✍️ AI đang viết phiên bản ${aiResults.length + 1}...`);
 
-      const res = await api.post('/ai/generate-post', { topic: aiTopic });
+      const avoid = aiResults.map((r) => ({
+        title: r.title,
+        excerpt: (r.excerpt || '').slice(0, 160),
+      }));
+      const res = await api.post('/ai/generate-post', {
+        topic: aiTopic,
+        variantIndex: aiResults.length,
+        avoid,
+      });
       const { data: d, source, sourceInfo, elapsed, message, wordCount: serverWords, hasTables, success } = res.data;
 
       if (success === false) {
@@ -403,6 +411,15 @@ export default function PostForm() {
 
       const wordCount = serverWords || (d.content || '').replace(/<[^>]*>/g, '').trim().split(/\s+/).filter(Boolean).length;
       const newResult = { ...d, source, sourceInfo, elapsed, wordCount, hasTables, createdAt: new Date().toLocaleTimeString('vi-VN') };
+
+      const strip = (html) => (html || '').replace(/<[^>]*>/g, '').replace(/\s+/g, ' ').trim();
+      const isDup = aiResults.some(
+        (r) => r.title === newResult.title && strip(r.content).slice(0, 400) === strip(newResult.content).slice(0, 400)
+      );
+      if (isDup) {
+        toast.error('Phiên bản trùng nội dung — hãy bấm Tạo Thêm lại hoặc đổi chủ đề một chút', { duration: 6000 });
+        return;
+      }
 
       setAiResults(prev => [...prev, newResult]);
       setAiSelectedIdx(aiResults.length);
