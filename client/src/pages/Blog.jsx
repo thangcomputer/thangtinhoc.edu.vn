@@ -52,7 +52,7 @@ export default function Blog() {
         {/* Featured posts */}
         {featured.length > 0 && (
           <div className="featured-posts">
-            <Link to={`/blog/${featured[0].slug}`} className="featured-main">
+            <Link to={`/blog/${featured[0].slug}`} className="featured-main" aria-label={featured[0].title}>
               <div className="feat-img-wrap">
                 {featured[0].thumbnail ? (
                   <img src={featured[0].thumbnail} alt={featured[0].title} />
@@ -69,7 +69,7 @@ export default function Blog() {
               </div>
             </Link>
             <div className="featured-side">
-              {featured.slice(1).map(post => (
+              {featured.filter((p) => p.slug).slice(1).map(post => (
                 <Link key={post.id} to={`/blog/${post.slug}`} className="feat-side-post">
                   <div className="feat-side-img">
                     {post.thumbnail ? <img src={post.thumbnail} alt="" /> : <div className="feat-placeholder" />}
@@ -100,7 +100,7 @@ export default function Blog() {
           <div className="loader loader--section"><div className="spinner" /></div>
         ) : (
           <div className="grid-3">
-            {posts.map(post => (
+            {posts.filter((post) => post.slug).map(post => (
               <Link key={post.id} to={`/blog/${post.slug}`} className="post-card">
                 <div className="post-img">
                   {post.thumbnail ? <img src={post.thumbnail} alt="" /> : <div className="post-placeholder" />}

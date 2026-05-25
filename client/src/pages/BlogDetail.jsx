@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { Clock, Eye, ArrowLeft, Tag, List, ChevronRight, BookOpen } from 'lucide-react';
+import toast from 'react-hot-toast';
 import api from '../lib/api';
 import { sanitizeHTML } from '../lib/sanitize';
 import './BlogDetail.css';
@@ -150,7 +151,10 @@ export default function BlogDetail() {
             }).catch(() => {});
         }
       })
-      .catch(() => {})
+      .catch(() => {
+        setPost(null);
+        toast.error('Không tải được bài viết');
+      })
       .finally(() => setLoading(false));
     window.scrollTo(0, 0);
 
@@ -293,7 +297,7 @@ export default function BlogDetail() {
                 <BookOpen size={20} /> Bài Viết Liên Quan
               </h2>
               <div className="bd-related-grid">
-                {related.map(r => (
+                {related.filter((r) => r.slug).map(r => (
                   <Link key={r.id} to={`/blog/${r.slug}`} className="bd-related-card">
                     <div className="bd-related-thumb">
                       {r.thumbnail
