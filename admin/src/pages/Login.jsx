@@ -27,7 +27,11 @@ export default function Login() {
       });
       const payload = res.data?.data;
       if (!payload?.user || !payload?.token) {
-        const hint = res.data?.message || 'API không trả về token (kiểm tra proxy /api và CORS trên VPS)';
+        const raw = typeof res.data === 'string' ? res.data.slice(0, 80) : JSON.stringify(res.data)?.slice(0, 120);
+        const looksHtml = /<!DOCTYPE|<html/i.test(String(res.data));
+        const hint = looksHtml
+          ? 'Apache trả HTML thay vì API — cấu hình Proxy ngược /api → http://127.0.0.1:5001 trên aaPanel'
+          : (res.data?.message || `API không trả token. Phản hồi: ${raw}`);
         throw new Error(hint);
       }
       const { user, token, sessionWarning, deviceId: serverDeviceId } = payload;

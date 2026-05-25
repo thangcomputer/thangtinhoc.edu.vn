@@ -77,9 +77,22 @@ git log -1 --oneline
 ## aaPanel (Apache) — bat buoc
 1. **Website** → **Thu muc web** = `/www/wwwroot/thangtinhoc/site_dist`  
    (KHONG dung `client/dist` hay `admin/dist` rieng)
-2. **Reverse proxy** (trong cau hinh site):
-   - `/api` → `http://127.0.0.1:5001` (port trong `deploy/deploy.conf`)
-   - `/uploads` → `http://127.0.0.1:5001`
+2. **Reverse proxy /api** (BAT BUOC — khong co thi admin khong dang nhap duoc):
+   - aaPanel: **Trang web** → site → **Proxy ngược** → **Thêm**
+   - **Duong dan:** `/api`
+   - **URL dich:** `http://127.0.0.1:5001` (port trong `deploy/deploy.conf`)
+   - Bat **Gui hostname**, **Ho tro WebSocket** (neu co)
+   - Lap lai cho `/uploads` → `http://127.0.0.1:5001`
+   - **Luu** → reload Apache
+
+   Kiem tra (phai thay JSON co `"token"`, KHONG phai HTML):
+   ```bash
+   curl -s -X POST https://thangtinhoc.edu.vn/api/auth/login \
+     -H "Content-Type: application/json" \
+     -d '{"email":"admin@thangtinhoc.vn","password":"admin123","deviceId":"0123456789abcdef"}' | head -c 120
+   ```
+
+   Neu van HTML: **Cau hinh** (Configuration) → chen noi dung file `deploy/apache/aapanel-api-proxy.conf` → luu → reload.
 3. Bat **Allow .htaccess** / rewrite (Apache: `mod_rewrite` on)
 4. File rewrite (sau `bash deploy/rebuild-frontend.sh`):
    - `site_dist/.htaccess`
