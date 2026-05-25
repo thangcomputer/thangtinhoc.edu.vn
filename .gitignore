@@ -9,6 +9,10 @@ deploy/deploy.conf
 dist/
 build/
 *.log
+**/out.txt
+**/out_*.txt
+**/build_err.txt
+**/test_out.txt
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
