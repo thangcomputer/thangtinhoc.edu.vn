@@ -406,8 +406,8 @@ function generateRichTemplate(topic) {
 <p>Thắng Tin Học có lộ trình luyện thi chứng chỉ quốc tế song song với kỹ năng thực tế công việc.</p>
 
 <h2>Kết Luận — Bắt Đầu Hành Trình ${topic}</h2>
-<p>Đầu tư thời gian cho <strong>${topic}</strong> hôm nay sẽ tạo lợi thế rõ rệt trong công việc. Liên hệ <strong>Thắng Tin Học</strong> để được tư vấn khóa học 1:1 phù hợp trình độ và lịch rảnh của bạn.</p>
-<p><em>Lưu ý: Nếu bạn thấy thông báo template — hãy cấu hình GEMINI_API_KEY hoặc GROQ_API_KEY (miễn phí) trong server và bấm tạo lại để nhận bài AI đầy đủ hơn.</em></p>
+<p>Đầu tư thời gian cho <strong>${topic}</strong> hôm nay sẽ tạo lợi thế rõ rệt trong công việc. Liên hệ <strong>Thắng Tin Học</strong> để được tư vấn khóa học phù hợp trình độ, lịch học linh hoạt và lộ trình luyện thi chứng chỉ nếu bạn cần.</p>
+<p>Bắt đầu từ một bài tập thực tế nhỏ mỗi ngày — sau 3–4 tuần bạn sẽ thấy tiến bộ rõ ràng trong tốc độ xử lý số liệu và chất lượng báo cáo.</p>
 `.trim();
 
   return {
