@@ -1,38 +1,20 @@
 /**
- * Chuẩn chất lượng bài viết SEO (độ dài + phong cách tư vấn chuyên sâu).
+ * Chuẩn chất lượng bài viết SEO (độ dài + Copywriter Master).
  */
+const { COPYWRITER_TASK_PROMPT, BRAND } = require('./copywriterPrompt');
+
 const MIN_ARTICLE_WORDS = 1400;
 const TARGET_ARTICLE_WORDS = '1600–2400';
 
 const EDITORIAL_STYLE_PROMPT = `
-═══ PHONG CÁCH BÀI VIẾT (BẮT BUỘC — chuẩn blog giáo dục Thắng Tin Học) ═══
-Viết như bài tư vấn dài, chuyên gia, có chiều sâu — KHÔNG phải outline ngắn hay bullet sơ sài.
+${COPYWRITER_TASK_PROMPT}
 
-TIÊU ĐỀ (title): dạng câu hỏi hoặc lời hứa rõ (vd: "... có khó không? Lộ trình ... cho người mới bắt đầu").
-
-MỞ BÀI (180–280 từ, 2–3 đoạn <p>):
-- Mỗi đoạn 4–6 câu, giọng đồng cảm (học sinh, nhân viên văn phòng, phụ huynh).
-- Bối cảnh kỷ nguyên số; nỗi lo "có khó không", sợ bấm nhầm, rối tính năng.
-- Hứa bài viết giải quyết gì (lộ trình, đánh giá độ khó khách quan).
-
-THÂN BÀI:
-- Tối thiểu 4 mục <h2> (tiêu đề có thể bắt đầu bằng số: "1. ...", "2. ...").
-- MỖI <h2> bắt buộc có ≥2 đoạn <p> (mỗi đoạn ≥3 câu) TRƯỚC khi dùng list/bảng.
-- Dùng <h3> cho tiểu mục (vd: "Cấp độ 1: Tin học ứng dụng", "Cấp độ 2: Kỹ thuật chuyên sâu").
-- Giải thích khái niệm, so sánh, ví dụ Việt Nam; số liệu % hợp lý khi cần.
-
-NÊN CÓ (phù hợp chủ đề):
-- Phân tầng độ khó (ứng dụng văn phòng vs kỹ thuật sâu).
-- Mục sai lầm khiến việc học trở nên "khó".
-- Phím tắt cụ thể: Alt+Tab, Ctrl+S, Windows+D, Windows+E...
-- Chứng chỉ MOS, IC3 và lợi ích CV.
-- Học 1 kèm 1 từ xa (UltraViewer, TeamViewer) — cầm tay chỉ việc.
-
-KẾT BÀI:
-- <h2>Kết luận</h2> + 1–2 đoạn <p> khích lệ, khẳng định "không khó" nếu có lộ trình đúng.
-- CTA: tư vấn lộ trình tại Thắng Tin Học, liên hệ Zalo để nhận lịch khai giảng (KHÔNG nhắc API key/template).
-
-CẤM: mục cụt (<80 từ/mục), chỉ bullet không có đoạn văn, câu AI rỗng lặp lại.
+═══ BỔ SUNG ĐỘ DÀI & CHIỀU SÂU ═══
+- Tối thiểu ${MIN_ARTICLE_WORDS} từ nội dung (mục tiêu ${TARGET_ARTICLE_WORDS}).
+- Mỗi <h2> có ≥2 đoạn <p> trước list/bảng; tối thiểu 5 <h2>.
+- Ít nhất 2 bảng <table> (so sánh + tra cứu/lộ trình).
+- FAQ: <h2>Câu Hỏi Thường Gặp</h2> + 4 cặp <h3> + <p>.
+- Cấm nhắc API key, template, hay "bài mẫu" trong content.
 `;
 
 function buildExpandStyleNote() {
@@ -75,11 +57,15 @@ function sharedDepthBlock(topic, year) {
 <p>Trung tâm Thắng Tin Học khuyến khích học viên mang đúng thách thức công việc vào lớp: một báo cáo bị sếp trả về, một file Excel bị lỗi công thức, một slide bị đồng nghiệp phàn nàn khó hiểu. Giải quyết đúng nỗi đau đó mang lại động lực mạnh hơn bất kỳ bài lý thuyết nào.</p>`;
 }
 
+function appendHashtagFooter(html) {
+  if (/#(?:MOS|IC3|hoctinhoc|thangcomputer)/i.test(html || '')) return html;
+  return `${html}\n<p><em>#MOS #IC3 #hoctinhoc #thangcomputer #tinhocvanphong</em></p>`;
+}
+
 function buildLongFormFallback(topic, variantIndex = 0) {
   const year = new Date().getFullYear();
   const v = variantIndex % 4;
-  const zaloCta = process.env.ZALO_CTA_TEXT?.trim()
-    || 'Hãy kết nối ngay qua Zalo Thắng Tin Học để được tư vấn lộ trình 1 kèm 1 cá nhân hóa và nhận lịch khai giảng mới nhất.';
+  const zaloCta = BRAND.zaloCta;
 
   let content;
   if (v === 1) content = buildWorkplaceAngle(topic, year, zaloCta);
@@ -92,7 +78,7 @@ function buildLongFormFallback(topic, variantIndex = 0) {
     content = `${content}\n${sharedDepthBlock(topic, year)}`;
     if (countPlainWords(content) <= before) break;
   }
-  return content.trim();
+  return appendHashtagFooter(content.trim());
 }
 
 function sharedRoadmapBlock(topic, year) {
@@ -185,7 +171,8 @@ ${sharedRoadmapBlock(topic, year)}
 
 <h2>Kết luận</h2>
 <p><strong>${topic}</strong> hoàn toàn không khó khi có người dẫn đường và lộ trình tinh gọn bám sát thực tế. Bạn chỉ cần bắt đầu nhỏ hôm nay — một file, một báo cáo, một thói quen phím tắt — rồi tích lũy mỗi tuần.</p>
-<p>Bạn muốn xóa mù tin học hoặc chinh phục MOS/IC3 trong thời gian ngắn? ${zaloCta}</p>`.trim();
+<p>Bạn muốn xóa mù tin học hoặc chinh phục MOS/IC3 trong thời gian ngắn? ${zaloCta}</p>
+<p><em>#MOS #IC3 #hoctinhoc #thangcomputer #tinhocvanphong</em></p>`.trim();
 }
 
 function buildWorkplaceAngle(topic, year, zaloCta) {

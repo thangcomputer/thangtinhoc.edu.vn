@@ -10,6 +10,7 @@ const {
   buildExpandStyleNote,
   buildLongFormFallback,
 } = require('../lib/articleQuality');
+const { COPYWRITER_SYSTEM_PROMPT, BRAND } = require('../lib/copywriterPrompt');
 
 const sleep = (ms) => new Promise(r => setTimeout(r, ms));
 
@@ -38,9 +39,8 @@ function callGroqAPI(prompt, temperature = 0.75) {
       messages: [
         {
           role: 'system',
-          content: `You are an expert Vietnamese SEO educator at Thắng Tin Học.
-Write long-form articles (${MIN_ARTICLE_WORDS}+ words): multi-paragraph sections, numbered h2, MOS/IC3, shortcuts, 1-on-1 remote learning.
-Include HTML tables. Output ONLY valid JSON when asked — no markdown fences.`,
+          content: `${COPYWRITER_SYSTEM_PROMPT}
+Minimum ${MIN_ARTICLE_WORDS} words in content HTML. Include 2+ tables. Hashtag line at end of content.`,
         },
         { role: 'user', content: prompt },
       ],
@@ -195,7 +195,13 @@ function normalizePostData(raw, cleanTopic) {
   if (!postData.slug) postData.slug = makeSlug(postData.title || cleanTopic);
   postData.focusKeyword = postData.focusKeyword || cleanTopic;
   postData.metaTitle = (postData.metaTitle || postData.title || '').substring(0, 60);
-  postData.metaDescription = (postData.metaDescription || postData.excerpt || '').substring(0, 160);
+  postData.metaDescription = (postData.metaDescription || postData.excerpt || '').substring(0, 155);
+  const brandTags = ['MOS', 'IC3', 'hoctinhoc', 'thangcomputer', 'tinhocvanphong'];
+  if (!postData.tags?.length) postData.tags = brandTags;
+  else {
+    const merged = [...new Set([...postData.tags, ...brandTags])];
+    postData.tags = merged.slice(0, 8);
+  }
   return postData;
 }
 
@@ -206,8 +212,7 @@ function buildSEOPrompt(cleanTopic, researchData, googleContext, variantIndex = 
   if (researchData) dataContext += `=== DỮ LIỆU NGHIÊN CỨU ===\n${researchData}\n\n`;
   if (googleContext) dataContext += `=== KẾT QUẢ TÌM KIẾM ===\n${googleContext}\n\n`;
 
-  return `Bạn là chuyên gia SEO và giảng viên tin học văn phòng tại Thắng Tin Học (Việt Nam).
-Viết bài tiếng Việt CHẤT LƯỢNG CAO, như người thật — không văn AI rỗng.
+  return `Viết bài CHẤT LƯỢNG CAO, như copywriter thật — không văn AI rỗng.
 
 ═══ PHIÊN BẢN ${variantIndex + 1} (bắt buộc khác các bản trước) ═══
 Góc nhìn chính: ${variant.angle}
@@ -228,7 +233,8 @@ ${EDITORIAL_STYLE_PROMPT}
 - Nội dung HTML: TỐI THIỂU ${MIN_ARTICLE_WORDS} từ (không tính thẻ HTML), mục tiêu ${TARGET_ARTICLE_WORDS} từ
 - Tối thiểu 5 thẻ <h2>, mỗi h2 có 1–3 <h3> và ≥2 đoạn <p> trước list/bảng
 - Mở bài 180+ từ (2–3 đoạn <p>), nhắc từ khóa trong 2 câu đầu
-- Kết bài + CTA Zalo / khóa học Thắng Tin Học
+- Kết bài + CTA (${BRAND.zaloCta})
+- Cuối content: đoạn <p> với 3–5 hashtag (#MOS #IC3 #hoctinhoc #thangcomputer #tinhocvanphong + tag liên quan chủ đề)
 
 ═══ BẮT BUỘC CÓ BẢNG MINH HỌA (quan trọng) ═══
 Phải có ÍT NHẤT 2 bảng <table> với <thead><tr><th>...</th></tr></thead><tbody>...</tbody>:
@@ -248,7 +254,7 @@ KHÔNG dùng: h1, div, span, class, style, script
 
 ═══ OUTPUT ═══
 CHỈ trả về JSON hợp lệ (không markdown, không giải thích):
-{"title":"50-70 ký tự","excerpt":"120-160 ký tự","content":"<h2>...</h2>...đủ ${MIN_ARTICLE_WORDS}+ từ và 2+ bảng table...","focusKeyword":"...","metaTitle":"≤60 ký tự","metaDescription":"120-160 ký tự","tags":["tag1","tag2","tag3","tag4","tag5"],"slug":"slug-khong-dau","suggestions":[{"title":"...","snippet":"..."},{"title":"...","snippet":"..."},{"title":"...","snippet":"..."}]}`;
+{"title":"50-70 ký tự","excerpt":"120-160 ký tự","content":"<h2>...</h2>...đủ ${MIN_ARTICLE_WORDS}+ từ, 2+ bảng, cuối bài có dòng hashtag...","focusKeyword":"...","metaTitle":"≤60 ký tự","metaDescription":"≤155 ký tự","tags":["MOS","IC3","hoctinhoc","thangcomputer","tinhocvanphong"],"slug":"slug-khong-dau","suggestions":[{"title":"...","snippet":"..."},{"title":"...","snippet":"..."},{"title":"...","snippet":"..."}]}`;
 }
 
 function buildExpandPrompt(cleanTopic, postData) {
@@ -419,7 +425,7 @@ function generateRichTemplate(topic, variantIndex = 0) {
     focusKeyword: topic.toLowerCase(),
     metaTitle: `${topic} — ${variant.titleSuffix}`.substring(0, 60),
     metaDescription: `${topic}: ${variant.excerptHint}. Tư vấn khóa học Thắng Tin Học.`.substring(0, 160),
-    tags: [topic, 'tin học văn phòng', variant.titleSuffix.split(' ')[0].toLowerCase(), 'thắng tin học', String(year)],
+    tags: [topic, 'MOS', 'IC3', 'hoctinhoc', 'thangcomputer', 'tinhocvanphong'],
     suggestions: [],
     variantIndex,
   };
