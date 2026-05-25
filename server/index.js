@@ -110,9 +110,17 @@ app.use(hpp());
 // 8. Input Sanitization — chống XSS injection
 app.use(sanitizeMiddleware);
 
-// 8b. aaPanel proxy đôi khi gửi /api/auth/... thành /auth/... — khôi phục prefix /api
+// 8b. Sửa path khi aaPanel reverse proxy gửi sai (/auth/... hoặc /api/api/...)
 app.use((req, res, next) => {
-  const p = req.path;
+  let p = req.path;
+  if (p.startsWith('/api/api/')) {
+    req.url = req.url.replace(/^\/api\/api/, '/api');
+    p = req.path;
+  }
+  if (p.startsWith('/uploads/uploads/')) {
+    req.url = req.url.replace(/^\/uploads\/uploads/, '/uploads');
+    p = req.path;
+  }
   if (p.startsWith('/api') || p.startsWith('/uploads')) return next();
   const needsApi =
     /^\/(auth|courses|posts|orders|users|stats|categories|settings|upload|media|notifications|comments|contacts|registrations|recruitment|ai|health|cache|lessons|materials|submissions)(\/|$)/.test(
@@ -224,7 +232,12 @@ if (serveSpaBundles) {
 
 // 404 handler
 app.use((req, res) => {
-  res.status(404).json({ success: false, message: 'Route not found' });
+  res.status(404).json({
+    success: false,
+    message: 'Route not found',
+    path: req.path,
+    hint: 'Kiem tra aaPanel proxy: /api -> http://127.0.0.1:5001 (http, khong https)',
+  });
 });
 
 // Error handler — KHÔNG lộ stack trace trong production

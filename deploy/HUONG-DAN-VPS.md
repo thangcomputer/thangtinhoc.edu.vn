@@ -80,13 +80,16 @@ git log -1 --oneline
 2. **Reverse proxy /api** (BAT BUOC — khong co thi admin khong dang nhap duoc):
    - aaPanel: **Trang web** → site → **Proxy ngược** → **Thêm**
    - **Duong dan:** `/api`
-   - **URL dich:** `http://127.0.0.1:5001/api` (PHAI co `/api` — neu chi `5001` se loi `Route not found`)
+   - **URL dich:** `http://127.0.0.1:5001` (**http** khong phai **https**, **khong** them `/api` o cuoi URL)
    - Bat **Gui hostname**, **Ho tro WebSocket** (neu co)
-   - Lap lai cho `/uploads` → `http://127.0.0.1:5001/uploads`
+   - Lap lai cho `/uploads` → `http://127.0.0.1:5001` (Proxy dir `/uploads`)
 
-   Neu `curl https://.../api/auth/login` tra `Route not found` nhung `curl http://127.0.0.1:5001/api/...` OK:
-   proxy dang cat mat tien to `/api` — sua URL dich thanh `http://127.0.0.1:5001/api`.
-   Hoac `git pull` ban moi (server tu them lai prefix `/api` khi proxy cat).
+   **SAI thuong gap:**
+   - `https://127.0.0.1:5001/...` (Node khong co SSL local)
+   - URL dich `http://127.0.0.1:5001/api` + Proxy dir `/api` → thanh `/api/api/...` → 404
+   - Proxy dir `/` (proxy ca site)
+
+   `git pull` + `pm2 restart` (server tu sua path `/auth` va `/api/api`).
 
    Sau khi sua proxy hoac pull code:
    ```bash
