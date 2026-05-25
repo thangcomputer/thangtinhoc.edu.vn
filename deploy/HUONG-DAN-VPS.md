@@ -151,6 +151,18 @@ SERVE_FRONTEND=false
 
 **Luu y:** Khong commit file `.env` len GitHub. Chi sua tren VPS.
 
+## Loi tin nhan (GET /api/contacts 500)
+
+Thuong do **chua chay migration** hoac thieu cot `subject` trong bang `ContactMessage`.
+
+```bash
+cd /www/wwwroot/thangtinhoc/server
+npx prisma migrate deploy
+pm2 restart thangtinhoc-api
+```
+
+Kiem tra: `curl -s -H "Authorization: Bearer TOKEN" https://thangtinhoc.edu.vn/api/contacts | head -c 80`
+
 ## Admin khong dang nhap duoc
 
 Loi `Cannot destructure property 'user'...` hoac `[admin login] undefined undefined`:

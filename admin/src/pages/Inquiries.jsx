@@ -25,8 +25,10 @@ export default function Inquiries() {
     try {
       const res = await api.get('/contacts');
       setMessages(res.data.data || []);
-    } catch {
-      toast.error('Lỗi khi tải tin nhắn');
+    } catch (err) {
+      const hint = err.response?.data?.hint;
+      const msg = err.response?.data?.message;
+      toast.error(hint || msg || 'Lỗi khi tải tin nhắn');
     } finally {
       setLoading(false);
     }
