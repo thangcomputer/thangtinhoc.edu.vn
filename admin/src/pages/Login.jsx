@@ -25,7 +25,12 @@ export default function Login() {
       const res = await api.post('/auth/login', { ...form, deviceId }, {
         headers: { 'X-Device-Id': deviceId },
       });
-      const { user, token, sessionWarning, deviceId: serverDeviceId } = res.data.data;
+      const payload = res.data?.data;
+      if (!payload?.user || !payload?.token) {
+        const hint = res.data?.message || 'API không trả về token (kiểm tra proxy /api và CORS trên VPS)';
+        throw new Error(hint);
+      }
+      const { user, token, sessionWarning, deviceId: serverDeviceId } = payload;
       if (user.role !== 'admin') throw new Error('Cần quyền Admin để truy cập');
       login(user, token, serverDeviceId);
       if (sessionWarning) toast(sessionWarning, { icon: '⚠️', duration: 6000 });
@@ -34,8 +39,13 @@ export default function Login() {
     } catch (err) {
       const msg = err.response?.data?.message || err.message || 'Đăng nhập thất bại';
       const code = err.response?.data?.code;
-      console.error('[admin login]', code, err.response?.status, msg);
-      toast.error(code ? `${msg} (${code})` : msg);
+      const status = err.response?.status;
+      console.error('[admin login]', code, status, msg);
+      if (!err.response) {
+        toast.error('Không kết nối được API. Kiểm tra proxy /api và CORS_ORIGIN (.edu.vn) trên VPS.');
+      } else {
+        toast.error(code ? `${msg} (${code})` : msg);
+      }
     } finally {
       setLoading(false);
     }

@@ -121,6 +121,36 @@ SERVE_FRONTEND=false
 
 **Luu y:** Khong commit file `.env` len GitHub. Chi sua tren VPS.
 
+## Admin khong dang nhap duoc
+
+Loi `Cannot destructure property 'user'...` hoac `[admin login] undefined undefined`:
+
+1. **CORS** — `server/.env` phai co domain dung (.edu.vn):
+   ```env
+   CORS_ORIGIN=https://thangtinhoc.edu.vn,https://www.thangtinhoc.edu.vn
+   SITE_URL=https://thangtinhoc.edu.vn
+   ```
+   `pm2 restart thangtinhoc-api`
+
+2. **Proxy /api** — aaPanel reverse proxy `/api` -> `http://127.0.0.1:5001`
+
+3. **Test API** tren VPS:
+   ```bash
+   curl -s -X POST http://127.0.0.1:5001/api/auth/login \
+     -H "Content-Type: application/json" \
+     -d '{"email":"admin@thangtinhoc.vn","password":"admin123","deviceId":"0123456789abcdef"}'
+   ```
+   Phai thay JSON co `"token"` va `"user"`.
+
+4. **Reset mat khau admin** (neu quen / chua seed):
+   ```bash
+   cd /www/wwwroot/thangtinhoc/server
+   node prisma/seed.js
+   # hoac: node reset_pw.js
+   ```
+
+5. Truy cap admin: `https://thangtinhoc.edu.vn/admin/login` (KHONG dung subdomain admin.)
+
 ## Dang nhap admin
 - Email: `admin@thangtinhoc.vn`
 - Mat khau: `admin123` (neu da seed)
