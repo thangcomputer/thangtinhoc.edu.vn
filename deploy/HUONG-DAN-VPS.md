@@ -42,6 +42,20 @@ bash deploy/rebuild-frontend.sh
 
 Sau do trinh duyet: **Ctrl+Shift+R** (hard refresh).
 
+### Admin / web chua responsive (bang bi vo, mobile khong thanh card)
+
+Code moi da co CSS responsive trong `admin/src/index.css`. **VPS phai build lai** moi co file CSS moi trong `site_dist`:
+
+```bash
+cd /www/wwwroot/thangtinhoc
+git pull origin main
+bash deploy/rebuild-frontend.sh
+```
+
+Kiem tra aaPanel: **Thu muc web** = `.../site_dist` (KHONG `admin/dist` hay `client/dist`).
+
+Trinh duyet: Ctrl+Shift+R hoac xoa cache. DevTools → Network → file `index-*.css` phai **Status 200**, khong phai file cu cache.
+
 ### Loi `vite: command not found` khi build
 
 Code da pull dung nhung chua cai npm trong `client/` va `admin/`. Chay:
