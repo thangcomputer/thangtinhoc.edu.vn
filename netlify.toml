@@ -10,18 +10,18 @@
   # Goi API cung domain qua proxy ben duoi (khong can CORS)
   VITE_API_URL = "/api"
 
-# --- Proxy API/uploads ve VPS (doi URL khi co domain backend) ---
-# Neu chua co VPS: xoa 2 rule nay va dat VITE_API_URL = https://domain-api-cua-ban/api trong Netlify UI
+# --- Proxy API/uploads ve backend Render ---
+# Doi URL ben duoi neu Render cap domain khac tinhoc24h-api.onrender.com
 
 [[redirects]]
   from = "/api/*"
-  to = "https://thangtinhoc.edu.vn/api/:splat"
+  to = "https://tinhoc24h-api.onrender.com/api/:splat"
   status = 200
   force = true
 
 [[redirects]]
   from = "/uploads/*"
-  to = "https://thangtinhoc.edu.vn/uploads/:splat"
+  to = "https://tinhoc24h-api.onrender.com/uploads/:splat"
   status = 200
   force = true
 

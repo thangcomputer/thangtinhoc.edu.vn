@@ -1,0 +1,31 @@
+# Render Blueprint - host backend API (Express + Prisma + SQLite)
+# Ket noi repo GitHub -> Render tu doc file nay -> deploy server/
+# Sau khi deploy xong, lay URL (vd https://tinhoc24h-api.onrender.com)
+# roi cap nhat netlify.toml neu URL khac.
+
+services:
+  - type: web
+    name: tinhoc24h-api
+    runtime: node
+    rootDir: server
+    plan: free
+    buildCommand: npm install && npx prisma generate && npx prisma migrate deploy && node prisma/seed.js
+    startCommand: node index.js
+    healthCheckPath: /api/health
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: JWT_SECRET
+        generateValue: true
+      - key: JWT_EXPIRE
+        value: 7d
+      - key: DATABASE_URL
+        value: file:./dev.db
+      # Khong serve frontend tu server (Netlify lo phan giao dien)
+      - key: SERVE_FRONTEND
+        value: "false"
+      # Cho phep Netlify goi API (doi neu domain Netlify khac)
+      - key: CORS_ORIGIN
+        value: https://tinhoc24h.netlify.app
+      - key: SITE_URL
+        value: https://tinhoc24h.netlify.app
