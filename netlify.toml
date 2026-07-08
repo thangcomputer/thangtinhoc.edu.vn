@@ -10,18 +10,18 @@
   # Goi API cung domain qua proxy ben duoi (khong can CORS)
   VITE_API_URL = "/api"
 
-# --- Proxy API/uploads ve backend VPS dang chay (thangtinhoc.edu.vn) ---
-# Netlify proxy phia server nen trinh duyet thay cung domain -> khong dinh CORS
+# --- Proxy API/uploads ve backend RIENG tren Render (doc lap voi VPS cu) ---
+# Doi URL ben duoi neu Render cap domain khac tinhoc24h-api.onrender.com
 
 [[redirects]]
   from = "/api/*"
-  to = "https://thangtinhoc.edu.vn/api/:splat"
+  to = "https://tinhoc24h-api.onrender.com/api/:splat"
   status = 200
   force = true
 
 [[redirects]]
   from = "/uploads/*"
-  to = "https://thangtinhoc.edu.vn/uploads/:splat"
+  to = "https://tinhoc24h-api.onrender.com/uploads/:splat"
   status = 200
   force = true
 
