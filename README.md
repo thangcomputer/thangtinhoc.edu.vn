@@ -1,4 +1,4 @@
-# Thắng Tin Học — Nền tảng đào tạo trực tuyến
+# TIN HỌC 24H — Nền tảng đào tạo trực tuyến
 
 Monorepo gồm **client** (website học viên), **admin** (quản trị), **server** (API Express + Prisma).
 
