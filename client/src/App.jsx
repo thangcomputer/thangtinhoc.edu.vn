@@ -1,11 +1,11 @@
-import { createBrowserRouter, RouterProvider, Navigate, Outlet, useLocation, useOutletContext } from 'react-router-dom';
-import { Toaster } from 'react-hot-toast';
+﻿import { createBrowserRouter, RouterProvider, Navigate, Outlet, useLocation, useOutletContext } from 'react-router-dom';
 import { useState, useEffect } from 'react';
 import { GoogleOAuthProvider } from '@react-oauth/google';
 import useAuthStore from './store/authStore';
 import api from './lib/api';
 import { useSecurityProtection } from './lib/useSecurityProtection';
 import { useIdleLogout } from './lib/useIdleLogout';
+import AppToaster from './components/AppToaster';
 
 // Layout & Components
 import Navbar from './components/Navbar';
@@ -83,25 +83,13 @@ function LayoutWrapper() {
   }, [location, settings]);
 
   if (settingsLoading) {
-    return <PageLoader mode={settings?.loading_mode || 'spinner'} siteName={settings?.site_name || 'Thắng Tin Học'} logo={settings?.site_logo} />;
+    return <PageLoader mode={settings?.loading_mode || 'spinner'} siteName={settings?.site_name || 'Tin học 24h'} logo={settings?.site_logo} />;
   }
 
   return (
     <>
       <ScrollToTop />
-      <Toaster
-        position="top-right"
-        containerStyle={{
-          zIndex: 999999,
-          top: 'max(12px, env(safe-area-inset-top))',
-          right: 'max(12px, env(safe-area-inset-right))',
-          left: 'auto',
-        }}
-        toastOptions={{
-          style: { zIndex: 999999, maxWidth: 'min(360px, calc(100vw - 24px))' },
-          duration: 4500,
-        }}
-      />
+      <AppToaster />
       <Navbar settings={settings} />
       <main style={{ flex: 1, paddingTop: '100px', minHeight: 'calc(100vh - 300px)' }}>
         <Outlet context={{ settings }} />
@@ -122,12 +110,12 @@ function HomeWrapper() {
 
 const router = createBrowserRouter([
   // Auth routes — no layout
-  { path: '/login', element: <><Toaster position="top-right" /><Login /></> },
-  { path: '/register', element: <><Toaster position="top-right" /><Register /></> },
-  { path: '/forgot-password', element: <><Toaster position="top-right" /><ForgotPassword /></> },
-  { path: '/reset-password', element: <><Toaster position="top-right" /><ResetPassword /></> },
-  { path: '/learn/:slug', element: <><Toaster position="top-right" /><PrivateRoute><CoursePlayer /></PrivateRoute></> },
-  { path: '/learn/:slug/:lessonId', element: <><Toaster position="top-right" /><PrivateRoute><CoursePlayer /></PrivateRoute></> },
+  { path: '/login', element: <><AppToaster /><Login /></> },
+  { path: '/register', element: <><AppToaster /><Register /></> },
+  { path: '/forgot-password', element: <><AppToaster /><ForgotPassword /></> },
+  { path: '/reset-password', element: <><AppToaster /><ResetPassword /></> },
+  { path: '/learn/:slug', element: <><AppToaster /><PrivateRoute><CoursePlayer /></PrivateRoute></> },
+  { path: '/learn/:slug/:lessonId', element: <><AppToaster /><PrivateRoute><CoursePlayer /></PrivateRoute></> },
 
   // Main layout — all routes share Navbar+Footer via LayoutWrapper
   {
@@ -151,7 +139,7 @@ const router = createBrowserRouter([
       { path: '*', element: <NotFound /> },
     ],
   },
-  { path: '*', element: <><Toaster position="top-right" /><NotFound /></> },
+  { path: '*', element: <><AppToaster /><NotFound /></> },
 ]);
 
 function App() {

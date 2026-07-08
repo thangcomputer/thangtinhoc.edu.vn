@@ -29,7 +29,7 @@ export function AuthDivider() {
 
 export default function AuthShell({
   siteLogo,
-  siteName = 'Thắng Tin Học',
+  siteName = 'Tin học 24h',
   title,
   subtitle,
   panelTitle,

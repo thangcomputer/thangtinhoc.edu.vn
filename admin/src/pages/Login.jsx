@@ -119,7 +119,7 @@ export default function Login() {
           </div>
           <div>
             <div style={{ fontWeight: 800, fontSize: '1.35rem', color: 'var(--text-primary)', letterSpacing: '-0.5px' }}>
-              Thắng Admin
+              Tin học 24h Admin
             </div>
             <div style={{ fontSize: '0.72rem', color: 'var(--text-muted)', fontWeight: 500, letterSpacing: '1px', textTransform: 'uppercase' }}>
               Bảng điều khiển
@@ -146,7 +146,7 @@ export default function Login() {
                 required 
                 className="form-control" 
                 style={{ paddingLeft: '42px' }} 
-                placeholder="admin@thangtinhoc.vn"
+                placeholder="Nhập email quản trị"
                 value={form.email} 
                 onChange={e => setForm({...form, email: e.target.value})} 
               />
@@ -192,26 +192,37 @@ export default function Login() {
           </button>
         </form>
 
-        <p style={{
-          textAlign: 'center',
-          marginTop: '24px',
+        <div style={{
+          marginTop: '20px',
+          padding: '12px 14px',
+          background: 'rgba(99,102,241,0.08)',
+          border: '1px dashed rgba(99,102,241,0.4)',
+          borderRadius: '10px',
           fontSize: '0.8rem',
-          color: 'var(--text-muted)',
-          lineHeight: 1.5,
+          lineHeight: 1.8,
+          color: 'var(--text-secondary)',
         }}>
-          Quên mật khẩu? Liên hệ quản trị hệ thống.
-        </p>
-        {import.meta.env.DEV && (
-          <p style={{
-            textAlign: 'center',
-            marginTop: '12px',
-            fontSize: '0.72rem',
-            color: 'var(--text-muted)',
-            opacity: 0.85,
-          }}>
-            Dev: admin@thangtinhoc.vn / admin123 (sau <code>npm run db:seed</code>)
-          </p>
-        )}
+          <strong style={{ display: 'block', marginBottom: '4px', color: 'var(--text-primary)' }}>
+            🔑 Tài khoản quản trị mặc định
+          </strong>
+          <span style={{ opacity: 0.75 }}>Email:</span>{' '}
+          <code
+            style={{ cursor: 'pointer', fontWeight: 600, color: 'var(--primary)' }}
+            onClick={() => setForm({ email: 'admin@gmail.com', password: 'admin123' })}
+            title="Nhấn để điền tự động"
+          >admin@gmail.com</code>
+          <br />
+          <span style={{ opacity: 0.75 }}>Mật khẩu:</span>{' '}
+          <code
+            style={{ cursor: 'pointer', fontWeight: 600, color: 'var(--primary)' }}
+            onClick={() => setForm({ email: 'admin@gmail.com', password: 'admin123' })}
+            title="Nhấn để điền tự động"
+          >admin123</code>
+          <br />
+          <span style={{ opacity: 0.5, fontSize: '0.7rem' }}>
+            Nhấn vào email/mật khẩu để điền tự động · Chạy <code>npm run db:seed</code> nếu chưa có tài khoản
+          </span>
+        </div>
       </div>
     </div>
   );

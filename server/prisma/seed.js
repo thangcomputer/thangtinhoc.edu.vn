@@ -11,12 +11,12 @@ async function main() {
   // Admin user
   const adminPass = await bcrypt.hash('admin123', 10);
   const admin = await prisma.user.upsert({
-    where: { email: 'admin@thangtinhoc.vn' },
+    where: { email: 'admin@gmail.com' },
     update: {},
     create: {
-      email: 'admin@thangtinhoc.vn',
+      email: 'admin@gmail.com',
       password: adminPass,
-      fullName: 'Admin Thắng Tin Học',
+      fullName: 'Admin Tin học 24h',
       role: 'admin',
     },
   });
@@ -243,7 +243,7 @@ async function main() {
   }
 
   console.log('✅ Seed completed successfully!');
-  console.log('👤 Admin: admin@thangtinhoc.vn / admin123');
+  console.log('👤 Admin: admin@gmail.com / admin123');
   console.log('👤 User: test@gmail.com / user123');
 }
 

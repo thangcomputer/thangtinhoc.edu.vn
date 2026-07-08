@@ -1,4 +1,4 @@
-import { useState } from 'react';
+﻿import { useState } from 'react';
 import { Send, Loader2, CheckCircle, Briefcase, GraduationCap, Clock, MapPin, Phone, Mail, User, Award } from 'lucide-react';
 import toast from 'react-hot-toast';
 import api from '../lib/api';
@@ -66,7 +66,7 @@ export default function Recruitment() {
               <CheckCircle size={56} />
             </div>
             <h2>Ứng Tuyển Thành Công!</h2>
-            <p>Cảm ơn bạn đã quan tâm đến cơ hội giảng dạy tại <strong>Thắng Tin Học</strong>.</p>
+            <p>Cảm ơn bạn đã quan tâm đến cơ hội giảng dạy tại <strong>Tin học 24h</strong>.</p>
             <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem' }}>Chúng tôi sẽ xem xét hồ sơ và liên hệ bạn trong vòng <strong>2-3 ngày làm việc</strong>.</p>
             <div className="success-actions">
               <a href="/" className="btn btn-primary" style={{ padding: '0.75rem 2rem', borderRadius: '50px' }}>← Về Trang Chủ</a>
@@ -86,7 +86,7 @@ export default function Recruitment() {
           <ScrollReveal animation="fade-up">
             <div className="recruit-hero-badge"><Briefcase size={14} /> Cơ Hội Nghề Nghiệp</div>
             <h1>Tuyển Dụng <span className="highlight">Giáo Viên</span></h1>
-            <p>Gia nhập đội ngũ giảng viên của Thắng Tin Học — nơi bạn có thể chia sẻ kiến thức, phát triển sự nghiệp và tạo ra tác động tích cực.</p>
+            <p>Gia nhập đội ngũ giảng viên của Tin học 24h — nơi bạn có thể chia sẻ kiến thức, phát triển sự nghiệp và tạo ra tác động tích cực.</p>
           </ScrollReveal>
         </div>
       </section>

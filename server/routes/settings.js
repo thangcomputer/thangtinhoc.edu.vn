@@ -1,4 +1,4 @@
-const express = require('express');
+﻿const express = require('express');
 const prisma = require('../lib/db');
 const { authenticate, authorize } = require('../middleware/auth');
 
@@ -20,7 +20,7 @@ router.get('/', async (req, res) => {
 // Update settings (admin)
 router.post('/bulk', authenticate, authorize('admin'), async (req, res) => {
   try {
-    const { settings } = req.body; // { site_name: "Thắng Tin Học", ... }
+    const { settings } = req.body; // { site_name: "Tin học 24h", ... }
     for (const [key, value] of Object.entries(settings)) {
       await prisma.systemSetting.upsert({
         where: { key },

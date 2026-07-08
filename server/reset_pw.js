@@ -8,7 +8,7 @@ async function main() {
 
   // Update Admin
   await prisma.user.update({
-    where: { email: 'admin@thangtinhoc.vn' },
+    where: { email: 'admin@gmail.com' },
     data: { password: hashedPassword, role: 'admin', isActive: true },
   });
   console.log('✅ Admin password reset to: admin123');

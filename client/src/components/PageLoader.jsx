@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+﻿import { useEffect, useState } from 'react';
 import { createPortal } from 'react-dom';
 import './PageLoader.css';
 
@@ -12,7 +12,7 @@ import './PageLoader.css';
  */
 const MODES = ['spinner', 'pulse', 'dots', 'wave', 'progress'];
 
-export default function PageLoader({ mode = 'spinner', siteName = 'Thắng Tin Học', logo }) {
+export default function PageLoader({ mode = 'spinner', siteName = 'Tin học 24h', logo }) {
   const [progressWidth, setProgressWidth] = useState(0);
 
   useEffect(() => {

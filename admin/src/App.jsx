@@ -1,7 +1,7 @@
 import { lazy, Suspense } from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
-import { Toaster } from 'react-hot-toast';
 import Layout from './components/Layout';
+import AppToaster from './components/AppToaster';
 import CourseList from './pages/CourseList';
 import CourseForm from './pages/CourseForm';
 import PostList from './pages/PostList';
@@ -59,7 +59,7 @@ export default function App() {
   return (
     <ErrorBoundary>
     <BrowserRouter basename={basename}>
-      <Toaster position="bottom-right" />
+      <AppToaster position="top-right" />
       <Routes>
         <Route path="/login" element={<Login />} />
         <Route path="/" element={<PrivateRoute><Layout /></PrivateRoute>}>

@@ -18,7 +18,7 @@ export default function Login() {
   const location = useLocation();
   const redirectTo = location.state?.from?.pathname || '/';
   const [siteLogo, setSiteLogo] = useState(null);
-  const [siteName, setSiteName] = useState('Thắng Tin Học');
+  const [siteName, setSiteName] = useState('Tin học 24h');
 
   useEffect(() => {
     api.get('/settings').then((res) => {
@@ -137,6 +137,38 @@ export default function Login() {
           {loading ? 'Đang đăng nhập...' : 'Đăng nhập'}
         </button>
       </form>
+
+      <div style={{
+        marginTop: '16px',
+        padding: '12px 14px',
+        background: 'rgba(99,102,241,0.07)',
+        border: '1px dashed rgba(99,102,241,0.35)',
+        borderRadius: '10px',
+        fontSize: '0.8rem',
+        lineHeight: 1.7,
+        color: 'inherit',
+      }}>
+        <strong style={{ display: 'block', marginBottom: '4px', opacity: 0.85 }}>
+          🔑 Tài khoản học viên demo
+        </strong>
+        <span style={{ opacity: 0.75 }}>Email:</span>{' '}
+        <code
+          style={{ cursor: 'pointer', fontWeight: 600 }}
+          onClick={() => setForm({ email: 'test@gmail.com', password: 'user123' })}
+          title="Nhấn để điền tự động"
+        >test@gmail.com</code>
+        <br />
+        <span style={{ opacity: 0.75 }}>Mật khẩu:</span>{' '}
+        <code
+          style={{ cursor: 'pointer', fontWeight: 600 }}
+          onClick={() => setForm({ email: 'test@gmail.com', password: 'user123' })}
+          title="Nhấn để điền tự động"
+        >user123</code>
+        <br />
+        <span style={{ opacity: 0.55, fontSize: '0.72rem' }}>
+          (Nhấn vào email/mật khẩu để điền tự động)
+        </span>
+      </div>
     </AuthShell>
   );
 }

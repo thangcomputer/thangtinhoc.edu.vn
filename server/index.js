@@ -1,4 +1,4 @@
-require('dotenv').config();
+﻿require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
 const morgan = require('morgan');
@@ -147,7 +147,7 @@ app.use('/uploads', (req, res, next) => {
 
 // Health check
 app.get('/api/health', (req, res) => {
-  res.json({ status: 'ok', message: 'Thắng Tin Học API is running 🚀', time: new Date() });
+  res.json({ status: 'ok', message: 'Tin học 24h API is running 🚀', time: new Date() });
 });
 
 // Cache purge (Admin only)
@@ -274,7 +274,7 @@ if (process.env.NODE_ENV === 'production' && !process.env.GOOGLE_CLIENT_ID) {
 }
 
 app.listen(PORT, () => {
-  console.log(`\n🚀 Thắng Tin Học Server running on port ${PORT}`);
+  console.log(`\n🚀 Tin học 24h Server running on port ${PORT}`);
   console.log(`📖 API: http://localhost:${PORT}/api`);
   console.log(`✅ Environment: ${process.env.NODE_ENV || 'development'}\n`);
 });

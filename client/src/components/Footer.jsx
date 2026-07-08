@@ -1,4 +1,4 @@
-import { Link } from 'react-router-dom';
+﻿import { Link } from 'react-router-dom';
 import { BookOpen, Phone, Mail, MapPin } from 'lucide-react';
 import './Footer.css';
 
@@ -54,14 +54,14 @@ export default function Footer({ settings }) {
   let footerBtns = [];
   try { footerBtns = JSON.parse(settings?.social_buttons || '[]').filter(b => b.show_footer && b.url); } catch {}
 
-  const bName = settings?.site_name || 'Thắng Tin Học';
+  const bName = settings?.site_name || 'Tin học 24h';
   const bDesc = settings?.site_description || 'Trung tâm đào tạo tin học văn phòng chuyên nghiệp.';
   const cAddress = settings?.address || '123 Đường Tin Học, Quận 1, TP.HCM';
   const cPhone = settings?.contact_phone || '0901 234 567';
   const cEmail = settings?.contact_email || 'info@thangtinhoc.vn';
   const hWd = settings?.footer_hours_weekday || 'Thứ 2 - Thứ 7: 8:00 - 21:00';
   const hWe = settings?.footer_hours_weekend || 'Chủ Nhật: 8:00 - 17:00';
-  const copyright = settings?.footer_text || `© ${new Date().getFullYear()} Thắng Tin Học.`;
+  const copyright = settings?.footer_text || `© ${new Date().getFullYear()} Tin học 24h.`;
   const logo = settings?.site_logo;
 
   return (

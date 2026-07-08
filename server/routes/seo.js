@@ -1,4 +1,4 @@
-const express = require('express');
+﻿const express = require('express');
 const prisma = require('../lib/db');
 const router = express.Router();
 
@@ -139,11 +139,11 @@ router.get('/api/seo/post/:slug', async (req, res) => {
       "dateModified": post.updatedAt?.toISOString(),
       "author": {
         "@type": "Person",
-        "name": post.author?.fullName || "Thắng Tin Học",
+        "name": post.author?.fullName || "Tin học 24h",
       },
       "publisher": {
         "@type": "Organization",
-        "name": "Thắng Tin Học",
+        "name": "Tin học 24h",
         "logo": {
           "@type": "ImageObject",
           "url": `${baseUrl}/logo.png`,
@@ -201,7 +201,7 @@ router.get('/api/seo/post/:slug', async (req, res) => {
       noIndex: !!post.noIndex,
       canonical: postUrl,
       type: 'article',
-      author: post.author?.fullName || 'Thắng Tin Học',
+      author: post.author?.fullName || 'Tin học 24h',
       publishedTime: post.createdAt?.toISOString(),
       modifiedTime: post.updatedAt?.toISOString(),
       category: post.category?.name || '',

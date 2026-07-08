@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Chuẩn chất lượng bài viết SEO (độ dài + Copywriter Master).
  */
 const { COPYWRITER_TASK_PROMPT, BRAND } = require('./copywriterPrompt');
@@ -34,7 +34,7 @@ function sharedDepthBlock(topic, year) {
   return `
 <h2>Định hướng thực hành ${topic} trong 30 ngày</h2>
 <p>Tuần đầu, hãy dành 30 phút mỗi ngày chỉ để làm quen thao tác cơ bản — không cố học nâng cao. Tuần thứ hai, gắn với một file thật: bảng điểm, bảng lương, danh sách khách, hoặc slide họp. Tuần thứ ba, tập trung trình bày: font thống nhất, tiêu đề rõ, biểu đồ đúng đơn vị. Tuần thứ tư, tự đánh giá bằng checklist: tốc độ, độ chính xác, khả năng giải thích lại cho đồng nghiệp.</p>
-<p>Nhiều học viên Thắng Tin Học nhận ra tiến bộ không đến từ “học thêm tính năng lạ”, mà từ việc lặp lại quy trình chuẩn trên đúng công việc họ làm hàng ngày. Đó là lý do lớp 1 kèm 1 và lớp nhóm đều ưu tiên sửa file thực tế thay vì chỉ demo file mẫu.</p>
+<p>Nhiều học viên Tin học 24h nhận ra tiến bộ không đến từ “học thêm tính năng lạ”, mà từ việc lặp lại quy trình chuẩn trên đúng công việc họ làm hàng ngày. Đó là lý do lớp 1 kèm 1 và lớp nhóm đều ưu tiên sửa file thực tế thay vì chỉ demo file mẫu.</p>
 
 <h2>Tài nguyên nên chuẩn bị trước khi học</h2>
 <p>Máy tính chạy bản Office hoặc tài khoản Google Workspace; ổ cứng trống vài GB để lưu bài tập; quyển ghi chú phím tắt; và quan trọng nhất — thời gian cố định 45–60 phút mỗi buổi, tắt thông báo mạng xã hội.</p>
@@ -54,7 +54,7 @@ function sharedDepthBlock(topic, year) {
 <h2>Thói quen học bền vững — không chỉ học “cho xong”</h2>
 <p>Sau mỗi buổi học, dành 5 phút ghi lại 3 thao tác mới và 1 lỗi bạn từng gặp. Cuối tuần, mở lại file bài tập và làm lại mà không xem video — đó là cách não củng cố trí nhớ vận động. Nếu bạn chỉ xem mà không bấm, khả năng quên sau 72 giờ là rất cao.</p>
 <p>Với ${topic}, mục tiêu không phải “biết hết menu”, mà là hoàn thành nhanh các tác vụ lặp lại: nhập liệu, kiểm tra, tổng hợp, in ấn, gửi mail kèm file đính kèm đúng phiên bản. Khi các tác vụ đó trở thành phản xạ, bạn sẽ cảm thấy ${topic} “dễ” dù trước đó từng rất sợ.</p>
-<p>Trung tâm Thắng Tin Học khuyến khích học viên mang đúng thách thức công việc vào lớp: một báo cáo bị sếp trả về, một file Excel bị lỗi công thức, một slide bị đồng nghiệp phàn nàn khó hiểu. Giải quyết đúng nỗi đau đó mang lại động lực mạnh hơn bất kỳ bài lý thuyết nào.</p>`;
+<p>Trung tâm Tin học 24h khuyến khích học viên mang đúng thách thức công việc vào lớp: một báo cáo bị sếp trả về, một file Excel bị lỗi công thức, một slide bị đồng nghiệp phàn nàn khó hiểu. Giải quyết đúng nỗi đau đó mang lại động lực mạnh hơn bất kỳ bài lý thuyết nào.</p>`;
 }
 
 function appendHashtagFooter(html) {
@@ -88,7 +88,7 @@ function sharedRoadmapBlock(topic, year) {
 <p><strong>Tuần 2:</strong> Nhập liệu, lọc, sắp xếp, hàm tổng hợp cơ bản (SUM, AVERAGE, IF). Mục tiêu: hoàn thành một bảng tính mini có số liệu thật.</p>
 <p><strong>Tuần 3:</strong> Biểu đồ, in ấn, PDF, template báo cáo. Mục tiêu: gửi được bản báo cáo có bố cục rõ ràng.</p>
 <p><strong>Tuần 4:</strong> Ôn tập + dự án tổng hợp 90 phút, checklist tự chấm. Mục tiêu: tự tin nhận thêm việc tại công ty.</p>
-<p>Trung tâm Thắng Tin Học điều chỉnh lộ trình theo trình độ thực tế — không ép nhịp chung khiến người yếu nản hoặc người khá chán.</p>
+<p>Trung tâm Tin học 24h điều chỉnh lộ trình theo trình độ thực tế — không ép nhịp chung khiến người yếu nản hoặc người khá chán.</p>
 
 <h3>Bảng lộ trình chi tiết</h3>
 <table>
@@ -115,7 +115,7 @@ function buildClassicAngle(topic, year, zaloCta) {
 
 <h3>Cấp độ 1: Tin học ứng dụng (thân thiện, dễ tiếp cận)</h3>
 <p>Nếu bạn cần soạn văn bản chuẩn, xử lý bảng số liệu, làm biểu đồ báo cáo hoặc thuyết trình, câu trả lời thường là <strong>KHÔNG KHÓ</strong> — miễn là có lộ trình và thực hành đều. Các phần mềm hiện đại thiết kế giao diện trực quan; bản chất là ghi nhớ thao tác, hiểu logic sắp xếp dữ liệu và luyện tay mỗi ngày.</p>
-<p>Nhiều học viên tại Thắng Tin Học chỉ sau 3–4 tuần (1–2 giờ/ngày) đã tự tin hoàn thành báo cáo thực tế, trong khi trước đó mất cả buổi chỉ vì ngại thử và sợ sai.</p>
+<p>Nhiều học viên tại Tin học 24h chỉ sau 3–4 tuần (1–2 giờ/ngày) đã tự tin hoàn thành báo cáo thực tế, trong khi trước đó mất cả buổi chỉ vì ngại thử và sợ sai.</p>
 
 <h3>Cấp độ 2: Kỹ thuật chuyên sâu (đòi hỏi tư duy logic)</h3>
 <p>Độ khó tăng rõ khi bạn bước vào lập trình, tự động hóa nâng cao, quản trị server. Ở đây bạn phải "ra lệnh" cho máy bằng logic, kiên trì debug và học liên tục. Đây là lộ trình dài hơn — không nên nhầm với nhu cầu văn phòng cơ bản.</p>
@@ -157,7 +157,7 @@ function buildClassicAngle(topic, year, zaloCta) {
 
 <h2>4. Học 1 kèm 1 từ xa — phương pháp hiệu quả ${year}</h2>
 <p>Với người bận rộn, người lớn tuổi hoặc học sinh cần sự kiên nhẫn, mô hình <strong>học 1 kèm 1</strong> qua UltraViewer/TeamViewer xóa khoảng cách địa lý. Giáo viên thấy màn hình học viên, sửa thao tác sai ngay — cầm tay chỉ việc đúng nghĩa đen.</p>
-<p>So với lớp đông, 1 kèm 1 cá nhân hóa tốc độ: bạn yếu phần nào thì dừng lại phần đó, không bị cuốn theo nhịp chung. Thắng Tin Học áp dụng mô hình này song song lớp nhóm và luyện thi MOS/IC3.</p>
+<p>So với lớp đông, 1 kèm 1 cá nhân hóa tốc độ: bạn yếu phần nào thì dừng lại phần đó, không bị cuốn theo nhịp chung. Tin học 24h áp dụng mô hình này song song lớp nhóm và luyện thi MOS/IC3.</p>
 
 <h2>Câu Hỏi Thường Gặp</h2>
 <h3>${topic} mất bao lâu để học được?</h3>
@@ -198,7 +198,7 @@ function buildWorkplaceAngle(topic, year, zaloCta) {
 
 <h2>2. Quy trình xử lý báo cáo trong 45 phút</h2>
 <p>Mở template → dán dữ liệu mới → chuẩn hóa cột → cập nhật công thức → xuất PDF. Ghi version theo ngày trong tên file. Thói quen nhỏ này cứu bạn khỏi sự cố gửi nhầm bản cũ cho lãnh đạo.</p>
-<p>Học viên Thắng Tin Học thường mang đúng file đang làm tại công ty để giảng viên chỉnh trực tiếp — tiết kiệm hàng giờ mỗi tuần.</p>
+<p>Học viên Tin học 24h thường mang đúng file đang làm tại công ty để giảng viên chỉnh trực tiếp — tiết kiệm hàng giờ mỗi tuần.</p>
 
 <h2>3. Tự học vs có mentor — bảng so sánh</h2>
 <table>
@@ -229,7 +229,7 @@ function buildFaqAngle(topic, year, zaloCta) {
 
 <h2>2. FAQ chi tiết</h2>
 <h3>Nên học Excel hay Word trước?</h3>
-<p>Excel trước nếu công việc nhiều số liệu; Word trước nếu soạn thảo là chính. Khóa tổng hợp Thắng Tin Học gộp cả hai theo lộ trình MOS.</p>
+<p>Excel trước nếu công việc nhiều số liệu; Word trước nếu soạn thảo là chính. Khóa tổng hợp Tin học 24h gộp cả hai theo lộ trình MOS.</p>
 <h3>Bao lâu thì đủ đi làm?</h3>
 <p>4–6 tuần nền tảng với 1–2h/ngày; thành thạo cần thêm dự án thật trên file công ty.</p>
 <h3>Học online có hiệu quả?</h3>

@@ -69,7 +69,7 @@ Kiem tra phai co JSON (khong phai HTML):
 curl -s https://thangtinhoc.edu.vn/api/auth/ping
 curl -s -X POST https://thangtinhoc.edu.vn/api/auth/login \
   -H "Content-Type: application/json" \
-  -d '{"email":"admin@thangtinhoc.vn","password":"admin123","deviceId":"0123456789abcdef"}' | head -c 150
+  -d '{"email":"admin@gmail.com","password":"admin123","deviceId":"0123456789abcdef"}' | head -c 150
 ```
 
 Neu thay `"token"` → mo trinh duyet **Ctrl+Shift+R** tai `/admin/login`.

@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+﻿import { useState, useEffect, useRef } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { Clock, Eye, ArrowLeft, Tag, List, ChevronRight, BookOpen } from 'lucide-react';
 import toast from 'react-hot-toast';
@@ -91,7 +91,7 @@ export default function BlogDetail() {
         setPost(p);
 
         // ── SEO: Dynamic Meta Tags ──
-        document.title = (p.metaTitle || p.title) + ' | Thắng Tin Học';
+        document.title = (p.metaTitle || p.title) + ' | Tin học 24h';
         const setMeta = (name, content) => {
           if (!content) return;
           let el = document.querySelector(`meta[name="${name}"], meta[property="${name}"]`);
@@ -164,7 +164,7 @@ export default function BlogDetail() {
 
     // Cleanup: restore default title + remove schemas on unmount
     return () => {
-      document.title = 'Thắng Tin Học - Trung Tâm Đào Tạo Tin Học';
+      document.title = 'Tin học 24h - Trung Tâm Đào Tạo Tin Học';
       document.querySelectorAll('script[data-seo-schema]').forEach(el => el.remove());
       document.querySelector('link[rel="canonical"]')?.remove();
     };

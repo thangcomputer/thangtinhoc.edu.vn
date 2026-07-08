@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+﻿import { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Eye, EyeOff, Mail, Lock, User, Phone } from 'lucide-react';
 import toast from 'react-hot-toast';
@@ -15,7 +15,7 @@ export default function Register() {
   const { login } = useAuthStore();
   const navigate = useNavigate();
   const [siteLogo, setSiteLogo] = useState(null);
-  const [siteName, setSiteName] = useState('Thắng Tin Học');
+  const [siteName, setSiteName] = useState('Tin học 24h');
 
   useEffect(() => {
     api.get('/settings').then((res) => {

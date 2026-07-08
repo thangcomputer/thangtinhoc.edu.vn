@@ -1,4 +1,4 @@
-const express = require('express');
+﻿const express = require('express');
 const router = express.Router();
 const { GoogleGenerativeAI } = require('@google/generative-ai');
 const https = require('https');
@@ -420,11 +420,11 @@ function generateRichTemplate(topic, variantIndex = 0) {
   return {
     title,
     slug,
-    excerpt: `${topic} ${year}: ${variant.excerptHint}. Khóa học Thắng Tin Học — học thử miễn phí.`,
+    excerpt: `${topic} ${year}: ${variant.excerptHint}. Khóa học Tin học 24h — học thử miễn phí.`,
     content,
     focusKeyword: topic.toLowerCase(),
     metaTitle: `${topic} — ${variant.titleSuffix}`.substring(0, 60),
-    metaDescription: `${topic}: ${variant.excerptHint}. Tư vấn khóa học Thắng Tin Học.`.substring(0, 160),
+    metaDescription: `${topic}: ${variant.excerptHint}. Tư vấn khóa học Tin học 24h.`.substring(0, 160),
     tags: [topic, 'MOS', 'IC3', 'hoctinhoc', 'thangcomputer', 'tinhocvanphong'],
     suggestions: [],
     variantIndex,

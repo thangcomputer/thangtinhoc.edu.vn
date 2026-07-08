@@ -386,3 +386,41 @@ button {
 
 @keyframes spin { to { transform: rotate(360deg); } }
 
+/* Toast notifications (react-hot-toast) */
+.app-toaster-container {
+  pointer-events: none;
+}
+
+.app-toaster-container > div {
+  pointer-events: auto;
+}
+
+.app-toast {
+  display: flex !important;
+  align-items: center !important;
+  gap: 12px !important;
+  min-width: 300px !important;
+  max-width: 380px !important;
+}
+
+.app-toast > div[role="status"],
+.app-toast > div:last-child {
+  flex: 1;
+  min-width: 0;
+  white-space: normal;
+  word-break: normal;
+  overflow-wrap: break-word;
+  line-height: 1.5;
+}
+
+.app-toast svg {
+  flex-shrink: 0;
+}
+
+@media (max-width: 480px) {
+  .app-toast {
+    min-width: min(300px, calc(100vw - 32px)) !important;
+    max-width: calc(100vw - 32px) !important;
+  }
+}
+

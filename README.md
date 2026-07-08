@@ -45,7 +45,7 @@ Tài khoản sau `npm run setup` (seed):
 
 | Vai trò | Email | Mật khẩu |
 |---------|-------|------------|
-| Admin | admin@thangtinhoc.vn | admin123 |
+| Admin | admin@gmail.com | admin123 |
 | Học viên | test@gmail.com | user123 |
 
 **Đổi mật khẩu ngay khi deploy production.**

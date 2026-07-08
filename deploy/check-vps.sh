@@ -19,7 +19,7 @@ curl -sf "http://127.0.0.1:$PORT/api/health" && echo "" || echo "FAIL health"
 curl -sf "http://127.0.0.1:$PORT/api/auth/ping" && echo "" || echo "FAIL auth/ping (can git pull)"
 curl -s -X POST "http://127.0.0.1:$PORT/api/auth/login" \
   -H "Content-Type: application/json" \
-  -d '{"email":"admin@thangtinhoc.vn","password":"admin123","deviceId":"0123456789abcdef"}' | head -c 150
+  -d '{"email":"admin@gmail.com","password":"admin123","deviceId":"0123456789abcdef"}' | head -c 150
 echo ""
 
 echo ""
@@ -30,7 +30,7 @@ curl -s "$DOMAIN/api/auth/ping" | head -c 120
 echo ""
 curl -s -X POST "$DOMAIN/api/auth/login" \
   -H "Content-Type: application/json" \
-  -d '{"email":"admin@thangtinhoc.vn","password":"admin123","deviceId":"0123456789abcdef"}' | head -c 200
+  -d '{"email":"admin@gmail.com","password":"admin123","deviceId":"0123456789abcdef"}' | head -c 200
 echo ""
 
 echo ""

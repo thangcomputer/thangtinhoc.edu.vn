@@ -65,6 +65,51 @@ router.get('/', authenticate, authorize('admin'), async (req, res) => {
   }
 });
 
+// POST /api/media/bulk-delete – xóa nhiều ảnh (admin only)
+router.post('/bulk-delete', authenticate, authorize('admin'), async (req, res) => {
+  const filenames = Array.isArray(req.body?.filenames) ? req.body.filenames : [];
+  if (!filenames.length) {
+    return res.status(400).json({ success: false, message: 'Chưa chọn ảnh nào' });
+  }
+
+  const meta = loadMeta();
+  const deleted = [];
+  const failed = [];
+
+  for (const raw of filenames) {
+    const filename = safeFilename(raw);
+    if (!filename) {
+      failed.push({ filename: raw, message: 'Tên file không hợp lệ' });
+      continue;
+    }
+    const filePath = resolveUploadPath(filename);
+    if (!filePath || !fs.existsSync(filePath)) {
+      delete meta[filename];
+      failed.push({ filename, message: 'Không tìm thấy ảnh trên đĩa' });
+      continue;
+    }
+    try {
+      await fs.promises.unlink(filePath);
+      delete meta[filename];
+      deleted.push(filename);
+    } catch (err) {
+      console.error('Bulk delete file error:', filename, err);
+      failed.push({ filename, message: 'Không thể xóa file' });
+    }
+  }
+
+  saveMeta(meta);
+
+  const allOk = failed.length === 0;
+  return res.status(allOk ? 200 : 207).json({
+    success: deleted.length > 0,
+    message: allOk
+      ? `Đã xóa ${deleted.length} ảnh`
+      : `Đã xóa ${deleted.length}/${filenames.length} ảnh`,
+    data: { deleted, failed },
+  });
+});
+
 // PUT /api/media/:filename – update alt & title metadata (admin only)
 router.put('/:filename', authenticate, authorize('admin'), async (req, res) => {
   const filename = safeFilename(req.params.filename);

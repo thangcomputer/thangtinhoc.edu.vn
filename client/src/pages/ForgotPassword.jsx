@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+﻿import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { Mail, ArrowLeft, Send, BookOpen } from 'lucide-react';
 import toast from 'react-hot-toast';
@@ -10,7 +10,7 @@ export default function ForgotPassword() {
   const [loading, setLoading] = useState(false);
   const [isSent, setIsSent] = useState(false);
   const [siteLogo, setSiteLogo] = useState(null);
-  const [siteName, setSiteName] = useState('Thắng Tin Học');
+  const [siteName, setSiteName] = useState('Tin học 24h');
 
   useEffect(() => {
     api.get('/settings').then(res => {

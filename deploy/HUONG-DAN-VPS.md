@@ -127,7 +127,7 @@ git log -1 --oneline
    ```bash
    curl -s -X POST https://thangtinhoc.edu.vn/api/auth/login \
      -H "Content-Type: application/json" \
-     -d '{"email":"admin@thangtinhoc.vn","password":"admin123","deviceId":"0123456789abcdef"}' | head -c 120
+     -d '{"email":"admin@gmail.com","password":"admin123","deviceId":"0123456789abcdef"}' | head -c 120
    ```
 
    Neu van HTML: xem chi tiet `deploy/FIX-PROXY-AAPANEL.md` hoac chen `deploy/apache/aapanel-api-proxy.conf` vao **Cau hinh** Apache → luu → reload.
@@ -206,7 +206,7 @@ Loi `Cannot destructure property 'user'...` hoac `[admin login] undefined undefi
    ```bash
    curl -s -X POST http://127.0.0.1:5001/api/auth/login \
      -H "Content-Type: application/json" \
-     -d '{"email":"admin@thangtinhoc.vn","password":"admin123","deviceId":"0123456789abcdef"}'
+     -d '{"email":"admin@gmail.com","password":"admin123","deviceId":"0123456789abcdef"}'
    ```
    Phai thay JSON co `"token"` va `"user"`.
 
@@ -220,7 +220,7 @@ Loi `Cannot destructure property 'user'...` hoac `[admin login] undefined undefi
 5. Truy cap admin: `https://thangtinhoc.edu.vn/admin/login` (KHONG dung subdomain admin.)
 
 ## Dang nhap admin
-- Email: `admin@thangtinhoc.vn`
+- Email: `admin@gmail.com`
 - Mat khau: `admin123` (neu da seed)
 - Neu quen mat khau: `cd server && node reset_pw.js`
 

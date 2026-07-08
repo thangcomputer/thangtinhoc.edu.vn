@@ -53,7 +53,7 @@ export default function MediaManager() {
       setSelected(prev => prev.filter(f => f !== filename));
     } catch (err) {
       console.error('Delete error:', err);
-      toast.error('Xóa ảnh thất bại');
+      toast.error(err.response?.data?.message || 'Xóa ảnh thất bại');
     }
   };
 
@@ -109,12 +109,22 @@ export default function MediaManager() {
   const bulkDelete = async () => {
     if (!selected.length) return toast.error('Chưa chọn ảnh nào');
     try {
-      await Promise.all(selected.map(fn => api.delete(`/media/${encodeURIComponent(fn)}`)));
-      toast.success(`Đã xóa ${selected.length} ảnh`);
-      setMedia(prev => prev.filter(m => !selected.includes(m.filename)));
-      setSelected([]);
-    } catch {
-      toast.error('Xóa thất bại');
+      const res = await api.post('/media/bulk-delete', { filenames: selected });
+      const { deleted = [], failed = [] } = res.data.data || {};
+      if (deleted.length) {
+        setMedia((prev) => prev.filter((m) => !deleted.includes(m.filename)));
+        setSelected((prev) => prev.filter((f) => !deleted.includes(f)));
+        toast.success(res.data.message || `Đã xóa ${deleted.length} ảnh`);
+      }
+      if (failed.length) {
+        toast.error(`Không xóa được ${failed.length} ảnh`);
+      }
+      if (!deleted.length && !failed.length) {
+        toast.error('Xóa thất bại');
+      }
+    } catch (err) {
+      console.error('Bulk delete error:', err);
+      toast.error(err.response?.data?.message || 'Xóa thất bại');
     }
   };
 

@@ -49,7 +49,7 @@ function testLoginApi() {
   return new Promise((resolve) => {
     const deviceId = "local-verify-device-0001";
     const body = JSON.stringify({
-      email: "admin@thangtinhoc.vn",
+      email: "admin@gmail.com",
       password: "admin123",
       deviceId,
     });

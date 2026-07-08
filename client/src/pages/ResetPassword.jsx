@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+﻿import { useState, useEffect } from 'react';
 import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { Lock, Save, BookOpen } from 'lucide-react';
 import toast from 'react-hot-toast';
@@ -15,7 +15,7 @@ export default function ResetPassword() {
   const [confirmPassword, setConfirmPassword] = useState('');
   const [loading, setLoading] = useState(false);
   const [siteLogo, setSiteLogo] = useState(null);
-  const [siteName, setSiteName] = useState('Thắng Tin Học');
+  const [siteName, setSiteName] = useState('Tin học 24h');
 
   useEffect(() => {
     api.get('/settings').then(res => {

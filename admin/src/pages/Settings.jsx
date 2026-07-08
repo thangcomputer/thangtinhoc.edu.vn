@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+﻿import { useState, useEffect } from 'react';
 import { 
   Save, Globe, Phone, Mail, MapPin, Upload as UploadIcon,
   ExternalLink, Share2, Loader2, ImageIcon, Clock,
@@ -43,7 +43,7 @@ const DEFAULT_SOCIAL_BUTTONS = [
 
 export default function Settings() {
   const [settings, setSettings] = useState({
-    site_name: 'Thắng Tin Học',
+    site_name: 'Tin học 24h',
     site_description: 'Nền tảng đào tạo tin học văn phòng chuyên nghiệp',
     contact_email: 'contact@thangtinhoc.vn',
     contact_phone: '0987-654-321',
@@ -53,7 +53,7 @@ export default function Settings() {
     zalo_url: '',
     tiktok_url: '',
     site_logo: '',
-    footer_text: '© 2026 Thắng Tin Học',
+    footer_text: '© 2026 Tin học 24h',
     footer_hours_weekday: 'Thứ 2 - Thứ 7: 8:00 - 21:00',
     footer_hours_weekend: 'Chủ Nhật: 8:00 - 17:00',
   });
