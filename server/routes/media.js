@@ -6,20 +6,33 @@ const { buildPublicFileUrl } = require('../lib/publicUrl');
 
 const router = express.Router();
 
+const USE_CLOUDINARY = !!(
+  process.env.CLOUDINARY_CLOUD_NAME &&
+  process.env.CLOUDINARY_API_KEY &&
+  process.env.CLOUDINARY_API_SECRET
+);
+
+let cloudinary;
+if (USE_CLOUDINARY) {
+  cloudinary = require('cloudinary').v2;
+  cloudinary.config({
+    cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+    api_key: process.env.CLOUDINARY_API_KEY,
+    api_secret: process.env.CLOUDINARY_API_SECRET,
+  });
+}
+
+// ── Local disk helpers ──────────────────────────────────────────────────────
 const uploadDir = path.join(__dirname, '..', 'uploads');
 const metaFile = path.join(__dirname, '..', 'uploads', '_meta.json');
 
-// Load metadata from JSON file
 function loadMeta() {
   try {
-    if (fs.existsSync(metaFile)) {
-      return JSON.parse(fs.readFileSync(metaFile, 'utf8'));
-    }
+    if (fs.existsSync(metaFile)) return JSON.parse(fs.readFileSync(metaFile, 'utf8'));
   } catch {}
   return {};
 }
 
-// Save metadata to JSON file
 function saveMeta(meta) {
   try {
     fs.writeFileSync(metaFile, JSON.stringify(meta, null, 2), 'utf8');
@@ -40,21 +53,55 @@ function resolveUploadPath(filename) {
   return filePath;
 }
 
-function fileUrl(_req, filename) {
-  return buildPublicFileUrl(filename);
+// Trích public_id từ Cloudinary URL
+// VD: https://res.cloudinary.com/demo/image/upload/v1234/tinhoc24h/abc.jpg → tinhoc24h/abc
+function extractCloudinaryPublicId(url) {
+  const match = url.match(/\/upload\/(?:v\d+\/)?(.+?)\.\w+$/);
+  return match ? match[1] : null;
 }
 
-// GET /api/media – list all uploaded images (admin only)
+// ── Cloudinary helpers ──────────────────────────────────────────────────────
+async function listCloudinaryImages() {
+  const result = await cloudinary.api.resources({
+    type: 'upload',
+    prefix: 'tinhoc24h',
+    max_results: 500,
+    resource_type: 'image',
+  });
+  return result.resources.map(r => ({
+    filename: r.public_id,
+    url: r.secure_url,
+    alt: '',
+    title: '',
+  }));
+}
+
+async function deleteCloudinaryImage(publicIdOrUrl) {
+  // Chấp nhận cả public_id lẫn URL đầy đủ
+  const publicId = publicIdOrUrl.startsWith('http')
+    ? extractCloudinaryPublicId(publicIdOrUrl)
+    : publicIdOrUrl;
+  if (!publicId) throw new Error('Không xác định được public_id');
+  return cloudinary.uploader.destroy(publicId);
+}
+
+// ── Routes ──────────────────────────────────────────────────────────────────
+
+// GET /api/media – danh sách ảnh (admin)
 router.get('/', authenticate, authorize('admin'), async (req, res) => {
   try {
+    if (USE_CLOUDINARY) {
+      const data = await listCloudinaryImages();
+      return res.json({ success: true, data });
+    }
+
     if (!fs.existsSync(uploadDir)) return res.json({ success: true, data: [] });
     const files = await fs.promises.readdir(uploadDir);
     const meta = loadMeta();
-    // Filter only image files (including .webp), skip _meta.json
     const images = files.filter(f => /\.(jpe?g|png|gif|webp)$/i.test(f));
     const data = images.map(f => ({
       filename: f,
-      url: fileUrl(req, f),
+      url: buildPublicFileUrl(f),
       alt: meta[f]?.alt || '',
       title: meta[f]?.title || '',
     }));
@@ -65,40 +112,51 @@ router.get('/', authenticate, authorize('admin'), async (req, res) => {
   }
 });
 
-// POST /api/media/bulk-delete – xóa nhiều ảnh (admin only)
+// POST /api/media/bulk-delete – xóa nhiều ảnh (admin)
 router.post('/bulk-delete', authenticate, authorize('admin'), async (req, res) => {
   const filenames = Array.isArray(req.body?.filenames) ? req.body.filenames : [];
   if (!filenames.length) {
     return res.status(400).json({ success: false, message: 'Chưa chọn ảnh nào' });
   }
 
-  const meta = loadMeta();
   const deleted = [];
   const failed = [];
 
-  for (const raw of filenames) {
-    const filename = safeFilename(raw);
-    if (!filename) {
-      failed.push({ filename: raw, message: 'Tên file không hợp lệ' });
-      continue;
+  if (USE_CLOUDINARY) {
+    for (const raw of filenames) {
+      try {
+        await deleteCloudinaryImage(raw);
+        deleted.push(raw);
+      } catch (err) {
+        console.error('Cloudinary delete error:', raw, err);
+        failed.push({ filename: raw, message: 'Không thể xóa ảnh' });
+      }
     }
-    const filePath = resolveUploadPath(filename);
-    if (!filePath || !fs.existsSync(filePath)) {
-      delete meta[filename];
-      failed.push({ filename, message: 'Không tìm thấy ảnh trên đĩa' });
-      continue;
+  } else {
+    const meta = loadMeta();
+    for (const raw of filenames) {
+      const filename = safeFilename(raw);
+      if (!filename) {
+        failed.push({ filename: raw, message: 'Tên file không hợp lệ' });
+        continue;
+      }
+      const filePath = resolveUploadPath(filename);
+      if (!filePath || !fs.existsSync(filePath)) {
+        delete meta[filename];
+        failed.push({ filename, message: 'Không tìm thấy ảnh trên đĩa' });
+        continue;
+      }
+      try {
+        await fs.promises.unlink(filePath);
+        delete meta[filename];
+        deleted.push(filename);
+      } catch (err) {
+        console.error('Bulk delete file error:', filename, err);
+        failed.push({ filename, message: 'Không thể xóa file' });
+      }
     }
-    try {
-      await fs.promises.unlink(filePath);
-      delete meta[filename];
-      deleted.push(filename);
-    } catch (err) {
-      console.error('Bulk delete file error:', filename, err);
-      failed.push({ filename, message: 'Không thể xóa file' });
-    }
+    saveMeta(meta);
   }
-
-  saveMeta(meta);
 
   const allOk = failed.length === 0;
   return res.status(allOk ? 200 : 207).json({
@@ -110,10 +168,13 @@ router.post('/bulk-delete', authenticate, authorize('admin'), async (req, res) =
   });
 });
 
-// PUT /api/media/:filename – update alt & title metadata (admin only)
+// PUT /api/media/:filename – cập nhật alt & title (admin, chỉ local)
 router.put('/:filename', authenticate, authorize('admin'), async (req, res) => {
+  if (USE_CLOUDINARY) {
+    return res.json({ success: true, message: 'Đã lưu' });
+  }
   const filename = safeFilename(req.params.filename);
-  if (!filename) return res.status(400).json({ success: false, message: 'Ten file khong hop le' });
+  if (!filename) return res.status(400).json({ success: false, message: 'Tên file không hợp lệ' });
   const { alt = '', title = '' } = req.body;
   const filePath = resolveUploadPath(filename);
   if (!filePath || !fs.existsSync(filePath)) {
@@ -125,17 +186,22 @@ router.put('/:filename', authenticate, authorize('admin'), async (req, res) => {
   res.json({ success: true, message: 'Đã lưu thông tin ảnh' });
 });
 
-// DELETE /api/media/:filename – delete an uploaded image (admin only)
+// DELETE /api/media/:filename – xóa một ảnh (admin)
 router.delete('/:filename', authenticate, authorize('admin'), async (req, res) => {
-  const filename = safeFilename(req.params.filename);
-  if (!filename) return res.status(400).json({ success: false, message: 'Ten file khong hop le' });
-  const filePath = resolveUploadPath(filename);
   try {
+    if (USE_CLOUDINARY) {
+      const raw = decodeURIComponent(req.params.filename);
+      await deleteCloudinaryImage(raw);
+      return res.json({ success: true, message: 'Xóa ảnh thành công' });
+    }
+
+    const filename = safeFilename(req.params.filename);
+    if (!filename) return res.status(400).json({ success: false, message: 'Tên file không hợp lệ' });
+    const filePath = resolveUploadPath(filename);
     if (!filePath || !fs.existsSync(filePath)) {
       return res.status(404).json({ success: false, message: 'Không tìm thấy ảnh' });
     }
     await fs.promises.unlink(filePath);
-    // Remove from metadata too
     const meta = loadMeta();
     delete meta[filename];
     saveMeta(meta);
