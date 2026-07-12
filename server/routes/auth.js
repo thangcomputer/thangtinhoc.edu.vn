@@ -150,6 +150,7 @@ router.put('/change-password', authenticate, async (req, res) => {
   try {
     const { currentPassword, newPassword } = req.body;
     const user = await prisma.user.findUnique({ where: { id: req.user.id } });
+    if (!user) return res.status(401).json({ success: false, message: 'Tài khoản không tồn tại' });
     if (!await bcrypt.compare(currentPassword, user.password)) {
       return res.status(400).json({ success: false, message: 'Mật khẩu hiện tại không đúng' });
     }

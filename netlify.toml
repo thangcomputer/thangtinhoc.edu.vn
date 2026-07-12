@@ -25,6 +25,18 @@
   status = 200
   force = true
 
+[[redirects]]
+  from = "/sitemap.xml"
+  to = "https://tinhoc24h-api.onrender.com/sitemap.xml"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "/robots.txt"
+  to = "https://tinhoc24h-api.onrender.com/robots.txt"
+  status = 200
+  force = true
+
 # --- SPA routing (client + admin) ---
 [[redirects]]
   from = "/admin/*"

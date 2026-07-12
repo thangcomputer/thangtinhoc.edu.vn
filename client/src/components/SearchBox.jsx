@@ -81,7 +81,7 @@ export default function SearchBox() {
                         <div className="search-section-label"><BookOpen size={12} /> Khóa Học</div>
                         {results.courses.map(c => (
                           <button key={c.id} className="search-item" onClick={() => goTo(`/courses/${c.slug}`)}>
-                            {c.thumbnail && <img src={c.thumbnail.startsWith('http') ? c.thumbnail : `http://localhost:5000${c.thumbnail}`} alt="" className="search-thumb" />}
+                            {c.thumbnail && <img src={c.thumbnail.startsWith('http') ? c.thumbnail : (import.meta.env.PROD ? c.thumbnail : `${import.meta.env.VITE_API_URL?.replace(/\/api\/?$/, '') || 'http://localhost:5000'}${c.thumbnail}`)} alt="" className="search-thumb" />}
                             <div className="search-item-info">
                               <span className="search-item-title">{c.title}</span>
                               <span className="search-item-meta">{c.level} • {Number(c.price).toLocaleString('vi-VN')}đ</span>

@@ -70,8 +70,10 @@ const defaultDevOrigins = [
   'http://localhost:4173',
   'http://127.0.0.1:4173',
 ];
-for (const o of defaultDevOrigins) {
-  if (!allowedOrigins.includes(o)) allowedOrigins.push(o);
+if (process.env.NODE_ENV !== 'production') {
+  for (const o of defaultDevOrigins) {
+    if (!allowedOrigins.includes(o)) allowedOrigins.push(o);
+  }
 }
 
 function isLocalDevOrigin(origin) {

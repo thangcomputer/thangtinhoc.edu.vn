@@ -164,7 +164,7 @@ router.get('/', async (req, res) => {
     if (categoryId) where.categoryId = parseInt(categoryId);
     if (level) where.level = level;
     if (featured === 'true') where.isFeatured = true;
-    if (search) where.title = { contains: search };
+    if (search) where.title = { contains: search, ...(process.env.DATABASE_PROVIDER === 'postgresql' && { mode: 'insensitive' }) };
 
     const [courses, total] = await Promise.all([
       prisma.course.findMany({

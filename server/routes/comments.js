@@ -120,7 +120,7 @@ router.post('/', authenticate, async (req, res) => {
         data: {
           type: 'COMMENT',
           message: `${req.user.fullName || 'Học viên'} vừa gửi câu hỏi / bình luận mới.`,
-          data: JSON.stringify({ lessonId, courseId, content: content.substring(0, 100) })
+          data: JSON.stringify({ lessonId, courseId, content: (content || '').substring(0, 100) })
         }
       });
     } catch(err) {}
