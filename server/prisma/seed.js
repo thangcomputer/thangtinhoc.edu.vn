@@ -4,6 +4,11 @@ const bcrypt = require('bcryptjs');
 
 const prisma = new PrismaClient();
 
+// URL localhost/upload tạm - sẽ mất khi reset, cần thay bằng default
+function isTemporaryUrl(url) {
+  if (!url) return true;
+  return /https?:\/\/(localhost|127\.0\.0\.1)(:\d+)?\/uploads\//i.test(url);
+}
 
 async function main() {
   console.log('🌱 Starting seed...');
@@ -62,6 +67,23 @@ async function main() {
     create: { name: 'Tin Tức Công Nghệ', slug: 'tin-tuc-cong-nghe', type: 'post' },
   });
 
+  // Default system settings — chỉ đặt nếu chưa có hoặc URL tạm (localhost upload)
+  const defaultSettings = [
+    { key: 'site_logo', value: '/default-logo.svg' },
+    { key: 'site_name', value: 'Thắng Tin Học' },
+    { key: 'site_description', value: 'Trung tâm đào tạo tin học văn phòng chuyên nghiệp' },
+  ];
+  for (const s of defaultSettings) {
+    const existing = await prisma.systemSetting.findUnique({ where: { key: s.key } });
+    if (!existing || isTemporaryUrl(existing.value)) {
+      await prisma.systemSetting.upsert({
+        where: { key: s.key },
+        update: { value: s.value },
+        create: { key: s.key, value: s.value },
+      });
+    }
+  }
+
   // Courses
   const courses = [
     {
@@ -69,6 +91,7 @@ async function main() {
       slug: 'tin-hoc-van-phong-co-ban',
       description: 'Khóa học toàn diện về Word, Excel, PowerPoint cho người mới bắt đầu. Từ cơ bản đến thành thạo trong 30 ngày.',
       content: 'Nội dung chi tiết của khóa học...',
+      thumbnail: '/default-course.svg',
       price: 599000,
       originalPrice: 999000,
       level: 'beginner',
@@ -83,6 +106,7 @@ async function main() {
       slug: 'excel-nang-cao-ham-cong-thuc',
       description: 'Thành thạo các hàm Excel nâng cao: VLOOKUP, INDEX/MATCH, Pivot Table, Dashboard.',
       content: 'Nội dung chi tiết của khóa học...',
+      thumbnail: '/default-course.svg',
       price: 799000,
       originalPrice: 1299000,
       level: 'intermediate',
@@ -97,6 +121,7 @@ async function main() {
       slug: 'word-chuyen-nghiep-soan-thao',
       description: 'Kỹ năng soạn thảo văn bản chuyên nghiệp, thiết kế tài liệu đẹp, mail merge.',
       content: 'Nội dung chi tiết của khóa học...',
+      thumbnail: '/default-course.svg',
       price: 499000,
       originalPrice: 799000,
       level: 'beginner',
@@ -111,6 +136,7 @@ async function main() {
       slug: 'powerpoint-thuyet-trinh',
       description: 'Thiết kế slide PowerPoint ấn tượng, kỹ năng thuyết trình, animation và hiệu ứng.',
       content: 'Nội dung chi tiết của khóa học...',
+      thumbnail: '/default-course.svg',
       price: 549000,
       originalPrice: 899000,
       level: 'beginner',
@@ -125,6 +151,7 @@ async function main() {
       slug: 'excel-vba-macro',
       description: 'Lập trình VBA để tự động hóa Excel. Tạo macro, UserForm và ứng dụng quản lý.',
       content: 'Nội dung chi tiết của khóa học...',
+      thumbnail: '/default-course.svg',
       price: 999000,
       originalPrice: 1599000,
       level: 'advanced',
@@ -139,6 +166,7 @@ async function main() {
       slug: 'google-workspace',
       description: 'Thành thạo Gmail, Google Drive, Docs, Sheets, Slides cho công việc hiệu quả.',
       content: 'Nội dung chi tiết của khóa học...',
+      thumbnail: '/default-course.svg',
       price: 399000,
       originalPrice: 699000,
       level: 'beginner',
@@ -156,6 +184,13 @@ async function main() {
       update: {},
       create: c,
     });
+    // Gán ảnh mặc định nếu chưa có thumbnail hoặc thumbnail là URL localhost tạm
+    if (isTemporaryUrl(course.thumbnail)) {
+      await prisma.course.update({
+        where: { id: course.id },
+        data: { thumbnail: c.thumbnail },
+      });
+    }
 
     // Add sample lessons
     for (let i = 1; i <= Math.min(5, c.totalLessons); i++) {
