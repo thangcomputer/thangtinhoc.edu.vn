@@ -69,9 +69,11 @@ async function main() {
 
   // Default system settings — chỉ đặt nếu chưa có hoặc URL tạm (localhost upload)
   const defaultSettings = [
-    { key: 'site_logo', value: '/default-logo.svg' },
-    { key: 'site_name', value: 'Thắng Tin Học' },
+    { key: 'site_logo',       value: '/logo.png' },
+    { key: 'site_name',       value: 'Thắng Tin Học' },
     { key: 'site_description', value: 'Trung tâm đào tạo tin học văn phòng chuyên nghiệp' },
+    { key: 'hero_media_url',  value: '/hero-banner.png' },
+    { key: 'hero_media_type', value: 'image' },
   ];
   for (const s of defaultSettings) {
     const existing = await prisma.systemSetting.findUnique({ where: { key: s.key } });
