@@ -67,17 +67,17 @@ async function main() {
     create: { name: 'Tin Tức Công Nghệ', slug: 'tin-tuc-cong-nghe', type: 'post' },
   });
 
-  // Default system settings — chỉ đặt nếu chưa có hoặc URL tạm (localhost upload)
+  // Settings mặc định — luôn đặt logo và hero về static assets (không mất khi reset)
   const defaultSettings = [
-    { key: 'site_logo',       value: '/logo.png' },
-    { key: 'site_name',       value: 'Thắng Tin Học' },
-    { key: 'site_description', value: 'Trung tâm đào tạo tin học văn phòng chuyên nghiệp' },
-    { key: 'hero_media_url',  value: '/hero-banner.png' },
-    { key: 'hero_media_type', value: 'image' },
+    { key: 'site_logo',       value: '/logo.png',        forceUpdate: true },
+    { key: 'hero_media_url',  value: '/hero-banner.png', forceUpdate: true },
+    { key: 'hero_media_type', value: 'image',            forceUpdate: true },
+    { key: 'site_name',       value: 'Thắng Tin Học',    forceUpdate: false },
+    { key: 'site_description', value: 'Trung tâm đào tạo tin học văn phòng chuyên nghiệp', forceUpdate: false },
   ];
   for (const s of defaultSettings) {
     const existing = await prisma.systemSetting.findUnique({ where: { key: s.key } });
-    if (!existing || isTemporaryUrl(existing.value)) {
+    if (!existing || s.forceUpdate || isTemporaryUrl(existing.value)) {
       await prisma.systemSetting.upsert({
         where: { key: s.key },
         update: { value: s.value },
@@ -183,16 +183,10 @@ async function main() {
   for (const c of courses) {
     const course = await prisma.course.upsert({
       where: { slug: c.slug },
-      update: {},
+      // Luôn cập nhật thumbnail về static asset khi seed chạy
+      update: { thumbnail: c.thumbnail },
       create: c,
     });
-    // Gán ảnh mặc định nếu chưa có thumbnail hoặc thumbnail là URL localhost tạm
-    if (isTemporaryUrl(course.thumbnail)) {
-      await prisma.course.update({
-        where: { id: course.id },
-        data: { thumbnail: c.thumbnail },
-      });
-    }
 
     // Add sample lessons
     for (let i = 1; i <= Math.min(5, c.totalLessons); i++) {

@@ -1,6 +1,7 @@
 const express = require('express');
 const prisma = require('../lib/db');
 const { authenticate, authorize, optionalAuthenticate } = require('../middleware/auth');
+const { normalizePublicUrl } = require('../lib/publicUrl');
 const {
   isUserEnrolled,
   sanitizeLessonsForPublic,
@@ -181,6 +182,7 @@ router.get('/', async (req, res) => {
 
     const formatted = courses.map(c => ({
       ...c,
+      thumbnail: normalizePublicUrl(c.thumbnail),
       avgRating: c.reviews.length ? (c.reviews.reduce((s, r) => s + r.rating, 0) / c.reviews.length).toFixed(1) : 0,
       totalStudents: c._count.enrollments,
       reviewCount: c.reviews.length,
@@ -237,6 +239,7 @@ router.get('/:courseId/related', async (req, res) => {
     
     const formatted = related.map(c => ({
       ...c,
+      thumbnail: normalizePublicUrl(c.thumbnail),
       avgRating: c.reviews.length ? (c.reviews.reduce((s, r) => s + r.rating, 0) / c.reviews.length).toFixed(1) : 0,
       totalStudents: c._count.enrollments,
     }));
@@ -257,6 +260,7 @@ function formatCourseResponse(course, lessons) {
 
   return {
     ...course,
+    thumbnail: normalizePublicUrl(course.thumbnail),
     lessons,
     totalLessons: computedTotalLessons,
     totalDuration: computedDuration,
