@@ -74,7 +74,7 @@ export default function Footer({ settings }) {
           <div className="footer-brand">
             <Link to="/" className="footer-logo">
               {logo ? (
-                <img src={logo} alt={bName} className="site-logo-img" />
+                <img src={logo} alt={bName} className="site-logo-img" width="180" height="50" loading="lazy" decoding="async" />
               ) : (
                 <>
                   <div className="brand-icon-sm"><BookOpen size={20} /></div>
@@ -87,8 +87,8 @@ export default function Footer({ settings }) {
             {/* Social Buttons — đọc từ admin social_buttons */}
             <div className="social-links">
               {footerBtns.map(btn => (
-                <a key={btn.id} href={btn.url} target="_blank" rel="noreferrer"
-                  title={btn.label} className="social-btn"
+                <a key={btn.id} href={btn.url} target="_blank" rel="noopener noreferrer"
+                  title={btn.label} aria-label={btn.label} className="social-btn"
                   style={{ background: btn.color }}>
                   <SocialSvg icon={btn.icon} />
                 </a>
@@ -105,7 +105,7 @@ export default function Footer({ settings }) {
                   {col.links && col.links.map((link, lIdx) => (
                     <li key={lIdx}>
                       {link.url.startsWith('http') ? (
-                        <a href={link.url} target="_blank" rel="noreferrer">{link.text}</a>
+                        <a href={link.url} target="_blank" rel="noopener noreferrer">{link.text}</a>
                       ) : (
                         <Link to={link.url}>{link.text}</Link>
                       )}

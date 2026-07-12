@@ -25,7 +25,14 @@ export default function CourseCard({ course }) {
     <Link to={`/courses/${course.slug}`} className="course-card">
       <div className="course-thumbnail">
         {course.thumbnail ? (
-          <img src={course.thumbnail} alt={course.title} />
+          <img
+            src={course.thumbnail}
+            alt={course.title}
+            width="400"
+            height="225"
+            loading="lazy"
+            decoding="async"
+          />
         ) : (
           <div className="course-thumbnail-placeholder">
             <BookOpen size={48} />

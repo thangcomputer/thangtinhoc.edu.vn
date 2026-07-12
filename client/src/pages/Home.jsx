@@ -241,24 +241,24 @@ export default function Home({ settings }) {
                   </div>
                 ) : (
                   <div className="main-3d-character">
-                    <img src={settings.hero_media_url} alt="Hero Banner" />
+                    <img src={settings.hero_media_url} alt="Hero Banner" width="540" height="480" loading="eager" fetchPriority="high" />
                   </div>
                 )
               ) : (
                 <div className="main-3d-character">
-                  <img src="/hero_3d_office_informatics.png" alt="3D Informatics Master" />
+                  <img src="/hero_3d_office_informatics.png" alt="3D Informatics Master" width="540" height="480" loading="eager" fetchPriority="high" />
                 </div>
               )}
               <div className="floating-3d word-3d float-slow">
-                <img src="/word_icon_3d.png" alt="Word" />
+                <img src="/word_icon_3d.png" alt="Word" width="72" height="72" loading="lazy" decoding="async" />
                 <div className="tool-glow word-glow" />
               </div>
               <div className="floating-3d excel-3d float-reverse">
-                <img src="/excel_icon_3d.png" alt="Excel" />
+                <img src="/excel_icon_3d.png" alt="Excel" width="72" height="72" loading="lazy" decoding="async" />
                 <div className="tool-glow excel-glow" />
               </div>
               <div className="floating-3d ppt-3d float-mid">
-                <img src="/ppt_icon_3d.png" alt="PowerPoint" />
+                <img src="/ppt_icon_3d.png" alt="PowerPoint" width="72" height="72" loading="lazy" decoding="async" />
                 <div className="tool-glow ppt-glow" />
               </div>
               <div className="hero-glass-card stats-card float-slow">
@@ -303,7 +303,7 @@ export default function Home({ settings }) {
               <div key={i} className="feature-card-premium" style={{ '--accent': f.color }}>
                 <div className="feature-icon-wrapper">
                   {f.icon.includes('.png') ? (
-                    <img src={f.icon} alt={f.title} className="feature-3d-icon" />
+                    <img src={f.icon} alt={f.title} className="feature-3d-icon" width="80" height="80" loading="lazy" decoding="async" />
                   ) : (
                     <div className="feature-icon-fallback"><Zap size={32} /></div>
                   )}
@@ -454,7 +454,7 @@ export default function Home({ settings }) {
                 <p className="testimonial-text">"{t.text}"</p>
                 <div className="testimonial-author">
                   {t.avatar ? (
-                    <img src={t.avatar} alt={t.name} className="author-avatar-img" />
+                    <img src={t.avatar} alt={t.name} className="author-avatar-img" width="48" height="48" loading="lazy" decoding="async" />
                   ) : (
                     <div className="author-avatar">{t.name?.[0] || '?'}</div>
                   )}
@@ -481,7 +481,7 @@ export default function Home({ settings }) {
           <StaggerReveal animation={anim.partners} staggerDelay={100} className="partners-grid">
             {finalPartners.map((partner, i) => (
               <div key={i} className="partner-card">
-                <img src={partner.logo} alt={partner.name} title={partner.name} />
+                <img src={partner.logo} alt={partner.name} title={partner.name} width="140" height="56" loading="lazy" decoding="async" />
               </div>
             ))}
           </StaggerReveal>

@@ -1,5 +1,5 @@
 ﻿import { createBrowserRouter, RouterProvider, Navigate, Outlet, useLocation, useOutletContext } from 'react-router-dom';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, lazy, Suspense } from 'react';
 import { GoogleOAuthProvider } from '@react-oauth/google';
 import useAuthStore from './store/authStore';
 import api from './lib/api';
@@ -7,7 +7,7 @@ import { useSecurityProtection } from './lib/useSecurityProtection';
 import { useIdleLogout } from './lib/useIdleLogout';
 import AppToaster from './components/AppToaster';
 
-// Layout & Components
+// Layout & Components (always loaded — small, critical)
 import Navbar from './components/Navbar';
 import Footer from './components/Footer';
 import PromotionPopup from './components/PromotionPopup';
@@ -16,26 +16,31 @@ import CookieConsent from './components/CookieConsent';
 import ScrollToTop from './components/ScrollToTop';
 import PageLoader from './components/PageLoader';
 
-// Pages
-import Home from './pages/Home';
-import About from './pages/About';
-import Courses from './pages/Courses';
-import CourseDetail from './pages/CourseDetail';
-import CoursePlayer from './pages/CoursePlayer';
-import MyCourses from './pages/MyCourses';
-import Blog from './pages/Blog';
-import BlogDetail from './pages/BlogDetail';
-import Checkout from './pages/Checkout';
-import PaymentSuccess from './pages/PaymentSuccess';
-import Login from './pages/Login';
-import Register from './pages/Register';
-import ForgotPassword from './pages/ForgotPassword';
-import ResetPassword from './pages/ResetPassword';
-import Profile from './pages/Profile';
-import NotFound from './pages/NotFound';
-import Recruitment from './pages/Recruitment';
-import Contact from './pages/Contact';
-import MyActivity from './pages/MyActivity';
+// Pages — lazy loaded to reduce initial bundle & unused JS
+const Home          = lazy(() => import('./pages/Home'));
+const About         = lazy(() => import('./pages/About'));
+const Courses       = lazy(() => import('./pages/Courses'));
+const CourseDetail  = lazy(() => import('./pages/CourseDetail'));
+const CoursePlayer  = lazy(() => import('./pages/CoursePlayer'));
+const MyCourses     = lazy(() => import('./pages/MyCourses'));
+const Blog          = lazy(() => import('./pages/Blog'));
+const BlogDetail    = lazy(() => import('./pages/BlogDetail'));
+const Checkout      = lazy(() => import('./pages/Checkout'));
+const PaymentSuccess= lazy(() => import('./pages/PaymentSuccess'));
+const Login         = lazy(() => import('./pages/Login'));
+const Register      = lazy(() => import('./pages/Register'));
+const ForgotPassword= lazy(() => import('./pages/ForgotPassword'));
+const ResetPassword = lazy(() => import('./pages/ResetPassword'));
+const Profile       = lazy(() => import('./pages/Profile'));
+const NotFound      = lazy(() => import('./pages/NotFound'));
+const Recruitment   = lazy(() => import('./pages/Recruitment'));
+const Contact       = lazy(() => import('./pages/Contact'));
+const MyActivity    = lazy(() => import('./pages/MyActivity'));
+
+// Minimal fallback for Suspense — no layout shift
+function PageFallback() {
+  return <div style={{ minHeight: '60vh' }} aria-hidden />;
+}
 
 const PrivateRoute = ({ children }) => {
   const { isAuthenticated } = useAuthStore();
@@ -72,7 +77,7 @@ function LayoutWrapper() {
         if (!meta) { meta = document.createElement('meta'); meta.name = 'description'; document.head.appendChild(meta); }
         meta.content = data.site_description;
       }
-    }).catch(err => console.error('Failed to fetch settings:', err))
+    }).catch(() => { /* silently fall back to defaults */ })
       .finally(() => setTimeout(() => setSettingsLoading(false), 600));
   }, []);
 
@@ -108,38 +113,40 @@ function HomeWrapper() {
   return <Home settings={settings} />;
 }
 
+const S = ({ children }) => <Suspense fallback={<PageFallback />}>{children}</Suspense>;
+
 const router = createBrowserRouter([
   // Auth routes — no layout
-  { path: '/login', element: <><AppToaster /><Login /></> },
-  { path: '/register', element: <><AppToaster /><Register /></> },
-  { path: '/forgot-password', element: <><AppToaster /><ForgotPassword /></> },
-  { path: '/reset-password', element: <><AppToaster /><ResetPassword /></> },
-  { path: '/learn/:slug', element: <><AppToaster /><PrivateRoute><CoursePlayer /></PrivateRoute></> },
-  { path: '/learn/:slug/:lessonId', element: <><AppToaster /><PrivateRoute><CoursePlayer /></PrivateRoute></> },
+  { path: '/login',          element: <><AppToaster /><S><Login /></S></> },
+  { path: '/register',       element: <><AppToaster /><S><Register /></S></> },
+  { path: '/forgot-password',element: <><AppToaster /><S><ForgotPassword /></S></> },
+  { path: '/reset-password', element: <><AppToaster /><S><ResetPassword /></S></> },
+  { path: '/learn/:slug',    element: <><AppToaster /><PrivateRoute><S><CoursePlayer /></S></PrivateRoute></> },
+  { path: '/learn/:slug/:lessonId', element: <><AppToaster /><PrivateRoute><S><CoursePlayer /></S></PrivateRoute></> },
 
   // Main layout — all routes share Navbar+Footer via LayoutWrapper
   {
     path: '/',
     element: <LayoutWrapper />,
     children: [
-      { index: true, element: <HomeWrapper /> },
-      { path: 'gioi-thieu', element: <About /> },
-      { path: 'courses', element: <Courses /> },
-      { path: 'courses/:slug', element: <CourseDetail /> },
-      { path: 'blog', element: <Blog /> },
-      { path: 'blog/:slug', element: <BlogDetail /> },
-      { path: 'tuyen-dung', element: <Recruitment /> },
-      { path: 'lien-he', element: <Contact /> },
-      { path: 'my-courses', element: <PrivateRoute><MyCourses /></PrivateRoute> },
-      { path: 'my-activity', element: <PrivateRoute><MyActivity /></PrivateRoute> },
-      { path: 'profile', element: <PrivateRoute><Profile /></PrivateRoute> },
-      { path: 'checkout', element: <PrivateRoute><Checkout /></PrivateRoute> },
-      { path: 'payment/success', element: <PrivateRoute><PaymentSuccess /></PrivateRoute> },
-      { path: 'ghi-danh', element: <Navigate to="/?enroll=true" replace /> },
-      { path: '*', element: <NotFound /> },
+      { index: true,              element: <S><HomeWrapper /></S> },
+      { path: 'gioi-thieu',       element: <S><About /></S> },
+      { path: 'courses',          element: <S><Courses /></S> },
+      { path: 'courses/:slug',    element: <S><CourseDetail /></S> },
+      { path: 'blog',             element: <S><Blog /></S> },
+      { path: 'blog/:slug',       element: <S><BlogDetail /></S> },
+      { path: 'tuyen-dung',       element: <S><Recruitment /></S> },
+      { path: 'lien-he',          element: <S><Contact /></S> },
+      { path: 'my-courses',       element: <PrivateRoute><S><MyCourses /></S></PrivateRoute> },
+      { path: 'my-activity',      element: <PrivateRoute><S><MyActivity /></S></PrivateRoute> },
+      { path: 'profile',          element: <PrivateRoute><S><Profile /></S></PrivateRoute> },
+      { path: 'checkout',         element: <PrivateRoute><S><Checkout /></S></PrivateRoute> },
+      { path: 'payment/success',  element: <PrivateRoute><S><PaymentSuccess /></S></PrivateRoute> },
+      { path: 'ghi-danh',         element: <Navigate to="/?enroll=true" replace /> },
+      { path: '*',                element: <S><NotFound /></S> },
     ],
   },
-  { path: '*', element: <><AppToaster /><NotFound /></> },
+  { path: '*', element: <><AppToaster /><S><NotFound /></S></> },
 ]);
 
 function App() {
