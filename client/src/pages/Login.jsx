@@ -138,36 +138,21 @@ export default function Login() {
         </button>
       </form>
 
-      <div style={{
-        marginTop: '16px',
-        padding: '12px 14px',
-        background: 'rgba(99,102,241,0.07)',
-        border: '1px dashed rgba(99,102,241,0.35)',
-        borderRadius: '10px',
-        fontSize: '0.8rem',
-        lineHeight: 1.7,
-        color: 'inherit',
-      }}>
-        <strong style={{ display: 'block', marginBottom: '4px', opacity: 0.85 }}>
-          🔑 Tài khoản học viên demo
-        </strong>
-        <span style={{ opacity: 0.75 }}>Email:</span>{' '}
-        <code
-          style={{ cursor: 'pointer', fontWeight: 600 }}
+      <div className="auth-demo-box" role="note">
+        <div className="auth-demo-header">
+          <span className="auth-demo-dot" aria-hidden="true" />
+          <strong>Tài khoản học viên demo</strong>
+        </div>
+        <button
+          type="button"
+          className="auth-demo-fill"
           onClick={() => setForm({ email: 'test@gmail.com', password: 'user123' })}
           title="Nhấn để điền tự động"
-        >test@gmail.com</code>
-        <br />
-        <span style={{ opacity: 0.75 }}>Mật khẩu:</span>{' '}
-        <code
-          style={{ cursor: 'pointer', fontWeight: 600 }}
-          onClick={() => setForm({ email: 'test@gmail.com', password: 'user123' })}
-          title="Nhấn để điền tự động"
-        >user123</code>
-        <br />
-        <span style={{ opacity: 0.55, fontSize: '0.72rem' }}>
-          (Nhấn vào email/mật khẩu để điền tự động)
-        </span>
+        >
+          <span className="auth-demo-row"><span>Email</span><code>test@gmail.com</code></span>
+          <span className="auth-demo-row"><span>Mật khẩu</span><code>user123</code></span>
+        </button>
+        <p className="auth-demo-hint">Nhấn để điền tự động</p>
       </div>
     </AuthShell>
   );

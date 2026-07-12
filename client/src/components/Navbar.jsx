@@ -8,7 +8,17 @@ import SearchBox from './SearchBox';
 import NotificationBell from './NotificationBell';
 import './Navbar.css';
 
-const capitalize = (s) => s ? s.replace(/\b\w/g, c => c.toUpperCase()) : '';
+// Fix: \b\w breaks Vietnamese chars (e.g. "thắng" → "ThắNg"). Capitalize per word instead.
+const capitalize = (s) =>
+  s ? s.split(' ').filter(Boolean).map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ') : '';
+
+// Lấy tên hiển thị ngắn (từ cuối = tên riêng trong tiếng Việt)
+const shortName = (fullName) => {
+  if (!fullName) return '';
+  const parts = fullName.trim().split(/\s+/);
+  const last = parts[parts.length - 1];
+  return last.charAt(0).toUpperCase() + last.slice(1);
+};
 
 export default function Navbar({ settings }) {
   const [isOpen, setIsOpen] = useState(false);
@@ -132,46 +142,74 @@ export default function Navbar({ settings }) {
           <NotificationBell />
           {isAuthenticated ? (
             <div className="user-menu-wrap" ref={menuRef}>
-              <button className="user-btn" onClick={() => setUserMenuOpen(!userMenuOpen)}>
-                <div className="user-avatar">
-                  {user?.avatar ? (
-                    <img src={user.avatar.startsWith('http') ? user.avatar : `${import.meta.env.VITE_API_URL?.replace('/api','')}${user.avatar}`} alt="" />
-                  ) : (
-                    capitalize(user?.fullName)?.[0] || 'U'
-                  )}
+              <button className="user-btn" onClick={() => setUserMenuOpen(!userMenuOpen)} aria-expanded={userMenuOpen}>
+                <div className="user-avatar-wrap">
+                  <div className="user-avatar">
+                    {user?.avatar ? (
+                      <img src={user.avatar.startsWith('http') ? user.avatar : `${import.meta.env.VITE_API_URL?.replace('/api','')}${user.avatar}`} alt={shortName(user?.fullName)} />
+                    ) : (
+                      <span>{capitalize(user?.fullName)?.[0] || 'U'}</span>
+                    )}
+                  </div>
+                  <span className="user-online-dot" aria-hidden="true" />
                 </div>
-                <span className="user-name">{capitalize(user?.fullName?.split(' ').pop())}</span>
-                <ChevronDown size={14} className={`chevron ${userMenuOpen ? 'open' : ''}`} />
+                <span className="user-name">{shortName(user?.fullName)}</span>
+                <ChevronDown size={13} className={`chevron ${userMenuOpen ? 'open' : ''}`} />
               </button>
+
               {userMenuOpen && (
                 <div className="user-dropdown">
+                  {/* Header with avatar */}
                   <div className="user-info">
-                    <p className="user-full-name">{capitalize(user?.fullName)}</p>
-                    <p className="user-email">{user?.email}</p>
+                    <div className="user-info-avatar">
+                      {user?.avatar ? (
+                        <img src={user.avatar.startsWith('http') ? user.avatar : `${import.meta.env.VITE_API_URL?.replace('/api','')}${user.avatar}`} alt="" />
+                      ) : (
+                        <span>{capitalize(user?.fullName)?.[0] || 'U'}</span>
+                      )}
+                    </div>
+                    <div className="user-info-text">
+                      <p className="user-full-name">{capitalize(user?.fullName)}</p>
+                      <p className="user-email">{user?.email}</p>
+                      {user?.role === 'admin' && <span className="user-role-badge">Admin</span>}
+                    </div>
                   </div>
+
                   <div className="dropdown-divider" />
-                  <Link to="/profile" className="dropdown-item">
-                    <User size={16} /> Cài Đặt Tài Khoản
-                  </Link>
-                  <Link to="/my-courses" className="dropdown-item">
-                    <GraduationCap size={16} /> Khóa Học Của Tôi
-                  </Link>
-                  <Link to="/my-activity" className="dropdown-item">
-                    <Activity size={16} /> Hoạt Động Của Tôi
-                  </Link>
-                  {user?.role === 'admin' && (
-                    <a
-                      href={adminHref}
-                      className="dropdown-item"
-                      {...(adminLinkExternal ? { target: '_blank', rel: 'noreferrer' } : {})}
-                    >
-                      <LayoutDashboard size={16} /> Admin Panel
-                    </a>
-                  )}
+
+                  <div className="dropdown-group">
+                    <Link to="/profile" className="dropdown-item">
+                      <span className="dropdown-item-icon"><User size={15} /></span>
+                      <span>Cài Đặt Tài Khoản</span>
+                    </Link>
+                    <Link to="/my-courses" className="dropdown-item">
+                      <span className="dropdown-item-icon"><GraduationCap size={15} /></span>
+                      <span>Khóa Học Của Tôi</span>
+                    </Link>
+                    <Link to="/my-activity" className="dropdown-item">
+                      <span className="dropdown-item-icon"><Activity size={15} /></span>
+                      <span>Hoạt Động Của Tôi</span>
+                    </Link>
+                    {user?.role === 'admin' && (
+                      <a
+                        href={adminHref}
+                        className="dropdown-item admin-item"
+                        {...(adminLinkExternal ? { target: '_blank', rel: 'noreferrer' } : {})}
+                      >
+                        <span className="dropdown-item-icon"><LayoutDashboard size={15} /></span>
+                        <span>Admin Panel</span>
+                      </a>
+                    )}
+                  </div>
+
                   <div className="dropdown-divider" />
-                  <button className="dropdown-item danger" onClick={handleLogout}>
-                    <LogOut size={16} /> Đăng Xuất
-                  </button>
+
+                  <div className="dropdown-group">
+                    <button className="dropdown-item danger" onClick={handleLogout}>
+                      <span className="dropdown-item-icon"><LogOut size={15} /></span>
+                      <span>Đăng Xuất</span>
+                    </button>
+                  </div>
                 </div>
               )}
             </div>
