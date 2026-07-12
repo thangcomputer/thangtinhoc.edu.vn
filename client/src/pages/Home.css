@@ -1159,7 +1159,12 @@
 }
 .promo-close:hover { background: #ef4444; border-color: #ef4444; transform: scale(1.15); }
 .promo-image {
-  width: 100%; display: block; cursor: pointer;
+  width: 100%;
+  height: auto;
+  aspect-ratio: 2 / 3;
+  object-fit: cover;
+  display: block;
+  cursor: pointer;
   border-radius: 0;
   transition: transform 0.3s;
   box-shadow: 

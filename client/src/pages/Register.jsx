@@ -2,13 +2,16 @@
 import { Link, useNavigate } from 'react-router-dom';
 import { Eye, EyeOff, Mail, Lock, User, Phone } from 'lucide-react';
 import toast from 'react-hot-toast';
-import { GoogleLogin } from '@react-oauth/google';
+import { GoogleOAuthProvider, GoogleLogin } from '@react-oauth/google';
 import api from '../lib/api';
+import { getDeviceId } from '../lib/deviceId';
 import useAuthStore from '../store/authStore';
 import AuthShell, { AuthField, AuthDivider, AuthSwitch } from '../components/AuthShell';
 import './Auth.css';
 
-export default function Register() {
+const googleClientId = import.meta.env.VITE_GOOGLE_CLIENT_ID;
+
+function RegisterPage() {
   const [form, setForm] = useState({ fullName: '', email: '', phone: '', password: '', confirmPassword: '' });
   const [showPass, setShowPass] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -55,8 +58,13 @@ export default function Register() {
 
   const handleGoogleSuccess = async (credentialResponse) => {
     try {
-      const res = await api.post('/auth/google', { credential: credentialResponse.credential });
-      login(res.data.data.user, res.data.data.token);
+      const deviceId = getDeviceId();
+      const res = await api.post('/auth/google', {
+        credential: credentialResponse.credential,
+        deviceId,
+      });
+      const { user, token, deviceId: serverDeviceId } = res.data.data;
+      login(user, token, serverDeviceId);
       toast.success('Đăng ký với Google thành công!');
       navigate('/');
     } catch (err) {
@@ -82,18 +90,21 @@ export default function Register() {
         </AuthSwitch>
       }
     >
-      <div className="auth-google-wrap">
-        <GoogleLogin
-          onSuccess={handleGoogleSuccess}
-          onError={() => toast.error('Đăng ký Google thất bại')}
-          theme="filled_blue"
-          shape="pill"
-          text="signup_with"
-          locale="vi"
-        />
-      </div>
-
-      <AuthDivider />
+      {googleClientId && (
+        <>
+          <div className="auth-google-wrap">
+            <GoogleLogin
+              onSuccess={handleGoogleSuccess}
+              onError={() => toast.error('Đăng ký Google thất bại')}
+              theme="filled_blue"
+              shape="pill"
+              text="signup_with"
+              locale="vi"
+            />
+          </div>
+          <AuthDivider />
+        </>
+      )}
 
       <form onSubmit={handleSubmit} className="auth-form">
         <div className="auth-form-grid">
@@ -170,5 +181,14 @@ export default function Register() {
         </button>
       </form>
     </AuthShell>
+  );
+}
+
+export default function Register() {
+  if (!googleClientId) return <RegisterPage />;
+  return (
+    <GoogleOAuthProvider clientId={googleClientId}>
+      <RegisterPage />
+    </GoogleOAuthProvider>
   );
 }

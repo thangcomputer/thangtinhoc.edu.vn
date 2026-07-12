@@ -11,6 +11,7 @@ import { sanitizeHTML } from '../lib/sanitize';
 import CourseCard from '../components/CourseCard';
 import ScrollReveal, { StaggerReveal } from '../components/ScrollReveal';
 import VideoPlayer from '../components/VideoPlayer';
+import YoutubeFacade from '../components/YoutubeFacade';
 import './Home.css';
 
 const IconMap = { Zap, Shield, Award, Users, Clock, TrendingUp, BookOpen, Target, Monitor, GraduationCap, CheckCircle, Star };
@@ -30,12 +31,12 @@ export default function Home({ settings }) {
     }).catch(() => {}).finally(() => setLoading(false));
   }, []);
 
-  // Promo popup — show once per session if enabled in settings
+  // Promo popup — delay so it không làm hỏng FCP/LCP trên mobile
   useEffect(() => {
     if (settings?.promo_enabled !== 'true') return;
     const dismissed = sessionStorage.getItem('promo_dismissed');
     if (!dismissed) {
-      const timer = setTimeout(() => setShowPromo(true), 2000);
+      const timer = setTimeout(() => setShowPromo(true), 8000);
       return () => clearTimeout(timer);
     }
   }, [settings]);
@@ -91,9 +92,9 @@ export default function Home({ settings }) {
   };
 
   const officeFeatures = [
-    { title: 'Microsoft Word', desc: 'Soạn thảo văn bản chuyên nghiệp, mail merge, tạo template báo cáo và hợp đồng chuẩn doanh nghiệp.', icon: '/word_icon_3d.png', color: '#2b579a' },
-    { title: 'Microsoft Excel', desc: 'Hàm nâng cao, Pivot Table, Dashboard động, VBA macro tự động hóa và xử lý dữ liệu lớn.', icon: '/excel_icon_3d.png', color: '#217346' },
-    { title: 'PowerPoint', desc: 'Thiết kế slide chuyên nghiệp, animation, infographic và kỹ năng thuyết trình ấn tượng.', icon: '/ppt_icon_3d.png', color: '#b7472a' },
+    { title: 'Microsoft Word', desc: 'Soạn thảo văn bản chuyên nghiệp, mail merge, tạo template báo cáo và hợp đồng chuẩn doanh nghiệp.', icon: '/word_icon_3d.webp', color: '#2b579a' },
+    { title: 'Microsoft Excel', desc: 'Hàm nâng cao, Pivot Table, Dashboard động, VBA macro tự động hóa và xử lý dữ liệu lớn.', icon: '/excel_icon_3d.webp', color: '#217346' },
+    { title: 'PowerPoint', desc: 'Thiết kế slide chuyên nghiệp, animation, infographic và kỹ năng thuyết trình ấn tượng.', icon: '/ppt_icon_3d.webp', color: '#b7472a' },
     { title: 'Kỹ Năng Máy Tính', desc: 'Windows, quản lý file, bảo mật dữ liệu, sử dụng AI và công cụ đám mây hiệu quả.', icon: 'Zap', color: '#6366f1' },
   ];
 
@@ -133,12 +134,12 @@ export default function Home({ settings }) {
   ];
 
   const partnersList = [
-    { name: 'FPT Corporation', logo: '/logo_fpt.png' },
-    { name: 'Viettel', logo: '/logo_viettel.png' },
-    { name: 'VinGroup', logo: '/logo_vingroup.png' },
-    { name: 'VNPT', logo: '/logo_vnpt.png' },
-    { name: 'Samsung Vietnam', logo: '/logo_samsung.png' },
-    { name: 'MISA', logo: '/logo_misa.png' },
+    { name: 'FPT Corporation', logo: '/logo_fpt.webp' },
+    { name: 'Viettel', logo: '/logo_viettel.webp' },
+    { name: 'VinGroup', logo: '/logo_vingroup.webp' },
+    { name: 'VNPT', logo: '/logo_vnpt.webp' },
+    { name: 'Samsung Vietnam', logo: '/logo_samsung.webp' },
+    { name: 'MISA', logo: '/logo_misa.webp' },
   ];
 
   // Parse dynamic partners from settings
@@ -229,36 +230,38 @@ export default function Home({ settings }) {
 
           <ScrollReveal animation={anim.hero} delay={300} duration={1000} className="hero-visual-premium">
             <div className="visual-wrapper">
-              {settings?.hero_media_url ? (
-                (settings?.hero_media_type === 'video') ? (
-                  <div className="main-3d-character" style={{ borderRadius: '16px', overflow: 'hidden' }}>
-                    {settings.hero_media_url.includes('youtube') || settings.hero_media_url.includes('youtu.be') ? (
-                      <iframe src={settings.hero_media_url.replace('watch?v=', 'embed/')} 
-                        style={{ width: '100%', height: '100%', minHeight: '350px', border: 'none' }} title="Hero Video" allowFullScreen />
-                    ) : (
-                      <VideoPlayer src={settings.hero_media_url} />
-                    )}
-                  </div>
-                ) : (
-                  <div className="main-3d-character">
-                    <img src={settings.hero_media_url} alt="Hero Banner" width="540" height="480" loading="eager" fetchPriority="high" />
-                  </div>
-                )
+              {settings?.hero_media_url && (settings.hero_media_url.includes('youtube') || settings.hero_media_url.includes('youtu.be')) ? (
+                <div className="main-3d-character" style={{ borderRadius: '16px', overflow: 'hidden' }}>
+                  <YoutubeFacade url={settings.hero_media_url} title="Hero Video" />
+                </div>
+              ) : settings?.hero_media_url && settings?.hero_media_type === 'video' ? (
+                <div className="main-3d-character" style={{ borderRadius: '16px', overflow: 'hidden' }}>
+                  <VideoPlayer src={settings.hero_media_url} />
+                </div>
               ) : (
                 <div className="main-3d-character">
-                  <img src="/hero_3d_office_informatics.png" alt="3D Informatics Master" width="540" height="480" loading="eager" fetchPriority="high" />
+                  <img
+                    src={settings?.hero_media_url || '/hero-banner.webp'}
+                    alt="Hero Banner"
+                    width="400"
+                    height="340"
+                    sizes="(max-width: 768px) 90vw, 400px"
+                    loading="eager"
+                    fetchPriority="high"
+                    decoding="async"
+                  />
                 </div>
               )}
               <div className="floating-3d word-3d float-slow">
-                <img src="/word_icon_3d.png" alt="Word" width="72" height="72" loading="lazy" decoding="async" />
+                <img src="/word_icon_3d.webp" alt="Word" width="72" height="72" loading="lazy" decoding="async" />
                 <div className="tool-glow word-glow" />
               </div>
               <div className="floating-3d excel-3d float-reverse">
-                <img src="/excel_icon_3d.png" alt="Excel" width="72" height="72" loading="lazy" decoding="async" />
+                <img src="/excel_icon_3d.webp" alt="Excel" width="72" height="72" loading="lazy" decoding="async" />
                 <div className="tool-glow excel-glow" />
               </div>
               <div className="floating-3d ppt-3d float-mid">
-                <img src="/ppt_icon_3d.png" alt="PowerPoint" width="72" height="72" loading="lazy" decoding="async" />
+                <img src="/ppt_icon_3d.webp" alt="PowerPoint" width="72" height="72" loading="lazy" decoding="async" />
                 <div className="tool-glow ppt-glow" />
               </div>
               <div className="hero-glass-card stats-card float-slow">
@@ -302,7 +305,7 @@ export default function Home({ settings }) {
             {officeFeatures.map((f, i) => (
               <div key={i} className="feature-card-premium" style={{ '--accent': f.color }}>
                 <div className="feature-icon-wrapper">
-                  {f.icon.includes('.png') ? (
+                  {/\.(png|webp|jpe?g|svg)$/i.test(f.icon) ? (
                     <img src={f.icon} alt={f.title} className="feature-3d-icon" width="80" height="80" loading="lazy" decoding="async" />
                   ) : (
                     <div className="feature-icon-fallback"><Zap size={32} /></div>
@@ -350,8 +353,7 @@ export default function Home({ settings }) {
                 (settings?.visual_media_type === 'video') ? (
                   <div style={{ borderRadius: '16px', overflow: 'hidden' }}>
                     {settings.visual_media_url.includes('youtube') || settings.visual_media_url.includes('youtu.be') ? (
-                      <iframe src={settings.visual_media_url.replace('watch?v=', 'embed/')} 
-                        style={{ width: '100%', height: '100%', minHeight: '350px', border: 'none' }} title="Visual Learning Video" allowFullScreen />
+                      <YoutubeFacade url={settings.visual_media_url} title="Visual Learning Video" />
                     ) : (
                       <VideoPlayer src={settings.visual_media_url} />
                     )}
@@ -360,7 +362,7 @@ export default function Home({ settings }) {
                   <img src={settings.visual_media_url} alt="Visual Learning" />
                 )
               ) : (
-                <img src="/computer_usage_3d.png" alt="Computer Skills" />
+                <img src="/computer_usage_3d.webp" alt="Computer Skills" width="560" height="400" loading="lazy" decoding="async" />
               )}
               <div className="visual-glow-ai" />
             </div>
@@ -425,8 +427,8 @@ export default function Home({ settings }) {
             <div className="loader loader--section"><div className="spinner" /></div>
           ) : (
             <StaggerReveal animation="fade-up" staggerDelay={150} className="grid-3">
-              {featuredCourses.map(course => (
-                <CourseCard key={course.id} course={course} />
+              {featuredCourses.map((course, i) => (
+                <CourseCard key={course.id} course={course} priority={i < 2} />
               ))}
             </StaggerReveal>
           )}
@@ -565,7 +567,15 @@ export default function Home({ settings }) {
                 to={settings?.promo_link || '/courses'}
                 onClick={() => { setShowPromo(false); sessionStorage.setItem('promo_dismissed', '1'); }}
               >
-                <img src={settings.promo_image} alt={settings.promo_title || 'Khuyến mãi'} className="promo-image" />
+                <img
+                  src={settings.promo_image}
+                  alt={settings.promo_title || 'Khuyến mãi'}
+                  className="promo-image"
+                  width="480"
+                  height="720"
+                  loading="lazy"
+                  decoding="async"
+                />
               </Link>
             ) : (
               <div className="promo-html-content">

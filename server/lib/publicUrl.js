@@ -13,14 +13,14 @@ function buildPublicFileUrl(filename) {
 
 // Map filename cũ (localhost upload) -> static asset trong client/public
 const STATIC_ASSET_MAP = {
-  '1783489055872-n0g4bm1xmxi.png': '/courses/word.png',
-  '1783489004838-334txnplmau.png':  '/courses/excel.png',
-  '1783489161250-53frxuza427.png':  '/courses/excel-vba.png',
-  '1783489084614-ifxy59cu4jg.png':  '/courses/powerpoint.png',
-  '1783489219438-ukqzz7196x.png':   '/courses/van-phong.png',
-  '1783489182570-3wmm3vmnju9.png':  '/courses/google-workspace.png',
-  '1783488620365-0lgf5heawm9b.png': '/logo.png',
-  '1783488514111-7lhtv2y11j8.png':  '/hero-banner.png',
+  '1783489055872-n0g4bm1xmxi.png': '/courses/word.webp',
+  '1783489004838-334txnplmau.png':  '/courses/excel.webp',
+  '1783489161250-53frxuza427.png':  '/courses/excel-vba.webp',
+  '1783489084614-ifxy59cu4jg.png':  '/courses/powerpoint.webp',
+  '1783489219438-ukqzz7196x.png':   '/courses/van-phong.webp',
+  '1783489182570-3wmm3vmnju9.png':  '/courses/google-workspace.webp',
+  '1783488620365-0lgf5heawm9b.png': '/logo.webp',
+  '1783488514111-7lhtv2y11j8.png':  '/hero-banner.webp',
 };
 
 /** Sua URL localhost/127.0.0.1 da luu trong DB thanh /uploads/... hoac SITE_URL */
@@ -57,6 +57,11 @@ function normalizePublicUrl(url) {
     }
   } catch {
     /* not absolute URL */
+  }
+
+  // Prefer WebP for known static assets
+  if (/^\/(logo|hero-banner)\.png$/i.test(trimmed) || /^\/courses\/[^/]+\.png$/i.test(trimmed)) {
+    return trimmed.replace(/\.png$/i, '.webp');
   }
 
   return trimmed;

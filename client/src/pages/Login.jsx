@@ -2,14 +2,16 @@ import { useState, useEffect } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { Eye, EyeOff, Mail, Lock } from 'lucide-react';
 import toast from 'react-hot-toast';
-import { GoogleLogin } from '@react-oauth/google';
+import { GoogleOAuthProvider, GoogleLogin } from '@react-oauth/google';
 import api from '../lib/api';
 import { getDeviceId } from '../lib/deviceId';
 import useAuthStore from '../store/authStore';
 import AuthShell, { AuthField, AuthDivider, AuthSwitch } from '../components/AuthShell';
 import './Auth.css';
 
-export default function Login() {
+const googleClientId = import.meta.env.VITE_GOOGLE_CLIENT_ID;
+
+function LoginPage() {
   const [form, setForm] = useState({ email: '', password: '' });
   const [showPass, setShowPass] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -50,9 +52,13 @@ export default function Login() {
 
   const handleGoogleSuccess = async (credentialResponse) => {
     try {
-      const res = await api.post('/auth/google', { credential: credentialResponse.credential });
-      const { user, token, sessionWarning } = res.data.data;
-      login(user, token);
+      const deviceId = getDeviceId();
+      const res = await api.post('/auth/google', {
+        credential: credentialResponse.credential,
+        deviceId,
+      });
+      const { user, token, sessionWarning, deviceId: serverDeviceId } = res.data.data;
+      login(user, token, serverDeviceId);
       if (sessionWarning) toast(sessionWarning, { icon: '⚠️', duration: 6000 });
       toast.success('Đăng nhập với Google thành công!');
       navigate(redirectTo, { replace: true });
@@ -79,18 +85,20 @@ export default function Login() {
         </AuthSwitch>
       }
     >
-      <div className="auth-google-wrap">
-        <GoogleLogin
-          onSuccess={handleGoogleSuccess}
-          onError={() => toast.error('Đăng nhập Google thất bại')}
-          useOneTap
-          theme="filled_blue"
-          shape="pill"
-          locale="vi"
-        />
-      </div>
-
-      <AuthDivider />
+      {googleClientId && (
+        <>
+          <div className="auth-google-wrap">
+            <GoogleLogin
+              onSuccess={handleGoogleSuccess}
+              onError={() => toast.error('Đăng nhập Google thất bại')}
+              theme="filled_blue"
+              shape="pill"
+              locale="vi"
+            />
+          </div>
+          <AuthDivider />
+        </>
+      )}
 
       <form onSubmit={handleSubmit} className="auth-form">
         <AuthField label="Email" icon={Mail}>
@@ -155,5 +163,14 @@ export default function Login() {
         <p className="auth-demo-hint">Nhấn để điền tự động</p>
       </div>
     </AuthShell>
+  );
+}
+
+export default function Login() {
+  if (!googleClientId) return <LoginPage />;
+  return (
+    <GoogleOAuthProvider clientId={googleClientId}>
+      <LoginPage />
+    </GoogleOAuthProvider>
   );
 }

@@ -9,6 +9,7 @@ import {
 import toast from 'react-hot-toast';
 import api from '../lib/api';
 import { sanitizeHTML } from '../lib/sanitize';
+import { toYoutubeEmbedUrl } from '../lib/youtube';
 import useAuthStore from '../store/authStore';
 import './CoursePlayer.css';
 
@@ -406,22 +407,10 @@ export default function CoursePlayer() {
         <div className={`player-content ${sidebarOpen ? 'with-sidebar' : ''}`}>
           <div className="video-container">
             {activeLesson.videoUrl ? (() => {
-              // Convert any YouTube URL format to embed URL
               const getEmbedUrl = (url) => {
                 if (!url) return '';
-                // Already embed
-                if (url.includes('youtube.com/embed/')) return url;
-                // youtu.be short link
-                const shortMatch = url.match(/youtu\.be\/([a-zA-Z0-9_-]{11})/);
-                if (shortMatch) return `https://www.youtube.com/embed/${shortMatch[1]}`;
-                // youtube.com/shorts/
-                const shortsMatch = url.match(/youtube\.com\/shorts\/([a-zA-Z0-9_-]{11})/);
-                if (shortsMatch) return `https://www.youtube.com/embed/${shortsMatch[1]}`;
-                // youtube.com/watch?v=
-                const watchMatch = url.match(/[?&]v=([a-zA-Z0-9_-]{11})/);
-                if (watchMatch) return `https://www.youtube.com/embed/${watchMatch[1]}`;
-                // Fallback: try basic replace
-                return url.replace('watch?v=', 'embed/');
+                if (/youtu\.?be|youtube/i.test(url)) return toYoutubeEmbedUrl(url);
+                return url;
               };
               const embedUrl = getEmbedUrl(activeLesson.videoUrl);
               return (

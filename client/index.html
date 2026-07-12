@@ -31,9 +31,18 @@
     <meta name="twitter:description" content="Khóa học tin học văn phòng chuyên nghiệp. Excel, Word, PowerPoint, AI ứng dụng." />
     <meta name="twitter:image" content="https://tinhoc24h.giasutinhoc24h.com/hero-banner.png" />
 
-    <!-- Resource hints (fonts served by system fallback — no external blocking request) -->
-    <link rel="dns-prefetch" href="https://fonts.googleapis.com" />
+    <!-- Non-blocking fonts (font-display=swap already in Google CSS) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;600;700;800&display=swap" />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;600;700;800&display=swap" media="print" onload="this.media='all'" />
+    <noscript>
+      <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;600;700;800&display=swap" />
+    </noscript>
+
+    <!-- Preload LCP candidates (home hero + default logo) -->
+    <link rel="preload" as="image" href="/hero-banner.webp" fetchpriority="high" type="image/webp" />
+    <link rel="preload" as="image" href="/logo.webp" type="image/webp" />
 
     <!-- Schema.org: Organization -->
     <script type="application/ld+json">

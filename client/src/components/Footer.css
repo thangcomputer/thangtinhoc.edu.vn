@@ -28,6 +28,7 @@
   height: 54px;
   width: auto;
   max-width: 240px;
+  aspect-ratio: 180 / 54;
   object-fit: contain;
   display: block;
 }

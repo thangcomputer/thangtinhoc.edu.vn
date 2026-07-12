@@ -17,7 +17,7 @@ function calcDiscount(original, price) {
   return Math.round((1 - price / original) * 100);
 }
 
-export default function CourseCard({ course }) {
+export default function CourseCard({ course, priority = false }) {
   const level = levelMap[course.level] || levelMap.beginner;
   const discount = calcDiscount(course.originalPrice, course.price);
 
@@ -30,8 +30,9 @@ export default function CourseCard({ course }) {
             alt={course.title}
             width="400"
             height="225"
-            loading="lazy"
-            decoding="async"
+            loading={priority ? 'eager' : 'lazy'}
+            fetchPriority={priority ? 'high' : 'auto'}
+            decoding={priority ? 'sync' : 'async'}
           />
         ) : (
           <div className="course-thumbnail-placeholder">

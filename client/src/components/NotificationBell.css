@@ -192,6 +192,29 @@
   color: rgba(255,255,255,0.25);
 }
 
-@media (max-width: 480px) {
-  .nb-dropdown { width: calc(100vw - 2rem); right: -3rem; }
+@media (max-width: 640px) {
+  .nb-dropdown {
+    position: fixed;
+    top: calc(64px + env(safe-area-inset-top, 0px));
+    left: max(12px, env(safe-area-inset-left, 0px));
+    right: max(12px, env(safe-area-inset-right, 0px));
+    width: auto;
+    max-width: none;
+    max-height: min(70dvh, 420px);
+    display: flex;
+    flex-direction: column;
+    border-radius: 16px;
+  }
+  .nb-list {
+    flex: 1;
+    max-height: none;
+    min-height: 0;
+  }
+  .nb-header {
+    flex-wrap: wrap;
+    padding: 12px 14px;
+  }
+  .nb-header h4 {
+    font-size: 0.95rem;
+  }
 }

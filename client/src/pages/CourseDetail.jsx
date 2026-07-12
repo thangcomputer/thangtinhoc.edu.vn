@@ -4,17 +4,11 @@ import { Star, Users, Clock, BookOpen, CheckCircle, Play, ShoppingCart, Lock, X,
 import toast from 'react-hot-toast';
 import api from '../lib/api';
 import useAuthStore from '../store/authStore';
+import { getYoutubeId } from '../lib/youtube';
 import './CourseDetail.css';
 
 function formatPrice(price) {
   return price === 0 ? 'Miễn phí' : new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(price);
-}
-
-// Extract YouTube video ID
-function getYoutubeId(url) {
-  if (!url) return null;
-  const match = url.match(/(?:youtu\.be\/|youtube\.com\/(?:embed\/|v\/|watch\?v=|watch\?.+&v=))([\w-]{11})/);
-  return match ? match[1] : null;
 }
 
 export default function CourseDetail() {
@@ -189,7 +183,7 @@ export default function CourseDetail() {
               {heroVideoId ? (
                 <div className="cd-video-wrapper">
                   <iframe
-                    src={`https://www.youtube.com/embed/${heroVideoId}?rel=0`}
+                    src={`https://www.youtube-nocookie.com/embed/${heroVideoId}?rel=0`}
                     title="Preview"
                     frameBorder="0"
                     allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
@@ -457,7 +451,7 @@ export default function CourseDetail() {
             <div className="cd-modal-video">
               {getYoutubeId(previewVideo.videoUrl) ? (
                 <iframe
-                  src={`https://www.youtube.com/embed/${getYoutubeId(previewVideo.videoUrl)}?autoplay=1&rel=0`}
+                  src={`https://www.youtube-nocookie.com/embed/${getYoutubeId(previewVideo.videoUrl)}?autoplay=1&rel=0`}
                   title={previewVideo.title}
                   frameBorder="0"
                   allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"

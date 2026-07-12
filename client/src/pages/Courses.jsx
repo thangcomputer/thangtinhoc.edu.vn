@@ -101,7 +101,11 @@ export default function Courses() {
             <p>Không tìm thấy khóa học nào</p>
           </div>
         ) : (
-          <div className="grid-3">{courses.map(c => <CourseCard key={c.id} course={c} />)}</div>
+          <div className="grid-3">
+            {courses.map((c, i) => (
+              <CourseCard key={c.id} course={c} priority={i < 2} />
+            ))}
+          </div>
         )}
 
         {/* Pagination */}

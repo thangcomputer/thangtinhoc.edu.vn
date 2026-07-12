@@ -1,6 +1,5 @@
 ﻿import { createBrowserRouter, RouterProvider, Navigate, Outlet, useLocation, useOutletContext } from 'react-router-dom';
 import { useState, useEffect, lazy, Suspense } from 'react';
-import { GoogleOAuthProvider } from '@react-oauth/google';
 import useAuthStore from './store/authStore';
 import api from './lib/api';
 import { useSecurityProtection } from './lib/useSecurityProtection';
@@ -10,11 +9,8 @@ import AppToaster from './components/AppToaster';
 // Layout & Components (always loaded — small, critical)
 import Navbar from './components/Navbar';
 import Footer from './components/Footer';
-import PromotionPopup from './components/PromotionPopup';
-import ChatWidget from './components/ChatWidget';
-import CookieConsent from './components/CookieConsent';
+import DeferredChrome from './components/DeferredChrome';
 import ScrollToTop from './components/ScrollToTop';
-import PageLoader from './components/PageLoader';
 
 // Pages — lazy loaded to reduce initial bundle & unused JS
 const Home          = lazy(() => import('./pages/Home'));
@@ -37,9 +33,9 @@ const Recruitment   = lazy(() => import('./pages/Recruitment'));
 const Contact       = lazy(() => import('./pages/Contact'));
 const MyActivity    = lazy(() => import('./pages/MyActivity'));
 
-// Minimal fallback for Suspense — no layout shift
+// Minimal fallback for Suspense — reserve full viewport so Footer không nhảy lên (CLS)
 function PageFallback() {
-  return <div style={{ minHeight: '60vh' }} aria-hidden />;
+  return <div className="page-fallback" style={{ minHeight: '100vh' }} aria-hidden />;
 }
 
 const PrivateRoute = ({ children }) => {
@@ -54,11 +50,14 @@ const PrivateRoute = ({ children }) => {
 // Layout with Navbar + Footer — uses Outlet for child routes
 function LayoutWrapper() {
   const [settings, setSettings] = useState(null);
-  const [settingsLoading, setSettingsLoading] = useState(true);
   const location = useLocation();
 
   useEffect(() => {
-    api.get('/settings').then(res => {
+    let cancelled = false;
+    const ctrl = new AbortController();
+
+    api.get('/settings', { signal: ctrl.signal }).then(res => {
+      if (cancelled) return;
       const data = res.data.data;
       setSettings(data);
       if (data?.google_analytics_id && !document.getElementById('ga-script')) {
@@ -77,8 +76,12 @@ function LayoutWrapper() {
         if (!meta) { meta = document.createElement('meta'); meta.name = 'description'; document.head.appendChild(meta); }
         meta.content = data.site_description;
       }
-    }).catch(() => { /* silently fall back to defaults */ })
-      .finally(() => setTimeout(() => setSettingsLoading(false), 600));
+    }).catch(() => { /* render with defaults */ });
+
+    return () => {
+      cancelled = true;
+      ctrl.abort();
+    };
   }, []);
 
   useEffect(() => {
@@ -87,10 +90,7 @@ function LayoutWrapper() {
     }
   }, [location, settings]);
 
-  if (settingsLoading) {
-    return <PageLoader mode={settings?.loading_mode || 'spinner'} siteName={settings?.site_name || 'Tin học 24h'} logo={settings?.site_logo} />;
-  }
-
+  // Render immediately — do NOT block FCP/LCP waiting for /settings
   return (
     <>
       <ScrollToTop />
@@ -99,9 +99,7 @@ function LayoutWrapper() {
       <main style={{ flex: 1, paddingTop: '100px', minHeight: 'calc(100vh - 300px)' }}>
         <Outlet context={{ settings }} />
       </main>
-      <PromotionPopup enabled={settings?.promo_enabled} content={settings?.promo_text} />
-      <ChatWidget settings={settings} />
-      <CookieConsent />
+      <DeferredChrome settings={settings} />
       <Footer settings={settings} />
     </>
   );
@@ -152,11 +150,7 @@ const router = createBrowserRouter([
 function App() {
   useSecurityProtection();
   useIdleLogout();
-  return (
-    <GoogleOAuthProvider clientId={import.meta.env.VITE_GOOGLE_CLIENT_ID || ''}>
-      <RouterProvider router={router} />
-    </GoogleOAuthProvider>
-  );
+  return <RouterProvider router={router} />;
 }
 
 export default App;

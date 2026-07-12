@@ -60,11 +60,13 @@
 }
 .social-float-btn:hover::after { opacity: 1; }
 
-/* ── CTA Pill Button ── */
+/* ── CTA Pill Button — fixed size (không expand) để tránh CLS ── */
 .chat-cta-pill {
   display: flex;
   align-items: center;
-  height: 52px;
+  justify-content: center;
+  width: 56px;
+  height: 56px;
   border: none;
   border-radius: 999px;
   cursor: pointer;
@@ -73,14 +75,13 @@
   background-size: 200% 200%;
   animation: pillGradient 4s ease infinite;
   box-shadow: 0 6px 24px rgba(99, 102, 241, 0.55);
-  transition: width 0.5s cubic-bezier(0.34, 1.2, 0.64, 1),
-              box-shadow 0.3s;
-  width: 52px;
+  transition: box-shadow 0.3s, transform 0.2s;
   position: relative;
   white-space: nowrap;
 }
 .chat-cta-pill:hover {
   box-shadow: 0 10px 32px rgba(99, 102, 241, 0.7);
+  transform: scale(1.06);
 }
 .chat-cta-pill.hidden {
   opacity: 0;
@@ -112,8 +113,8 @@
 
 /* Icon slot */
 .pill-icon {
-  width: 52px;
-  height: 52px;
+  width: 56px;
+  height: 56px;
   flex-shrink: 0;
   display: flex;
   align-items: center;
@@ -122,32 +123,19 @@
   z-index: 1;
 }
 
-/* Text slot — animates max-width */
+/* Text hidden visually — giữ aria trên button */
 .pill-text-wrap {
-  max-width: 0;
+  position: absolute;
+  width: 1px;
+  height: 1px;
   overflow: hidden;
-  transition: max-width 0.5s cubic-bezier(0.34, 1.2, 0.64, 1);
+  clip: rect(0, 0, 0, 0);
 }
 .chat-cta-pill.pill-expanded .pill-text-wrap {
-  max-width: 220px;
+  /* no expand — avoid CLS */
 }
-
-.pill-text {
-  display: block;
-  color: white;
-  font-weight: 800;
-  font-size: 0.85rem;
-  letter-spacing: 0.02em;
-  padding-right: 20px;
-  opacity: 0;
-  transform: translateX(-6px);
-  transition: opacity 0.25s 0.2s, transform 0.25s 0.2s;
-  white-space: nowrap;
-}
-.chat-cta-pill.pill-expanded .pill-text {
-  opacity: 1;
-  transform: translateX(0);
-}
+.pill-text { display: none; }
+.chat-cta-pill.pill-expanded .pill-text { display: none; }
 
 /* ── Close button when panel open ── */
 .chat-toggle-btn {

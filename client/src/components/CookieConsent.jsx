@@ -28,14 +28,14 @@ export default function CookieConsent() {
       </div>
       <div>
         <h4 style={{ marginBottom: '0.5rem', fontWeight: 600 }}>Quản lý Cookie</h4>
-        <p style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', lineHeight: 1.5, marginBottom: '1rem' }}>
+        <p className="cookie-consent-text">
           Chúng tôi sử dụng cookie để lưu trữ phiên đăng nhập và cải thiện trải nghiệm học tập của bạn trên nền tảng.
         </p>
         <div className="cookie-consent-actions">
           <button type="button" onClick={acceptCookies} className="btn btn-primary" style={{ padding: '0.4rem 1rem', fontSize: '0.85rem' }}>
             Đồng Ý
           </button>
-          <a href="/lien-he" style={{ fontSize: '0.85rem', color: 'var(--text-muted)', textDecoration: 'underline' }}>
+          <a href="/lien-he" className="cookie-consent-link">
             Chính sách bảo mật
           </a>
         </div>
