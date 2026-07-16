@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import { BookOpen, GraduationCap, Sparkles } from 'lucide-react';
+import { BookOpen, GraduationCap } from 'lucide-react';
 
 export function AuthField({ label, icon: Icon, children, hint, labelExtra, className = '' }) {
   return (
@@ -56,10 +56,6 @@ export default function AuthShell({
       <div className="auth-shell">
         <aside className="auth-panel">
           <div className="auth-panel-inner">
-            <div className="auth-panel-badge">
-              <Sparkles size={14} />
-              {siteName}
-            </div>
             <h2 className="auth-panel-title">{panelTitle}</h2>
             <ul className="auth-panel-list">
               {items.map((text) => (
