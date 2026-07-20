@@ -1,0 +1,19 @@
+function unescapeStoredHtml(str) {
+  if (!str || typeof str !== 'string') return str;
+  if (!/&lt;|&gt;|&amp;/.test(str)) return str;
+  return str
+    .replace(/&amp;/g, '&')
+    .replace(/&lt;/g, '<')
+    .replace(/&gt;/g, '>');
+}
+
+function decodeRichHtmlFields(record, fields = ['content', 'requirements']) {
+  if (!record) return record;
+  const out = { ...record };
+  for (const key of fields) {
+    if (typeof out[key] === 'string') out[key] = unescapeStoredHtml(out[key]);
+  }
+  return out;
+}
+
+module.exports = { unescapeStoredHtml, decodeRichHtmlFields };

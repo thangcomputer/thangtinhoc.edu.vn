@@ -1,0 +1,12 @@
+import api, { loginPageHref } from './api';
+import useAuthStore from '../store/authStore';
+
+export async function performLogout() {
+  try {
+    await api.post('/auth/logout');
+  } catch {
+    /* ignore */
+  }
+  useAuthStore.getState().logout();
+  window.location.href = loginPageHref();
+}

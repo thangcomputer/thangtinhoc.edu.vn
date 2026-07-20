@@ -1,0 +1,11 @@
+const fs = require("fs");
+const file = "c:/Users/thang/Desktop/WEB/admin/src/pages/HomeEditor.jsx";
+let c = fs.readFileSync(file, "utf8");
+const re = /<div style=\{\{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' \}\}>[\s\S]*?<\/div>\r?\n            <div className="cms-item-grid/g;
+const n = (c.match(re) || []).length;
+c = c.replace(re, '<motion.div className="cms-item-grid');
+c = c.replace(/<motion\.motion\.motion\.div className="cms-item-grid/g, '<div className="cms-item-grid');
+c = c.replace(/<motion\.motion\.motion\.div className="cms-item-grid/g, '<div className="cms-item-grid');
+c = c.replace(/<motion\.div className="cms-item-grid/g, '<div className="cms-item-grid');
+fs.writeFileSync(file, c);
+console.log("removed", n);

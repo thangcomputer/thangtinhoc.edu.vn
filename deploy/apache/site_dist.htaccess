@@ -1,0 +1,25 @@
+# Copy to site_dist/.htaccess after npm run build:merged
+# aaPanel: Website root = .../site_dist, enable rewrite module
+
+<IfModule mod_rewrite.c>
+  RewriteEngine On
+  RewriteBase /
+
+  # Admin panel SPA (/admin/login, /admin/courses, ...)
+  RewriteRule ^admin/login$ /admin/index.html [L]
+  RewriteCond %{REQUEST_URI} ^/admin(/|$)
+  RewriteCond %{REQUEST_FILENAME} !-f
+  RewriteCond %{REQUEST_FILENAME} !-d
+  RewriteRule ^admin(/.*)?$ /admin/index.html [L]
+
+  # API / uploads — do Apache proxy xu ly (khong rewrite ve index.html)
+  RewriteCond %{REQUEST_URI} ^/api [OR]
+  RewriteCond %{REQUEST_URI} ^/uploads
+  RewriteRule ^ - [L]
+
+  # Public site SPA
+  RewriteCond %{REQUEST_FILENAME} !-f
+  RewriteCond %{REQUEST_FILENAME} !-d
+  RewriteRule ^ /index.html [L]
+
+</IfModule>

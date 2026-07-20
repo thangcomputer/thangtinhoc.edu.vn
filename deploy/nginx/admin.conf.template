@@ -1,0 +1,11 @@
+server {
+        listen 80;
+        server_name __ADMIN_DOMAIN__;
+
+        root __APP_DIR__/admin/dist;
+        index index.html;
+
+        location / {
+                try_files $uri $uri/ /index.html;
+        }
+}

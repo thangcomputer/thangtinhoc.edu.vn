@@ -1,0 +1,34 @@
+#!/bin/bash
+# Chay tren VPS: bash deploy/verify-admin.sh
+set -e
+ROOT="$(cd "$(dirname "$0")/.." && pwd)"
+cd "$ROOT"
+
+echo "=== Thu muc web (aaPanel phai tro site_dist) ==="
+if [ -f site_dist/admin/index.html ]; then
+  echo "site_dist/admin/index.html: OK"
+  grep -o 'src="[^"]*"' site_dist/admin/index.html | head -1
+else
+  echo "LOI: Khong co site_dist/admin/index.html"
+  echo "Chay: bash deploy/rebuild-frontend.sh"
+  exit 1
+fi
+
+echo ""
+echo "=== Apache rewrite files ==="
+test -f site_dist/.htaccess && echo "site_dist/.htaccess: OK" || echo "LOI: thieu site_dist/.htaccess"
+test -f site_dist/admin/.htaccess && echo "site_dist/admin/.htaccess: OK" || echo "LOI: thieu site_dist/admin/.htaccess"
+test -f site_dist/admin/login/index.html && echo "site_dist/admin/login/index.html: OK" || echo "LOI: thieu admin/login fallback"
+
+echo ""
+echo "=== Live site (phai thay /admin/assets/...) ==="
+LIVE=$(curl -sS "https://thangtinhoc.edu.vn/admin/login" | grep -o 'src="[^"]*"' | head -1)
+echo "$LIVE"
+if echo "$LIVE" | grep -q '/admin/assets/'; then
+  echo "OK: Apache/Nginx dang phuc vu admin dung."
+else
+  echo "LOI: Van phuc vu SPA client. Sua aaPanel:"
+  echo "  Website -> Thu muc web = ${ROOT}/site_dist"
+  echo "  (KHONG dung client/dist)"
+  exit 1
+fi

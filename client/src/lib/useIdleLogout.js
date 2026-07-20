@@ -1,0 +1,41 @@
+import { useEffect, useRef } from 'react';
+import toast from 'react-hot-toast';
+import useAuthStore from '../store/authStore';
+import { performLogout } from './logout';
+
+const IDLE_MS = 60 * 60 * 1000;
+const EVENTS = ['mousedown', 'mousemove', 'keydown', 'scroll', 'touchstart', 'click'];
+
+export function useIdleLogout() {
+  const { isAuthenticated } = useAuthStore();
+  const timerRef = useRef(null);
+
+  useEffect(() => {
+    if (!isAuthenticated) return undefined;
+
+    const clearTimer = () => {
+      if (timerRef.current) clearTimeout(timerRef.current);
+    };
+
+    const handleIdle = async () => {
+      await performLogout();
+      toast.error('Đã tự động đăng xuất do không hoạt động 1 giờ.');
+      if (window.location.pathname !== '/login') {
+        window.location.href = '/login';
+      }
+    };
+
+    const resetTimer = () => {
+      clearTimer();
+      timerRef.current = setTimeout(handleIdle, IDLE_MS);
+    };
+
+    EVENTS.forEach((ev) => window.addEventListener(ev, resetTimer, { passive: true }));
+    resetTimer();
+
+    return () => {
+      clearTimer();
+      EVENTS.forEach((ev) => window.removeEventListener(ev, resetTimer));
+    };
+  }, [isAuthenticated]);
+}

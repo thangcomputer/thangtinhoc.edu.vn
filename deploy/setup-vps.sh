@@ -1,0 +1,11 @@
+#!/bin/bash
+set -e
+apt update && apt upgrade -y
+if ! command -v node &> /dev/null; then
+  curl -fsSL https://deb.nodesource.com/setup_20.x | bash -
+  apt install -y nodejs
+fi
+apt install -y git nginx curl
+npm install -g pm2
+mkdir -p /www/wwwroot
+echo "Xong. Clone repo va chay deploy/deploy.sh"
