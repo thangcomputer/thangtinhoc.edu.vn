@@ -145,23 +145,6 @@ function LoginPage() {
           {loading ? 'Đang đăng nhập...' : 'Đăng nhập'}
         </button>
       </form>
-
-      <div className="auth-demo-box" role="note">
-        <div className="auth-demo-header">
-          <span className="auth-demo-dot" aria-hidden="true" />
-          <strong>Tài khoản học viên demo</strong>
-        </div>
-        <button
-          type="button"
-          className="auth-demo-fill"
-          onClick={() => setForm({ email: 'test@gmail.com', password: 'user123' })}
-          title="Nhấn để điền tự động"
-        >
-          <span className="auth-demo-row"><span>Email</span><code>test@gmail.com</code></span>
-          <span className="auth-demo-row"><span>Mật khẩu</span><code>user123</code></span>
-        </button>
-        <p className="auth-demo-hint">Nhấn để điền tự động</p>
-      </div>
     </AuthShell>
   );
 }

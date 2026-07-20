@@ -1,8 +1,9 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { Phone, Mail, MapPin, Clock, Send, Loader2, CheckCircle, MessageSquare } from 'lucide-react';
 import toast from 'react-hot-toast';
 import api from '../lib/api';
 import ScrollReveal from '../components/ScrollReveal';
+import { usePageSeo, SITE_URL, buildBreadcrumbSchema } from '../lib/usePageSeo';
 import './Contact.css';
 
 export default function Contact() {
@@ -10,6 +11,18 @@ export default function Contact() {
   const [sending, setSending] = useState(false);
   const [success, setSuccess] = useState(false);
   const [form, setForm] = useState({ name: '', phone: '', email: '', subject: '', message: '' });
+
+  const pageSeo = useMemo(() => ({
+    title: 'Liên hệ đăng ký học tin học - Thắng Tin Học',
+    description: 'Liên hệ Thắng Tin Học để đăng ký học tin học văn phòng, Excel, Word 1 kèm 1 online. Tư vấn lộ trình miễn phí.',
+    keywords: 'liên hệ thắng tin học, đăng ký học tin học, gia sư tin học',
+    canonical: `${SITE_URL}/lien-he`,
+    schemas: [buildBreadcrumbSchema([
+      { name: 'Trang chủ', url: '/' },
+      { name: 'Liên hệ', url: '/lien-he' },
+    ])],
+  }), []);
+  usePageSeo(pageSeo);
 
   useEffect(() => {
     api.get('/settings').then(res => setSettings(res.data.data || {})).catch(() => {});

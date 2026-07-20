@@ -1,7 +1,8 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import { Clock, Eye, Tag } from 'lucide-react';
 import api from '../lib/api';
+import { usePageSeo, SITE_URL, buildBreadcrumbSchema } from '../lib/usePageSeo';
 import './Blog.css';
 
 function timeAgo(date) {
@@ -21,6 +22,18 @@ export default function Blog() {
   const [categoryId, setCategoryId] = useState('');
   const [page, setPage] = useState(1);
   const [pagination, setPagination] = useState({});
+
+  const pageSeo = useMemo(() => ({
+    title: 'Blog tin học văn phòng - Mẹo Word Excel PowerPoint',
+    description: 'Blog Thắng Tin Học: hướng dẫn học máy tính, Excel, Word, PowerPoint, học online 1 kèm 1 và tin tức đào tạo tin học văn phòng.',
+    keywords: 'blog tin học, học Excel, học Word, thắng tin học là ai, học máy vi tính',
+    canonical: `${SITE_URL}/blog`,
+    schemas: [buildBreadcrumbSchema([
+      { name: 'Trang chủ', url: '/' },
+      { name: 'Blog', url: '/blog' },
+    ])],
+  }), []);
+  usePageSeo(pageSeo);
 
   useEffect(() => {
     api.get('/stats/categories?type=post').then(res => setCategories(res.data.data || []));

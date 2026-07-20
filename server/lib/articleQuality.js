@@ -3,17 +3,20 @@
  */
 const { COPYWRITER_TASK_PROMPT, BRAND } = require('./copywriterPrompt');
 
-const MIN_ARTICLE_WORDS = 1400;
-const TARGET_ARTICLE_WORDS = '1600–2400';
+const MIN_ARTICLE_WORDS = 2500;
+const TARGET_ARTICLE_WORDS = '2500–4000';
 
 const EDITORIAL_STYLE_PROMPT = `
 ${COPYWRITER_TASK_PROMPT}
 
-═══ BỔ SUNG ĐỘ DÀI & CHIỀU SÂU ═══
-- Tối thiểu ${MIN_ARTICLE_WORDS} từ nội dung (mục tiêu ${TARGET_ARTICLE_WORDS}).
-- Mỗi <h2> có ≥2 đoạn <p> trước list/bảng; tối thiểu 5 <h2>.
-- Ít nhất 2 bảng <table> (so sánh + tra cứu/lộ trình).
-- FAQ: <h2>Câu Hỏi Thường Gặp</h2> + 4 cặp <h3> + <p>.
+═══ BỔ SUNG KIỂM SOÁT CHẤT LƯỢNG ═══
+- Tối thiểu ${MIN_ARTICLE_WORDS} từ nội dung (mục tiêu ${TARGET_ARTICLE_WORDS}). CẤM dưới 2500 từ.
+- Mỗi <h2> có ≥2 đoạn <p> trước list/bảng; tối thiểu 6 <h2>.
+- Ít nhất 2 bảng <table>; checklist; 1–2 figure với ALT SEO.
+- FAQ: <h2>Câu Hỏi Thường Gặp</h2> + 5–10 cặp <h3> + <p>.
+- Internal link: ≥5 thẻ <a href="/..."> tới pillar silo với anchor đa dạng.
+- Topic cluster: <h2>Bài viết liên quan nên đọc</h2> + 5–10 gợi ý.
+- CTA cuối bài theo chuẩn Thắng Tin Học / Thầy Thắng / UltraViewer / 1 kèm 1.
 - Cấm nhắc API key, template, hay "bài mẫu" trong content.
 `;
 
@@ -58,8 +61,8 @@ function sharedDepthBlock(topic, year) {
 }
 
 function appendHashtagFooter(html) {
-  if (/#(?:MOS|IC3|hoctinhoc|thangcomputer)/i.test(html || '')) return html;
-  return `${html}\n<p><em>#MOS #IC3 #hoctinhoc #thangcomputer #tinhocvanphong</em></p>`;
+  if (/#(?:ThangTinHoc|TinHocVanPhong|MOS|IC3|hoctinhoc)/i.test(html || '')) return html;
+  return `${html}\n<p><em>#ThangTinHoc #TinHocVanPhong #HocExcel #HocOnline #UltraViewer</em></p>`;
 }
 
 function buildLongFormFallback(topic, variantIndex = 0) {

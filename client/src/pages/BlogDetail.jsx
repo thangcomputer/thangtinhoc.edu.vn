@@ -1,9 +1,12 @@
-﻿import { useState, useEffect, useRef } from 'react';
+﻿import { useState, useEffect, useRef, useMemo } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { Clock, Eye, ArrowLeft, Tag, List, ChevronRight, BookOpen } from 'lucide-react';
 import toast from 'react-hot-toast';
 import api from '../lib/api';
 import { sanitizeHTML } from '../lib/sanitize';
+import { usePageSeo, SITE_URL } from '../lib/usePageSeo';
+import SeoBreadcrumb from '../components/SeoBreadcrumb';
+import InternalLinks from '../components/InternalLinks';
 import './BlogDetail.css';
 
 function timeAgo(date) {
@@ -16,20 +19,22 @@ function timeAgo(date) {
   return d.toLocaleDateString('vi-VN');
 }
 
-// Parse Table of Contents from JSON or generate from HTML headings
+function readingTime(html) {
+  const words = (html || '').replace(/<[^>]*>/g, ' ').split(/\s+/).filter(Boolean).length;
+  return Math.max(1, Math.ceil(words / 200));
+}
+
 function parseTOC(post) {
-  // Try stored TOC first
   try {
     const stored = JSON.parse(post.tableOfContents || '[]');
     if (Array.isArray(stored) && stored.length > 0) return stored;
-  } catch {}
+  } catch { /* ignore */ }
 
-  // Generate from content HTML
   const toc = [];
   const parser = new DOMParser();
   const doc = parser.parseFromString(post.content || '', 'text/html');
   doc.querySelectorAll('h2, h3, h4').forEach((el) => {
-    const level = parseInt(el.tagName[1]);
+    const level = parseInt(el.tagName[1], 10);
     const text = el.textContent.trim();
     const id = text.toLowerCase()
       .normalize('NFD').replace(/[\u0300-\u036f]/g, '')
@@ -39,13 +44,11 @@ function parseTOC(post) {
   return toc;
 }
 
-// Add IDs to headings in HTML content + wrap images with figure/figcaption
 function processContent(html) {
   if (!html) return '';
   const parser = new DOMParser();
   const doc = parser.parseFromString(html, 'text/html');
 
-  // Add IDs to headings
   doc.querySelectorAll('h2, h3, h4').forEach((el) => {
     const text = el.textContent.trim();
     const id = text.toLowerCase()
@@ -54,9 +57,10 @@ function processContent(html) {
     el.id = id;
   });
 
-  // Wrap standalone images with figure + figcaption
   doc.querySelectorAll('img').forEach((img) => {
-    if (img.closest('figure')) return; // already wrapped
+    if (img.closest('figure')) return;
+    img.setAttribute('loading', 'lazy');
+    img.setAttribute('decoding', 'async');
     const alt = img.getAttribute('alt') || '';
     const figure = doc.createElement('figure');
     figure.className = 'bd-figure';
@@ -76,6 +80,7 @@ export default function BlogDetail() {
   const { slug } = useParams();
   const [post, setPost] = useState(null);
   const [related, setRelated] = useState([]);
+  const [schemas, setSchemas] = useState([]);
   const [loading, setLoading] = useState(true);
   const [activeId, setActiveId] = useState('');
   const [tocOpen, setTocOpen] = useState(true);
@@ -85,68 +90,20 @@ export default function BlogDetail() {
     setLoading(true);
     setPost(null);
     setRelated([]);
+    setSchemas([]);
     api.get(`/posts/${slug}`)
-      .then(res => {
+      .then((res) => {
         const p = res.data.data;
         setPost(p);
 
-        // ── SEO: Dynamic Meta Tags ──
-        document.title = (p.metaTitle || p.title) + ' | Thắng Tin Học';
-        const setMeta = (name, content) => {
-          if (!content) return;
-          let el = document.querySelector(`meta[name="${name}"], meta[property="${name}"]`);
-          if (!el) { el = document.createElement('meta'); el.setAttribute(name.startsWith('og:') || name.startsWith('article:') ? 'property' : 'name', name); document.head.appendChild(el); }
-          el.content = content;
-        };
-        const desc = p.metaDescription || p.excerpt || '';
-        const canonical = (p.canonicalUrl && String(p.canonicalUrl).trim()) || window.location.href.split('#')[0];
-        setMeta('description', desc);
-        setMeta('keywords', (() => { try { return JSON.parse(p.tags || '[]').join(', '); } catch { return ''; } })());
-        setMeta('robots', p.noIndex ? 'noindex, nofollow' : 'index, follow, max-image-preview:large');
-        setMeta('og:title', p.metaTitle || p.title);
-        setMeta('og:description', desc);
-        setMeta('og:type', 'article');
-        setMeta('og:url', canonical);
-        if (p.thumbnail) {
-          setMeta('og:image', p.thumbnail);
-          setMeta('twitter:card', 'summary_large_image');
-          setMeta('twitter:image', p.thumbnail);
-        } else {
-          setMeta('twitter:card', 'summary');
-        }
-        setMeta('twitter:title', p.metaTitle || p.title);
-        setMeta('twitter:description', desc);
-        setMeta('article:published_time', p.createdAt);
-        setMeta('article:modified_time', p.updatedAt);
-        setMeta('article:section', p.category?.name || '');
-        let linkCanon = document.querySelector('link[rel="canonical"]');
-        if (!linkCanon) {
-          linkCanon = document.createElement('link');
-          linkCanon.rel = 'canonical';
-          document.head.appendChild(linkCanon);
-        }
-        linkCanon.href = canonical;
-
-        // ── SEO: Schema.org JSON-LD (Article + FAQ + Breadcrumb) ──
-        api.get(`/seo/post/${slug}`).then(seoRes => {
-          const schemas = seoRes.data?.data?.schemas || [];
-          // Remove old schema scripts
-          document.querySelectorAll('script[data-seo-schema]').forEach(el => el.remove());
-          // Inject new schemas
-          schemas.forEach((schema, i) => {
-            const script = document.createElement('script');
-            script.type = 'application/ld+json';
-            script.setAttribute('data-seo-schema', `schema-${i}`);
-            script.textContent = JSON.stringify(schema);
-            document.head.appendChild(script);
-          });
+        api.get(`/seo/post/${slug}`).then((seoRes) => {
+          setSchemas(seoRes.data?.data?.schemas || []);
         }).catch(() => {});
 
-        // Fetch related posts by same category
         if (p?.category?.id) {
           api.get(`/posts?categoryId=${p.category.id}&limit=6`)
-            .then(r => {
-              const others = (r.data.data || []).filter(x => x.slug !== slug).slice(0, 6);
+            .then((r) => {
+              const others = (r.data.data || []).filter((x) => x.slug !== slug).slice(0, 6);
               setRelated(others);
             }).catch(() => {});
         }
@@ -161,28 +118,43 @@ export default function BlogDetail() {
       })
       .finally(() => setLoading(false));
     window.scrollTo(0, 0);
-
-    // Cleanup: restore default title + remove schemas on unmount
-    return () => {
-      document.title = 'Thắng Tin Học - Trung Tâm Đào Tạo Tin Học';
-      document.querySelectorAll('script[data-seo-schema]').forEach(el => el.remove());
-      document.querySelector('link[rel="canonical"]')?.remove();
-    };
   }, [slug]);
 
-  // Highlight active TOC item on scroll
+  const seo = useMemo(() => {
+    if (!post) return { enabled: false };
+    let tags = [];
+    try { tags = JSON.parse(post.tags || '[]'); } catch { tags = []; }
+    const canonical = (post.canonicalUrl && String(post.canonicalUrl).trim())
+      || `${SITE_URL}/blog/${post.slug}`;
+    return {
+      title: post.metaTitle || post.title,
+      description: post.metaDescription || post.excerpt || '',
+      keywords: Array.isArray(tags) ? tags.join(', ') : '',
+      canonical,
+      image: post.thumbnail || undefined,
+      type: 'article',
+      noIndex: !!post.noIndex,
+      publishedTime: post.createdAt,
+      modifiedTime: post.updatedAt,
+      section: post.category?.name || '',
+      schemas,
+    };
+  }, [post, schemas]);
+
+  usePageSeo(seo);
+
   useEffect(() => {
-    if (!post) return;
+    if (!post) return undefined;
     const observer = new IntersectionObserver(
       (entries) => {
-        entries.forEach(entry => {
+        entries.forEach((entry) => {
           if (entry.isIntersecting) setActiveId(entry.target.id);
         });
       },
-      { rootMargin: '-10% 0px -75% 0px' }
+      { rootMargin: '-10% 0px -75% 0px' },
     );
     const headings = contentRef.current?.querySelectorAll('h2, h3, h4') || [];
-    headings.forEach(h => observer.observe(h));
+    headings.forEach((h) => observer.observe(h));
     return () => observer.disconnect();
   }, [post]);
 
@@ -191,37 +163,45 @@ export default function BlogDetail() {
 
   const toc = parseTOC(post);
   const processedContent = processContent(post.content);
+  const mins = readingTime(post.content);
 
   return (
     <div className="blog-detail">
-      {/* ── HERO ── */}
       <div className="bd-hero">
         <div className="bd-hero-bg" />
         <div className="container bd-hero-content">
+          <SeoBreadcrumb items={[
+            { name: 'Trang chủ', to: '/' },
+            { name: 'Blog', to: '/blog' },
+            { name: post.title },
+          ]} />
           <Link to="/blog" className="btn btn-ghost btn-sm" style={{ marginBottom: '1.5rem' }}>
             <ArrowLeft size={16} /> Quay Lại Blog
           </Link>
-          <span className="badge badge-primary"><Tag size={12} /> {post.category?.name}</span>
+          {post.category?.name && (
+            <span className="badge badge-primary"><Tag size={12} /> {post.category.name}</span>
+          )}
           <h1 className="bd-title">{post.title}</h1>
           <div className="bd-meta">
             <div className="bd-author">
-              <div className="author-avatar-sm">{post.author?.fullName?.[0] || 'A'}</div>
-              <span>{post.author?.fullName}</span>
+              <div className="author-avatar-sm">{post.author?.fullName?.[0] || 'T'}</div>
+              <span>
+                <Link to="/gioi-thieu" className="bd-author-link">
+                  {post.author?.fullName || 'Thắng Tin Học'}
+                </Link>
+              </span>
             </div>
-            <span><Clock size={14} />{timeAgo(post.createdAt)}</span>
+            <span><Clock size={14} />{timeAgo(post.createdAt)} · {mins} phút đọc</span>
             <span><Eye size={14} />{post.views} lượt xem</span>
           </div>
         </div>
       </div>
 
-      {/* ── MAIN LAYOUT ── */}
       <div className="bd-layout container">
-
-        {/* ── LEFT: TOC Sidebar ── */}
         {toc.length > 0 && (
           <aside className="bd-toc-sidebar">
             <div className="bd-toc-box">
-              <button className="bd-toc-toggle" onClick={() => setTocOpen(v => !v)}>
+              <button type="button" className="bd-toc-toggle" onClick={() => setTocOpen((v) => !v)}>
                 <List size={16} />
                 <span>Mục Lục</span>
                 <ChevronRight size={14} style={{ transform: tocOpen ? 'rotate(90deg)' : 'none', transition: '0.2s' }} />
@@ -233,7 +213,7 @@ export default function BlogDetail() {
                       key={i}
                       href={`#${item.id}`}
                       className={`bd-toc-item bd-toc-h${item.level}${activeId === item.id ? ' active' : ''}`}
-                      onClick={e => {
+                      onClick={(e) => {
                         e.preventDefault();
                         document.getElementById(item.id)?.scrollIntoView({ behavior: 'smooth', block: 'start' });
                       }}
@@ -247,67 +227,70 @@ export default function BlogDetail() {
           </aside>
         )}
 
-        {/* ── RIGHT: Content ── */}
         <main className="bd-main">
           {post.thumbnail && (
             <div className="bd-featured-img">
-              <img src={post.thumbnail} alt={post.title} />
+              <img src={post.thumbnail} alt={post.title} loading="eager" decoding="async" />
             </div>
           )}
 
-          {/* Inline TOC for mobile */}
           {toc.length > 0 && (
             <div className="bd-toc-inline">
               <div className="bd-toc-inline-header"><List size={15} /> Mục Lục Bài Viết</div>
               <ol className="bd-toc-inline-list">
-                {toc.filter(t => t.level === 2).map((item, i) => (
+                {toc.filter((t) => t.level === 2).map((item, i) => (
                   <li key={i}>
-                    <a href={`#${item.id}`} onClick={e => {
-                      e.preventDefault();
-                      document.getElementById(item.id)?.scrollIntoView({ behavior: 'smooth' });
-                    }}>{item.text}</a>
+                    <a
+                      href={`#${item.id}`}
+                      onClick={(e) => {
+                        e.preventDefault();
+                        document.getElementById(item.id)?.scrollIntoView({ behavior: 'smooth' });
+                      }}
+                    >
+                      {item.text}
+                    </a>
                   </li>
                 ))}
               </ol>
             </div>
           )}
 
-          {/* Post content */}
           <div
             className="bd-content"
             ref={contentRef}
             dangerouslySetInnerHTML={{ __html: processedContent }}
           />
 
-          {/* Tags */}
+          <InternalLinks seed={post.slug} title="Tìm hiểu thêm về Thắng Tin Học" />
+
           {post.tags && (() => {
             try {
               const tags = JSON.parse(post.tags);
-              if (Array.isArray(tags) && tags.length > 0) return (
-                <div className="bd-tags">
-                  {tags.map((t, i) => (
-                    <Link key={i} to={`/blog?tag=${t}`} className="bd-tag">#{t}</Link>
-                  ))}
-                </div>
-              );
-            } catch {}
+              if (Array.isArray(tags) && tags.length > 0) {
+                return (
+                  <div className="bd-tags">
+                    {tags.map((t, i) => (
+                      <Link key={i} to={`/blog?tag=${encodeURIComponent(t)}`} className="bd-tag">#{t}</Link>
+                    ))}
+                  </div>
+                );
+              }
+            } catch { /* ignore */ }
             return null;
           })()}
 
-          {/* ── RELATED POSTS ── */}
           {related.length > 0 && (
             <section className="bd-related">
               <h2 className="bd-related-title">
                 <BookOpen size={20} /> Bài Viết Liên Quan
               </h2>
               <div className="bd-related-grid">
-                {related.filter((r) => r.slug).map(r => (
+                {related.filter((r) => r.slug).map((r) => (
                   <Link key={r.id} to={`/blog/${r.slug}`} className="bd-related-card">
                     <div className="bd-related-thumb">
                       {r.thumbnail
-                        ? <img src={r.thumbnail} alt={r.title} />
-                        : <div className="bd-related-thumb-placeholder"><BookOpen size={28} /></div>
-                      }
+                        ? <img src={r.thumbnail} alt={r.title} loading="lazy" decoding="async" />
+                        : <div className="bd-related-thumb-placeholder"><BookOpen size={28} /></div>}
                       {r.category && <span className="bd-related-cat">{r.category.name}</span>}
                     </div>
                     <div className="bd-related-info">
@@ -321,8 +304,17 @@ export default function BlogDetail() {
             </section>
           )}
 
-          <div className="bd-cta">
-            <p>Muốn học thêm? Khám phá <Link to="/courses" className="text-link">các khóa học của chúng tôi →</Link></p>
+          <div className="bd-cta bd-cta-box">
+            <h2>Học tin học cùng Thắng Tin Học</h2>
+            <p>
+              Muốn học Excel, Word hoặc tin học văn phòng 1 kèm 1?
+              Đăng ký lộ trình với <Link to="/gioi-thieu">Thầy Thắng Tin Học</Link>
+              {' '}hoặc xem <Link to="/dich-vu">dịch vụ đào tạo</Link>.
+            </p>
+            <div className="bd-cta-actions">
+              <Link to="/lien-he" className="btn btn-primary">Đăng ký học 1 kèm 1</Link>
+              <Link to="/courses" className="btn btn-ghost">Xem khóa học</Link>
+            </div>
           </div>
         </main>
       </div>

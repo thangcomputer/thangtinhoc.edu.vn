@@ -1,7 +1,8 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { Search, Filter, SlidersHorizontal } from 'lucide-react';
 import api from '../lib/api';
 import CourseCard from '../components/CourseCard';
+import { usePageSeo, SITE_URL, buildBreadcrumbSchema } from '../lib/usePageSeo';
 import './Courses.css';
 
 const levels = [
@@ -20,6 +21,18 @@ export default function Courses() {
   const [categoryId, setCategoryId] = useState('');
   const [page, setPage] = useState(1);
   const [pagination, setPagination] = useState({});
+
+  const pageSeo = useMemo(() => ({
+    title: 'Khóa học tin học văn phòng - Word Excel PowerPoint',
+    description: 'Danh sách khóa học tin học văn phòng của Thắng Tin Học: Excel, Word, PowerPoint, học online 1 kèm 1. Chọn lộ trình phù hợp và đăng ký ngay.',
+    keywords: 'khóa học tin học văn phòng, khóa học Excel, khóa học Word, khóa học PowerPoint, Thắng Tin Học',
+    canonical: `${SITE_URL}/courses`,
+    schemas: [buildBreadcrumbSchema([
+      { name: 'Trang chủ', url: '/' },
+      { name: 'Khóa học', url: '/courses' },
+    ])],
+  }), []);
+  usePageSeo(pageSeo);
 
   const fetchCourses = () => {
     setLoading(true);

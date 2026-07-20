@@ -1,0 +1,177 @@
+/* Services — đồng bộ design system site (dark indigo) */
+.services-page {
+  min-height: 100vh;
+  background: var(--bg-dark);
+}
+
+.services-hero {
+  padding: 36px 0 48px;
+  position: relative;
+  overflow: hidden;
+  background: linear-gradient(135deg, #0f0c29, #1a1640, #302b63);
+}
+.services-hero::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(circle at 70% 30%, rgba(99, 102, 241, 0.16), transparent 55%),
+    radial-gradient(circle at 20% 80%, rgba(59, 130, 246, 0.1), transparent 50%);
+}
+.services-hero .container { position: relative; z-index: 1; }
+.services-hero .seo-breadcrumb-list { color: var(--text-muted); }
+.services-hero .seo-breadcrumb-item a { color: var(--primary-light); }
+.services-hero .seo-breadcrumb-item span[aria-current="page"] { color: var(--text-primary); }
+
+.services-eyebrow {
+  font-size: 0.8rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--primary-light);
+  margin: 0 0 8px;
+}
+.services-hero h1 {
+  font-size: 2.1rem;
+  margin: 0 0 14px;
+  color: #fff;
+  max-width: 640px;
+  line-height: 1.25;
+}
+.services-lead {
+  font-size: 1.05rem;
+  color: var(--text-muted);
+  max-width: 600px;
+  line-height: 1.7;
+  margin: 0 0 22px;
+}
+.services-lead a {
+  color: var(--primary-light);
+  font-weight: 600;
+}
+.services-hero-ctas {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.services-page .btn-outline-light {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 12px 24px;
+  border-radius: 10px;
+  font-weight: 700;
+  font-size: 0.92rem;
+  border: 1.5px solid rgba(255, 255, 255, 0.28);
+  color: var(--text-primary);
+  text-decoration: none;
+  background: transparent;
+  transition: border-color 0.2s, color 0.2s;
+}
+.services-page .btn-outline-light:hover {
+  border-color: var(--primary-light);
+  color: var(--primary-light);
+}
+
+.services-list { padding: 40px 0 56px; }
+.services-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 18px;
+}
+.service-card {
+  padding: 28px 24px;
+  border-radius: var(--radius);
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid var(--border);
+  scroll-margin-top: 120px;
+  transition: border-color 0.25s, transform 0.25s, box-shadow 0.25s;
+}
+.service-card:hover {
+  border-color: rgba(99, 102, 241, 0.35);
+  transform: translateY(-2px);
+  box-shadow: 0 12px 32px rgba(99, 102, 241, 0.1);
+}
+.service-icon {
+  width: 48px;
+  height: 48px;
+  border-radius: 12px;
+  margin-bottom: 14px;
+  background: var(--gradient-primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+}
+.service-card h2 {
+  font-size: 1.2rem;
+  margin: 0 0 8px;
+  color: var(--text-primary);
+}
+.service-card > p {
+  margin: 0 0 14px;
+  color: var(--text-muted);
+  line-height: 1.6;
+  font-size: 0.95rem;
+}
+.service-checks {
+  list-style: none;
+  margin: 0 0 16px;
+  padding: 0;
+  display: grid;
+  gap: 6px;
+}
+.service-checks li {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+}
+.service-checks svg { color: var(--primary-light); }
+.service-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 14px;
+  align-items: center;
+}
+.service-actions a {
+  font-weight: 600;
+  font-size: 0.9rem;
+  color: var(--primary-light);
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+.service-actions a:hover { text-decoration: underline; }
+
+.services-cta { padding: 0 0 72px; }
+.services-cta-box {
+  text-align: center;
+  padding: 40px 28px;
+  border-radius: var(--radius);
+  background: linear-gradient(135deg, rgba(99, 102, 241, 0.18), rgba(59, 130, 246, 0.1));
+  border: 1px solid rgba(99, 102, 241, 0.28);
+}
+.services-cta-box h2 {
+  margin: 0 0 10px;
+  color: var(--text-primary);
+  font-size: 1.45rem;
+}
+.services-cta-box > p {
+  color: var(--text-muted);
+  margin: 0 auto 20px;
+  max-width: 520px;
+}
+.services-cta-box > p a {
+  color: var(--primary-light);
+  font-weight: 600;
+}
+.services-cta-box .services-hero-ctas { justify-content: center; }
+
+@media (max-width: 768px) {
+  .services-grid { grid-template-columns: 1fr; }
+  .services-hero h1 { font-size: 1.65rem; }
+}

@@ -83,10 +83,10 @@ export default function Navbar({ settings }) {
 
   const navLinks = [
     { to: '/', label: 'Trang Chủ' },
-    { to: '/gioi-thieu', label: 'Giới Thiệu' },
+    { to: '/gioi-thieu', label: 'Thắng Tin Học' },
+    { to: '/dich-vu', label: 'Dịch Vụ' },
     { to: '/courses', label: 'Khóa Học' },
     { to: '/blog', label: 'Blog' },
-    { to: '/tuyen-dung', label: 'Tuyển Dụng' },
     { to: '/lien-he', label: 'Liên Hệ' },
   ];
 

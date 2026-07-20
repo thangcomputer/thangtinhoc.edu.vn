@@ -40,7 +40,7 @@ function callGroqAPI(prompt, temperature = 0.75) {
         {
           role: 'system',
           content: `${COPYWRITER_SYSTEM_PROMPT}
-Minimum ${MIN_ARTICLE_WORDS} words in content HTML. Include 2+ tables. Hashtag line at end of content.`,
+Minimum ${MIN_ARTICLE_WORDS} words in content HTML (target 2500–4000). Include 2+ tables, 5–10 FAQ, 5+ internal links, CTA Thắng Tin Học. Hashtag line at end of content.`,
         },
         { role: 'user', content: prompt },
       ],
@@ -230,31 +230,34 @@ ${dataContext || `Dựa trên chuyên môn sâu về "${cleanTopic}".`}
 ${EDITORIAL_STYLE_PROMPT}
 
 ═══ BẮT BUỘC VỀ ĐỘ DÀI & CẤU TRÚC ═══
-- Nội dung HTML: TỐI THIỂU ${MIN_ARTICLE_WORDS} từ (không tính thẻ HTML), mục tiêu ${TARGET_ARTICLE_WORDS} từ
-- Tối thiểu 5 thẻ <h2>, mỗi h2 có 1–3 <h3> và ≥2 đoạn <p> trước list/bảng
-- Mở bài 180+ từ (2–3 đoạn <p>), nhắc từ khóa trong 2 câu đầu
-- Kết bài + CTA (${BRAND.zaloCta})
-- Cuối content: đoạn <p> với 3–5 hashtag (#MOS #IC3 #hoctinhoc #thangcomputer #tinhocvanphong + tag liên quan chủ đề)
+- Nội dung HTML: TỐI THIỂU ${MIN_ARTICLE_WORDS} từ (không tính thẻ HTML), mục tiêu ${TARGET_ARTICLE_WORDS} từ — CẤM dưới 2500 từ
+- Tối thiểu 6 thẻ <h2>, dùng thêm h3/h4; mỗi h2 có ≥2 đoạn <p> trước list/bảng
+- metaTitle 55–60 ký tự; metaDescription 140–160 ký tự
+- Mở bài hook 180+ từ, nhắc từ khóa tự nhiên (không nhồi)
+- FAQ 5–10 câu; Tổng kết; CTA theo chuẩn ${BRAND.name} / ${BRAND.teacher} / UltraViewer / 1 kèm 1
+- ≥5 internal link silo (anchor đa dạng); 1–2 <figure> với ALT SEO
+- Topic cluster: suggestions[] 5–10 bài + block "Bài viết liên quan nên đọc" trong content
+- Cuối content: hashtag (#ThangTinHoc #TinHocVanPhong …)
 
 ═══ BẮT BUỘC CÓ BẢNG MINH HỌA (quan trọng) ═══
 Phải có ÍT NHẤT 2 bảng <table> với <thead><tr><th>...</th></tr></thead><tbody>...</tbody>:
-1) Bảng SO SÁNH (vd: Excel vs Google Sheets, hoặc các phương pháp/công cụ liên quan chủ đề)
-2) Bảng DỮ LIỆU THAM KHẢO (vd: phím tắt, hàm Excel, checklist bước làm, lỗi thường gặp & cách sửa)
-Mỗi bảng: tiêu đề <h3> ngay trước bảng, 4-8 dòng dữ liệu CỤ THỂ (số, tên hàm, phím tắt thật).
-Thêm 1 bảng tùy chọn nếu phù hợp (lộ trình học theo tuần, bảng giá gói học giả định minh họa).
+1) Bảng SO SÁNH (vd: tự học vs 1 kèm 1, Excel vs Google Sheets, online vs offline…)
+2) Bảng DỮ LIỆU THAM KHẢO (phím tắt, hàm, checklist, lỗi thường gặp & cách sửa)
+Mỗi bảng: tiêu đề <h3> ngay trước bảng, 4-8 dòng dữ liệu CỤ THỂ.
 
 ═══ NỘI DUNG PHẢI CÓ ═══
-- Ví dụ thực hành từng bước (numbered list)
-- Mẹo pro / lỗi thường gặp (blockquote)
-- FAQ: <h2>Câu Hỏi Thường Gặp</h2> + 4 cặp <h3>câu hỏi?</h3><p>trả lời</p>
+- Ví dụ thực hành / case study / lỗi thường gặp + khắc phục (EEAT)
+- Checklist + mẹo (blockquote)
+- FAQ: <h2>Câu Hỏi Thường Gặp</h2> + 5–10 cặp <h3>câu hỏi?</h3><p>trả lời</p>
+- Entity: Microsoft Office / Word / Excel / PowerPoint / UltraViewer / Zoom khi phù hợp
 
 ═══ HTML CHO PHÉP ═══
-h2, h3, p, ul, ol, li, strong, em, blockquote, table, thead, tbody, tr, th, td
-KHÔNG dùng: h1, div, span, class, style, script
+h2, h3, h4, p, ul, ol, li, strong, em, blockquote, table, thead, tbody, tr, th, td, figure, img, figcaption, a
+KHÔNG dùng: h1, div, span class/style tùy tiện, script
 
 ═══ OUTPUT ═══
 CHỈ trả về JSON hợp lệ (không markdown, không giải thích):
-{"title":"50-70 ký tự","excerpt":"120-160 ký tự","content":"<h2>...</h2>...đủ ${MIN_ARTICLE_WORDS}+ từ, 2+ bảng, cuối bài có dòng hashtag...","focusKeyword":"...","metaTitle":"≤60 ký tự","metaDescription":"≤155 ký tự","tags":["MOS","IC3","hoctinhoc","thangcomputer","tinhocvanphong"],"slug":"slug-khong-dau","suggestions":[{"title":"...","snippet":"..."},{"title":"...","snippet":"..."},{"title":"...","snippet":"..."}]}`;
+{"title":"...","excerpt":"120-160 ký tự","content":"<h2>...</h2>...đủ ${MIN_ARTICLE_WORDS}+ từ...","focusKeyword":"...","metaTitle":"55-60 ký tự","metaDescription":"140-160 ký tự","tags":["ThangTinHoc","TinHocVanPhong",...],"slug":"slug-khong-dau","suggestions":[{"title":"...","snippet":"..."},{"title":"...","snippet":"..."},{"title":"...","snippet":"..."},{"title":"...","snippet":"..."},{"title":"...","snippet":"..."}]}`;
 }
 
 function buildExpandPrompt(cleanTopic, postData) {

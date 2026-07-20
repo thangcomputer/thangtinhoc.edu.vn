@@ -1,4 +1,4 @@
-﻿import { useState, useEffect, useCallback, useRef } from 'react';
+﻿import { useState, useEffect, useCallback, useRef, useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import {
   ArrowRight, Play, Star, Users, BookOpen, Award, TrendingUp,
@@ -12,6 +12,13 @@ import CourseCard from '../components/CourseCard';
 import ScrollReveal, { StaggerReveal } from '../components/ScrollReveal';
 import VideoPlayer from '../components/VideoPlayer';
 import YoutubeFacade from '../components/YoutubeFacade';
+import {
+  usePageSeo,
+  buildPersonSchema,
+  buildOrganizationSchema,
+  SITE_URL,
+  SITE_NAME,
+} from '../lib/usePageSeo';
 import './Home.css';
 
 const IconMap = { Zap, Shield, Award, Users, Clock, TrendingUp, BookOpen, Target, Monitor, GraduationCap, CheckCircle, Star };
@@ -24,6 +31,17 @@ export default function Home({ settings }) {
   const [showPromo, setShowPromo] = useState(false);
 
   const sectionIdsRef = useRef([]);
+
+  const homeSeo = useMemo(() => ({
+    title: `${SITE_NAME} - Trung Tâm Đào Tạo Tin Học Văn Phòng | thangtinhoc.edu.vn`,
+    description: settings?.site_description
+      || 'Thắng Tin Học — đào tạo tin học văn phòng, Excel, Word, PowerPoint online 1 kèm 1 qua UltraViewer. Học máy tính cho người mới bắt đầu.',
+    keywords: 'Thắng Tin Học, thầy thắng tin học, tin học văn phòng, học Excel online, học Word online, học máy vi tính, dạy Excel 1 kèm 1, UltraViewer',
+    canonical: `${SITE_URL}/`,
+    schemas: [buildOrganizationSchema(), buildPersonSchema()],
+  }), [settings?.site_description]);
+
+  usePageSeo(homeSeo);
 
   useEffect(() => {
     api.get('/courses?featured=true&limit=6').then(res => {
@@ -208,10 +226,13 @@ export default function Home({ settings }) {
               <Link to={settings?.hero_btn_url || '/courses'} className="btn btn-primary btn-lg hero-cta">
                 {settings?.hero_btn_text || 'Bắt Đầu Học Ngay'} <ArrowRight size={20} />
               </Link>
-              <button className="btn-play-premium">
+              <Link to="/gioi-thieu" className="btn-play-premium">
                 <div className="play-icon-ai"><Play size={20} fill="white" /></div>
-                <span>Xem Giới Thiệu</span>
-              </button>
+                <span>Giới thiệu Thắng Tin Học</span>
+              </Link>
+              <Link to="/dich-vu" className="btn btn-ghost btn-lg" style={{ marginLeft: 0 }}>
+                Dịch vụ đào tạo <ChevronRight size={18} />
+              </Link>
             </div>
             <div className="hero-trust">
               <div className="hero-avatars">
@@ -506,11 +527,11 @@ export default function Home({ settings }) {
             {settings?.cta_subtitle || <>Đăng ký ngay hôm nay để nhận ưu đãi giảm 30% cho tất cả khóa học.<br/>Cơ hội có hạn — đừng bỏ lỡ!</>}
           </p>
           <div className="cta-actions">
-            <Link to={settings?.cta_btn_url || '/register'} className="btn btn-primary btn-lg cta-btn">
-              {settings?.cta_btn_text || 'Đăng Ký Ngay'} <ArrowRight size={20} />
+            <Link to={settings?.cta_btn_url || '/lien-he'} className="btn btn-primary btn-lg cta-btn">
+              {settings?.cta_btn_text || 'Đăng Ký Học 1 Kèm 1'} <ArrowRight size={20} />
             </Link>
-            <Link to={settings?.cta_btn2_url || '/courses'} className="btn btn-ghost btn-lg">
-              {settings?.cta_btn2_text || 'Xem Khóa Học'} <ChevronRight size={18} />
+            <Link to={settings?.cta_btn2_url || '/gioi-thieu'} className="btn btn-ghost btn-lg">
+              {settings?.cta_btn2_text || 'Về Thắng Tin Học'} <ChevronRight size={18} />
             </Link>
           </div>
         </ScrollReveal>

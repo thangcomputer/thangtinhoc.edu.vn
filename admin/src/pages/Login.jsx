@@ -191,38 +191,6 @@ export default function Login() {
             )}
           </button>
         </form>
-
-        <div style={{
-          marginTop: '20px',
-          padding: '12px 14px',
-          background: 'rgba(99,102,241,0.08)',
-          border: '1px dashed rgba(99,102,241,0.4)',
-          borderRadius: '10px',
-          fontSize: '0.8rem',
-          lineHeight: 1.8,
-          color: 'var(--text-secondary)',
-        }}>
-          <strong style={{ display: 'block', marginBottom: '4px', color: 'var(--text-primary)' }}>
-            🔑 Tài khoản quản trị mặc định
-          </strong>
-          <span style={{ opacity: 0.75 }}>Email:</span>{' '}
-          <code
-            style={{ cursor: 'pointer', fontWeight: 600, color: 'var(--primary)' }}
-            onClick={() => setForm({ email: 'admin@gmail.com', password: 'admin123' })}
-            title="Nhấn để điền tự động"
-          >admin@gmail.com</code>
-          <br />
-          <span style={{ opacity: 0.75 }}>Mật khẩu:</span>{' '}
-          <code
-            style={{ cursor: 'pointer', fontWeight: 600, color: 'var(--primary)' }}
-            onClick={() => setForm({ email: 'admin@gmail.com', password: 'admin123' })}
-            title="Nhấn để điền tự động"
-          >admin123</code>
-          <br />
-          <span style={{ opacity: 0.5, fontSize: '0.7rem' }}>
-            Nhấn vào email/mật khẩu để điền tự động · Chạy <code>npm run db:seed</code> nếu chưa có tài khoản
-          </span>
-        </div>
       </div>
     </div>
   );

@@ -273,9 +273,39 @@ async function main() {
     });
   }
 
+  // SEO silo posts (Thắng Tin Học)
+  const { SEO_SILO_POSTS } = require('./seedSeoPosts');
+  for (const p of SEO_SILO_POSTS) {
+    await prisma.post.upsert({
+      where: { slug: p.slug },
+      update: {
+        title: p.title,
+        excerpt: p.excerpt,
+        content: p.content,
+        metaTitle: p.metaTitle,
+        metaDescription: p.metaDescription,
+        focusKeyword: p.focusKeyword,
+        tags: p.tags,
+        tableOfContents: p.tableOfContents,
+        canonicalUrl: p.canonicalUrl,
+        isPublished: true,
+        isFeatured: true,
+        noIndex: false,
+        categoryId: catPost2.id,
+        authorId: admin.id,
+      },
+      create: {
+        ...p,
+        categoryId: catPost2.id,
+        authorId: admin.id,
+      },
+    });
+  }
+
   console.log('✅ Seed completed successfully!');
   console.log('👤 Admin: admin@gmail.com / admin123');
   console.log('👤 User: test@gmail.com / user123');
+  console.log('📝 SEO silo posts:', SEO_SILO_POSTS.map((p) => p.slug).join(', '));
 }
 
 main()

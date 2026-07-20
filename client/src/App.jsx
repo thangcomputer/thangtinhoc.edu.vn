@@ -15,6 +15,7 @@ import ScrollToTop from './components/ScrollToTop';
 // Pages — lazy loaded to reduce initial bundle & unused JS
 const Home          = lazy(() => import('./pages/Home'));
 const About         = lazy(() => import('./pages/About'));
+const Services      = lazy(() => import('./pages/Services'));
 const Courses       = lazy(() => import('./pages/Courses'));
 const CourseDetail  = lazy(() => import('./pages/CourseDetail'));
 const CoursePlayer  = lazy(() => import('./pages/CoursePlayer'));
@@ -70,12 +71,7 @@ function LayoutWrapper() {
         inline.textContent = `window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','${data.google_analytics_id}');`;
         document.head.appendChild(inline);
       }
-      if (data?.site_name) document.title = data.site_name + ' - Trung Tâm Đào Tạo Tin Học';
-      if (data?.site_description) {
-        let meta = document.querySelector('meta[name="description"]');
-        if (!meta) { meta = document.createElement('meta'); meta.name = 'description'; document.head.appendChild(meta); }
-        meta.content = data.site_description;
-      }
+      // Page-level title/meta is owned by usePageSeo on each route (avoid overriding).
     }).catch(() => { /* render with defaults */ });
 
     return () => {
@@ -129,6 +125,7 @@ const router = createBrowserRouter([
     children: [
       { index: true,              element: <S><HomeWrapper /></S> },
       { path: 'gioi-thieu',       element: <S><About /></S> },
+      { path: 'dich-vu',          element: <S><Services /></S> },
       { path: 'courses',          element: <S><Courses /></S> },
       { path: 'courses/:slug',    element: <S><CourseDetail /></S> },
       { path: 'blog',             element: <S><Blog /></S> },

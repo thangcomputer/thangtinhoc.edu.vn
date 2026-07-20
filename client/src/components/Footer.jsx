@@ -129,10 +129,10 @@ export default function Footer({ settings }) {
                 <h4>Liên Kết</h4>
                 <ul>
                   <li><Link to="/">Trang Chủ</Link></li>
-                  <li><Link to="/gioi-thieu">Giới Thiệu</Link></li>
+                  <li><Link to="/gioi-thieu">Thắng Tin Học</Link></li>
+                  <li><Link to="/dich-vu">Dịch Vụ</Link></li>
                   <li><Link to="/courses">Khóa Học</Link></li>
                   <li><Link to="/blog">Blog</Link></li>
-                  <li><Link to="/tuyen-dung">Tuyển Dụng</Link></li>
                   <li><Link to="/lien-he">Liên Hệ</Link></li>
                 </ul>
               </div>

@@ -6,6 +6,8 @@ Disallow: /login
 Disallow: /register
 Disallow: /profile
 Disallow: /checkout
+Disallow: /my-courses
+Disallow: /my-activity
 Disallow: /learn/
 
 Sitemap: https://thangtinhoc.edu.vn/sitemap.xml
