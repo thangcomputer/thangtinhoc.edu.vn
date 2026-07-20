@@ -31,16 +31,15 @@
 }
 
 .navbar-brand .site-logo-img {
-  height: 56px;
+  height: 88px;
   width: auto;
-  max-width: min(220px, 42vw);
-  aspect-ratio: 126 / 56;
+  max-width: min(340px, 55vw);
   object-fit: contain;
   display: block;
 }
 
 .navbar.scrolled .navbar-brand .site-logo-img {
-  height: 50px;
+  height: 72px;
 }
 
 .brand-icon {
@@ -599,11 +598,11 @@
   .navbar-brand .brand-sub { display: none; }
   .brand-name { font-size: 1.25rem; }
   .navbar-brand .site-logo-img {
-    height: 44px;
-    max-width: 120px;
+    height: 64px;
+    max-width: 200px;
   }
   .navbar.scrolled .navbar-brand .site-logo-img {
-    height: 40px;
+    height: 56px;
   }
 
   .user-btn {

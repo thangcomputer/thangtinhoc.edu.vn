@@ -25,10 +25,9 @@
 }
 
 .footer-logo .site-logo-img {
-  height: 54px;
+  height: 80px;
   width: auto;
-  max-width: 240px;
-  aspect-ratio: 180 / 54;
+  max-width: 320px;
   object-fit: contain;
   display: block;
 }

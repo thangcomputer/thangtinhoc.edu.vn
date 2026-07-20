@@ -82,25 +82,25 @@
   }
 }
 
-/* Left panel */
+/* Left panel — nền sáng, tránh chồng đỏ với logo */
 .auth-panel {
   position: relative;
   padding: 0;
   background:
-    radial-gradient(ellipse 90% 70% at 10% 0%, rgba(220, 38, 38, 0.22), transparent 55%),
-    radial-gradient(ellipse 70% 50% at 90% 100%, rgba(244, 63, 94, 0.12), transparent 50%),
-    linear-gradient(165deg, #dc2626 0%, #b91c1c 100%);
-  border-right: 1px solid rgba(255, 255, 255, 0.12);
+    radial-gradient(ellipse 80% 60% at 0% 0%, rgba(254, 202, 202, 0.55) 0%, transparent 55%),
+    radial-gradient(ellipse 60% 45% at 100% 100%, rgba(255, 228, 230, 0.5) 0%, transparent 50%),
+    linear-gradient(180deg, #fff5f5 0%, #ffffff 100%);
+  border-right: 1px solid rgba(220, 38, 38, 0.12);
   display: flex;
-  color: #fff;
+  color: #0f172a;
 }
 
 .auth-panel::after {
   content: '';
   position: absolute;
   inset: 0;
-  background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.08'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
-  opacity: 0.7;
+  background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23dc2626' fill-opacity='0.05'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+  opacity: 1;
   pointer-events: none;
 }
 
@@ -135,9 +135,9 @@
 }
 
 .auth-panel-logo {
-  height: 44px;
+  height: 64px;
   width: auto;
-  max-width: 200px;
+  max-width: 280px;
   object-fit: contain;
   display: block;
 }
@@ -160,16 +160,16 @@
   gap: 0.4rem;
   padding: 0.38rem 0.8rem;
   border-radius: 999px;
-  background: rgba(255, 255, 255, 0.16);
-  border: 1px solid rgba(255, 255, 255, 0.28);
+  background: rgba(220, 38, 38, 0.08);
+  border: 1px solid rgba(220, 38, 38, 0.22);
   font-size: 0.72rem;
   font-weight: 700;
-  color: #fff;
+  color: #b91c1c;
   margin-bottom: 0;
 }
 
 .auth-panel-badge svg {
-  color: #fecaca;
+  color: #dc2626;
 }
 
 .auth-panel-mid {
@@ -186,7 +186,7 @@
   font-weight: 800;
   line-height: 1.2;
   letter-spacing: -0.03em;
-  color: #fff;
+  color: #0f172a;
   margin: 0 0 0.65rem;
 }
 
@@ -194,8 +194,8 @@
   margin: 0 0 1.5rem;
   font-size: 0.9rem;
   line-height: 1.55;
-  color: rgba(255, 255, 255, 0.88);
-  max-width: 28ch;
+  color: #64748b;
+  max-width: 32ch;
 }
 
 .auth-panel-list {
@@ -212,18 +212,19 @@
   align-items: flex-start;
   gap: 0.7rem;
   font-size: 0.9rem;
-  color: rgba(255, 255, 255, 0.95);
+  color: #334155;
   line-height: 1.4;
   padding: 0.7rem 0.85rem;
   border-radius: 12px;
-  background: rgba(255, 255, 255, 0.12);
-  border: 1px solid rgba(255, 255, 255, 0.18);
+  background: #ffffff;
+  border: 1px solid rgba(15, 23, 42, 0.08);
+  box-shadow: 0 4px 14px rgba(15, 23, 42, 0.04);
 }
 
 .auth-panel-list li svg {
   flex-shrink: 0;
   margin-top: 1px;
-  color: #fecaca;
+  color: #dc2626;
 }
 
 .auth-panel-foot {
@@ -231,9 +232,9 @@
   font-size: 0.75rem;
   font-weight: 600;
   letter-spacing: 0.02em;
-  color: rgba(255, 255, 255, 0.75);
-  padding-top: 0.25rem;
-  border-top: 1px solid rgba(255, 255, 255, 0.18);
+  color: #94a3b8;
+  padding-top: 0.75rem;
+  border-top: 1px solid rgba(15, 23, 42, 0.08);
 }
 
 /* Right card / form */
@@ -258,9 +259,9 @@
 }
 
 .auth-brand-logo {
-  height: 56px;
+  height: 80px;
   width: auto;
-  max-width: 220px;
+  max-width: 300px;
   object-fit: contain;
   display: block;
   filter: drop-shadow(0 4px 12px rgba(185, 28, 28, 0.18));
