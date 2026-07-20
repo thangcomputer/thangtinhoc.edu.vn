@@ -7,7 +7,7 @@ import EmptyState from '../components/EmptyState';
 
 const STATUS_MAP = {
   pending: { label: 'Chờ duyệt', color: '#f59e0b', bg: '#f59e0b15' },
-  reviewing: { label: 'Đang xem', color: '#3b82f6', bg: '#3b82f615' },
+  reviewing: { label: 'Đang xem', color: '#ef4444', bg: '#ef444415' },
   accepted: { label: 'Đã nhận', color: '#10b981', bg: '#10b98115' },
   rejected: { label: 'Từ chối', color: '#ef4444', bg: '#ef444415' },
 };
@@ -128,11 +128,11 @@ export default function RecruitmentAdmin() {
                     return (
                       <tr key={item.id} style={{
                         cursor: 'pointer',
-                        background: selected?.id === item.id ? 'var(--bg-subtle)' : item.isRead ? 'transparent' : 'rgba(99,102,241,0.03)',
+                        background: selected?.id === item.id ? 'var(--bg-subtle)' : item.isRead ? 'transparent' : 'rgba(220, 38, 38,0.03)',
                       }} onClick={() => setSelected(item)}>
                         <td data-label="Họ tên">
                           <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                            {!item.isRead && <span style={{ width: '6px', height: '6px', borderRadius: '50%', background: '#6366f1', flexShrink: 0 }} />}
+                            {!item.isRead && <span style={{ width: '6px', height: '6px', borderRadius: '50%', background: '#dc2626', flexShrink: 0 }} />}
                             <div>
                               <strong>{item.fullName}</strong>
                               <div style={{ fontSize: '0.72rem', color: 'var(--text-muted)' }}>
@@ -253,7 +253,7 @@ export default function RecruitmentAdmin() {
                   {parseSafe(selected.schedule).map((s, i) => (
                     <span key={i} style={{
                       padding: '4px 12px', borderRadius: '8px', fontSize: '0.75rem', fontWeight: 600,
-                      background: '#8b5cf620', color: '#8b5cf6',
+                      background: '#dc262620', color: '#dc2626',
                     }}>{SCHEDULE_LABELS[s] || s}</span>
                   ))}
                 </div>

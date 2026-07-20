@@ -7,7 +7,7 @@ import EmptyState from '../components/EmptyState';
 
 const STATUS_MAP = {
   pending: { label: 'Chờ xử lý', color: '#f59e0b', bg: '#f59e0b15' },
-  contacted: { label: 'Đã liên hệ', color: '#3b82f6', bg: '#3b82f615' },
+  contacted: { label: 'Đã liên hệ', color: '#ef4444', bg: '#ef444415' },
   completed: { label: 'Hoàn thành', color: '#10b981', bg: '#10b98115' },
 };
 
@@ -108,11 +108,11 @@ export default function Registrations() {
                 {filtered.map(item => (
                   <tr key={item.id} style={{
                     cursor: 'pointer',
-                    background: selected?.id === item.id ? 'var(--bg-subtle)' : item.isRead ? 'transparent' : 'rgba(99,102,241,0.03)',
+                    background: selected?.id === item.id ? 'var(--bg-subtle)' : item.isRead ? 'transparent' : 'rgba(220, 38, 38,0.03)',
                   }} onClick={() => setSelected(item)}>
                     <td data-label="Họ tên">
                       <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                        {!item.isRead && <span style={{ width: '6px', height: '6px', borderRadius: '50%', background: '#6366f1', flexShrink: 0 }} />}
+                        {!item.isRead && <span style={{ width: '6px', height: '6px', borderRadius: '50%', background: '#dc2626', flexShrink: 0 }} />}
                         <strong>{item.fullName}</strong>
                       </div>
                     </td>
@@ -120,8 +120,8 @@ export default function Registrations() {
                     <td data-label="Loại">
                       <span style={{
                         padding: '3px 10px', borderRadius: '99px', fontSize: '0.72rem', fontWeight: 700,
-                        background: item.type === 'course' ? '#6366f115' : '#f59e0b15',
-                        color: item.type === 'course' ? '#6366f1' : '#f59e0b',
+                        background: item.type === 'course' ? '#dc262615' : '#f59e0b15',
+                        color: item.type === 'course' ? '#dc2626' : '#f59e0b',
                       }}>
                         {item.type === 'course' ? 'Học' : 'Thi'}
                       </span>
@@ -224,7 +224,7 @@ export default function Registrations() {
                             {(lang || ver) && (
                               <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
                                 {lang && (
-                                  <span style={{ padding: '2px 8px', borderRadius: '4px', fontSize: '0.68rem', fontWeight: 600, background: '#3b82f615', color: '#3b82f6' }}>
+                                  <span style={{ padding: '2px 8px', borderRadius: '4px', fontSize: '0.68rem', fontWeight: 600, background: '#ef444415', color: '#ef4444' }}>
                                     🌐 {lang}
                                   </span>
                                 )}

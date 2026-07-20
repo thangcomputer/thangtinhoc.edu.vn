@@ -62,7 +62,7 @@ export default function Login() {
       display: 'flex',
       alignItems: 'center',
       justifyContent: 'center',
-      background: 'linear-gradient(135deg, #0f0f23 0%, #1a1a3e 40%, #0f172a 100%)',
+      background: 'linear-gradient(135deg, #1a0a0a 0%, #2b1010 40%, #1c1917 100%)',
       position: 'relative',
       overflow: 'hidden',
     }}>
@@ -72,7 +72,7 @@ export default function Login() {
         width: '600px',
         height: '600px',
         borderRadius: '50%',
-        background: 'radial-gradient(circle, rgba(99, 102, 241, 0.12) 0%, transparent 70%)',
+        background: 'radial-gradient(circle, rgba(220, 38, 38, 0.16) 0%, transparent 70%)',
         top: '-200px',
         right: '-200px',
         pointerEvents: 'none',
@@ -82,7 +82,7 @@ export default function Login() {
         width: '400px',
         height: '400px',
         borderRadius: '50%',
-        background: 'radial-gradient(circle, rgba(99, 102, 241, 0.08) 0%, transparent 70%)',
+        background: 'radial-gradient(circle, rgba(220, 38, 38, 0.1) 0%, transparent 70%)',
         bottom: '-100px',
         left: '-100px',
         pointerEvents: 'none',
@@ -108,12 +108,12 @@ export default function Login() {
           <div style={{
             width: '48px',
             height: '48px',
-            background: 'linear-gradient(135deg, var(--primary) 0%, #818cf8 100%)',
+            background: 'linear-gradient(135deg, #dc2626 0%, #ef4444 100%)',
             borderRadius: '14px',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            boxShadow: '0 8px 24px rgba(99, 102, 241, 0.3)',
+            boxShadow: '0 8px 24px rgba(220, 38, 38, 0.35)',
           }}>
             <Terminal size={24} color="white" />
           </div>

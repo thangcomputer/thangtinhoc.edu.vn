@@ -2,7 +2,12 @@
  * Chuẩn chất lượng bài viết SEO (độ dài + Copywriter Master).
  * Ưu tiên nội dung có nguồn + đọc được — không nhồi chữ khuôn mẫu.
  */
-const { COPYWRITER_TASK_PROMPT, BRAND } = require('./copywriterPrompt');
+const {
+  COPYWRITER_TASK_PROMPT,
+  BRAND,
+  detectTopicIntent,
+  resolveTopicEntity,
+} = require('./copywriterPrompt');
 
 const MIN_ARTICLE_WORDS = 1800;
 const TARGET_ARTICLE_WORDS = '1800–3200';
@@ -17,9 +22,15 @@ ${COPYWRITER_TASK_PROMPT}
 - FAQ 4–8 câu hỏi thật; kết + CTA mềm Thắng Tin Học / 1 kèm 1 / UltraViewer.
 - 3–6 internal link; nếu có nguồn web thì có mục Nguồn tham khảo.
 - Cấm nhắc API key, template, "bài mẫu", giọng AI sáo.
+- Cấm dán nguyên câu hỏi search vào giữa câu như một kỹ năng.
 `;
 
-function buildExpandStyleNote() {
+function buildExpandStyleNote(intent = 'general') {
+  if (intent === 'who_is') {
+    return `Mở rộng bài GIỚI THIỆU / "là ai" đến khoảng ${MIN_ARTICLE_WORDS}+ từ.
+Bổ sung: vai trò, chuyên môn, phương pháp dạy, đối tượng, FAQ danh tính — CẤM đệm lộ trình 4 tuần / phím tắt / "tin học có khó không".
+Giữ HTML h2/h3/p/table; dùng tên ngắn (Thầy Thắng, Thắng Tin Học).`;
+  }
   return `Mở rộng bài đến khoảng ${MIN_ARTICLE_WORDS}+ từ (mục tiêu ${TARGET_ARTICLE_WORDS}) bằng ví dụ thực tế, FAQ, bảng hữu ích — KHÔNG đệm đoạn sáo rỗng.
 ${EDITORIAL_STYLE_PROMPT}
 Giữ HTML h2/h3/p/table; bổ sung tình huống văn phòng VN, lỗi hay gặp, cách sửa.`;
@@ -66,21 +77,119 @@ function appendHashtagFooter(html) {
 
 function buildLongFormFallback(topic, variantIndex = 0) {
   const year = new Date().getFullYear();
-  const v = variantIndex % 4;
   const zaloCta = BRAND.zaloCta;
+  const intent = detectTopicIntent(topic);
+  const entity = resolveTopicEntity(topic);
 
+  if (intent === 'who_is') {
+    let content = buildWhoIsFallback(entity, year, zaloCta, variantIndex);
+    while (countPlainWords(content) < MIN_ARTICLE_WORDS) {
+      const before = countPlainWords(content);
+      content = `${content}\n${whoIsDepthBlock(entity, year)}`;
+      if (countPlainWords(content) <= before) break;
+    }
+    return appendHashtagFooter(content.trim());
+  }
+
+  const v = variantIndex % 4;
+  // Dùng entity ngắn — không nhét cả câu hỏi vào template kỹ năng
+  const subject = entity;
   let content;
-  if (v === 1) content = buildWorkplaceAngle(topic, year, zaloCta);
-  else if (v === 2) content = buildFaqAngle(topic, year, zaloCta);
-  else if (v === 3) content = buildTipsAngle(topic, year, zaloCta);
-  else content = buildClassicAngle(topic, year, zaloCta);
+  if (v === 1) content = buildWorkplaceAngle(subject, year, zaloCta);
+  else if (v === 2) content = buildFaqAngle(subject, year, zaloCta);
+  else if (v === 3) content = buildTipsAngle(subject, year, zaloCta);
+  else content = buildClassicAngle(subject, year, zaloCta);
 
   while (countPlainWords(content) < MIN_ARTICLE_WORDS) {
     const before = countPlainWords(content);
-    content = `${content}\n${sharedDepthBlock(topic, year)}`;
+    content = `${content}\n${sharedDepthBlock(subject, year)}`;
     if (countPlainWords(content) <= before) break;
   }
   return appendHashtagFooter(content.trim());
+}
+
+function buildWhoIsFallback(entity, year, zaloCta, variantIndex = 0) {
+  const name = entity || BRAND.teacher;
+  const brand = BRAND.name;
+  return `
+<p><strong>${name}</strong> là giáo viên đào tạo tin học văn phòng gắn với thương hiệu <a href="/gioi-thieu"><strong>${brand}</strong></a> (website <a href="/">${BRAND.sites}</a>). Nhiều người tìm kiếm “${name} là ai?” vì muốn biết rõ người dạy trước khi đăng ký học online 1 kèm 1.</p>
+
+<p>Ngắn gọn: ${name} chuyên hướng dẫn Word, Excel, PowerPoint và các kỹ năng máy tính văn phòng cho người mới / mất gốc, học sinh – sinh viên, người đi làm. Hình thức nổi bật là học từ xa qua UltraViewer hoặc Zoom — giáo viên nhìn màn hình học viên và sửa thao tác trực tiếp.</p>
+
+<h2>${name} là ai?</h2>
+<p>${name} (còn được gọi là ${BRAND.altName}) đại diện cho hướng đào tạo thực chiến: lấy file công việc thật làm bài tập, không chỉ xem lý thuyết. Thương hiệu ${brand} tập trung chứng chỉ liên quan văn phòng như MOS và IC3 khi học viên có nhu cầu chuẩn hóa năng lực trên CV.</p>
+<p>Bài viết này (${year}) trả lời đúng câu hỏi danh tính và cách dạy — không lan man thành giáo án “tin học có khó không”.</p>
+
+<h2>${name} dạy những gì?</h2>
+<p>Chuyên môn chính: ${BRAND.fields}. Mục tiêu học viên thường gặp: soạn thảo văn bản chuẩn, xử lý bảng tính báo cáo, làm slide họp, làm quen máy tính cơ bản, và luyện thi chứng chỉ khi cần.</p>
+
+<h3>Bảng tóm tắt nhanh về ${name}</h3>
+<table>
+<thead><tr><th>Hạng mục</th><th>Thông tin</th></tr></thead>
+<tbody>
+<tr><td>Vai trò</td><td>Giáo viên / đại diện thương hiệu ${brand}</td></tr>
+<tr><td>Lĩnh vực</td><td>Tin học văn phòng (Word, Excel, PowerPoint…)</td></tr>
+<tr><td>Hình thức</td><td>Online / từ xa / 1 kèm 1 (UltraViewer, Zoom)</td></tr>
+<tr><td>Đối tượng</td><td>Người mới, NVVP, HS–SV, người lớn tuổi</td></tr>
+<tr><td>Website</td><td>${BRAND.sites}</td></tr>
+</tbody>
+</table>
+
+<h2>Phương pháp dạy của ${name}</h2>
+<p>${BRAND.training}. Điểm khác biệt so với tự học clip rời: có người dừng lại đúng chỗ bạn đang sai, chỉnh trên đúng file bạn đang làm cho sếp hoặc trường.</p>
+<p>Học viên có thể học theo lịch linh hoạt; buổi học ưu tiên “cầm tay chỉ việc” hơn nhồi menu tính năng.</p>
+
+<h2>Ai thường tìm hiểu “${name} là ai?”</h2>
+<ul>
+<li>Người mới bắt đầu / mất gốc tin học, sợ tự học không biết hỏi ai.</li>
+<li>Nhân viên văn phòng cần Excel / Word / slide gấp cho công việc.</li>
+<li>Phụ huynh muốn định hướng con học tin học ứng dụng.</li>
+<li>Người ở tỉnh khác trung tâm, cần học online 1 kèm 1.</li>
+</ul>
+
+<h2>Vì sao nên đọc kỹ trước khi đăng ký?</h2>
+<p>Biết ${name} là ai giúp bạn tránh nhầm với khóa học đại trà hoặc nội dung chỉ “xem video”. Nếu bạn cần sửa lỗi trên máy mình và lộ trình cá nhân hóa, mô hình của ${brand} phù hợp hơn lớp đông hoặc tự học hoàn toàn.</p>
+
+${variantIndex % 2 === 1 ? `
+<h2>${name} và thương hiệu ${brand}</h2>
+<p>${brand} là khung dịch vụ / nội dung đào tạo gắn với ${name}: giới thiệu tại <a href="/gioi-thieu">trang Giới thiệu</a>, dịch vụ tại <a href="/dich-vu">khóa học Tin học văn phòng</a>, tư vấn tại <a href="/lien-he">liên hệ</a>.</p>
+` : ''}
+
+<h2>Câu hỏi thường gặp</h2>
+<h3>${name} là ai?</h3>
+<p>${name} là giáo viên tin học văn phòng của thương hiệu ${brand}, dạy online 1 kèm 1 qua UltraViewer/Zoom.</p>
+<h3>${brand} dạy những môn nào?</h3>
+<p>Chủ yếu Word, Excel, PowerPoint, máy tính cơ bản; có hướng MOS/IC3 khi học viên cần chứng chỉ.</p>
+<h3>Học với ${name} có cần đến trung tâm không?</h3>
+<p>Có thể học từ xa; giáo viên hướng dẫn trực tiếp trên máy bạn qua UltraViewer hoặc Zoom.</p>
+<h3>Người mới / lớn tuổi có học được không?</h3>
+<p>Được — đối tượng chính gồm người mới, mất gốc và người cần nhịp độ chậm, giải thích kỹ.</p>
+<h3>Làm sao để liên hệ / đăng ký?</h3>
+<p>${zaloCta}</p>
+
+<h2>Kết luận</h2>
+<p><strong>${name}</strong> là người đứng sau thương hiệu <strong>${brand}</strong> — đào tạo tin học văn phòng theo hướng thực chiến, online 1 kèm 1. Nếu bạn đang tìm đúng câu trả lời “${name} là ai?” trước khi học, hãy xem <a href="/gioi-thieu">giới thiệu</a> và <a href="/lien-he">đăng ký tư vấn</a> để được xếp lộ trình phù hợp.</p>
+`.trim();
+}
+
+function whoIsDepthBlock(entity, year) {
+  const name = entity || BRAND.teacher;
+  return `
+<h2>Cách ${name} đồng hành với học viên (${year})</h2>
+<p>Buổi học thường bắt đầu từ đúng nỗi đau hiện tại: file báo cáo bị lỗi, slide chưa rõ, hoặc chưa biết lưu/tổ chức thư mục. ${name} ưu tiên giải quyết việc đang kẹt, rồi mới mở rộng kỹ năng nền.</p>
+<p>Sau buổi học, học viên nên giữ lại checklist thao tác vừa sửa — đó là cách biến “được chỉ” thành “tự làm lại được”.</p>
+
+<h2>Phân biệt ${name} với tự học trên mạng</h2>
+<table>
+<thead><tr><th>Tiêu chí</th><th>Tự học clip</th><th>Học với ${name} (1 kèm 1)</th></tr></thead>
+<tbody>
+<tr><td>Phản hồi lỗi</td><td>Ít / chậm</td><td>Sửa ngay trên máy bạn</td></tr>
+<tr><td>Lộ trình</td><td>Dễ lệch chủ đề</td><td>Theo mục tiêu cá nhân</td></tr>
+<tr><td>File thật</td><td>Thường dùng file mẫu</td><td>Ưu tiên file công việc/học tập của bạn</td></tr>
+<tr><td>Phù hợp</td><td>Người đã có nền</td><td>Người mới / cần kèm sát</td></tr>
+</tbody>
+</table>
+`;
 }
 
 function sharedRoadmapBlock(topic, year) {

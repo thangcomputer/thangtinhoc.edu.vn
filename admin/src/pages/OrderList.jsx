@@ -216,7 +216,7 @@ export default function OrderList() {
                       {/* Cấp quyền mua thủ công */}
                       <button
                         className="btn btn-secondary btn-sm btn-icon"
-                        style={{ color: '#7c3aed' }}
+                        style={{ color: '#b91c1c' }}
                         onClick={() => handleGrantAccess(order.id)}
                         title="Cấp quyền truy cập khóa học"
                       >
@@ -297,7 +297,7 @@ export default function OrderList() {
                 <div style={{ display: 'flex', gap: '8px' }}>
                   <button
                     className="btn btn-secondary"
-                    style={{ color: '#7c3aed', borderColor: '#7c3aed' }}
+                    style={{ color: '#b91c1c', borderColor: '#b91c1c' }}
                     onClick={() => handleGrantAccess(selectedOrder.id)}
                   >
                     <ShieldCheck size={16} /> Cấp quyền mua

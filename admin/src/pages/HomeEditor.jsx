@@ -109,7 +109,7 @@ function CourseFeaturePicker() {
       ) : (
         <div style={{ display: 'grid', gap: '8px', marginBottom: '16px' }}>
           {featured.map(c => (
-            <div key={c.id} style={{ display: 'flex', alignItems: 'center', gap: '12px', padding: '10px 14px', background: 'var(--bg-card)', borderRadius: 'var(--radius)', border: '1px solid var(--primary)', boxShadow: '0 0 0 1px rgba(99,102,241,0.1)' }}>
+            <div key={c.id} style={{ display: 'flex', alignItems: 'center', gap: '12px', padding: '10px 14px', background: 'var(--bg-card)', borderRadius: 'var(--radius)', border: '1px solid var(--primary)', boxShadow: '0 0 0 1px rgba(220, 38, 38,0.1)' }}>
               {c.thumbnail ? (
                 <img src={c.thumbnail} alt="" style={{ width: '56px', height: '40px', borderRadius: '6px', objectFit: 'cover' }} />
               ) : (
@@ -122,7 +122,7 @@ function CourseFeaturePicker() {
                   {c.level && <span>• {c.level}</span>}
                 </div>
               </div>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '6px', background: 'rgba(99,102,241,0.1)', padding: '3px 10px', borderRadius: '99px', fontSize: '0.7rem', fontWeight: 600, color: 'var(--primary)' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '6px', background: 'rgba(220, 38, 38,0.1)', padding: '3px 10px', borderRadius: '99px', fontSize: '0.7rem', fontWeight: 600, color: 'var(--primary)' }}>
                 ⭐ Nổi bật
               </div>
               <button onClick={() => toggleFeatured(c)} disabled={toggling === c.id}
@@ -153,7 +153,7 @@ function CourseFeaturePicker() {
                   <div style={{ fontSize: '0.68rem', color: 'var(--text-muted)' }}>{c.price?.toLocaleString() || '0'} đ</div>
                 </div>
                 <button onClick={() => toggleFeatured(c)} disabled={toggling === c.id}
-                  style={{ background: 'var(--primary)', border: 'none', borderRadius: '50%', width: '28px', height: '28px', cursor: 'pointer', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, opacity: toggling === c.id ? 0.5 : 1, transition: 'all 0.15s', boxShadow: '0 2px 8px rgba(99,102,241,0.3)' }}
+                  style={{ background: 'var(--primary)', border: 'none', borderRadius: '50%', width: '28px', height: '28px', cursor: 'pointer', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, opacity: toggling === c.id ? 0.5 : 1, transition: 'all 0.15s', boxShadow: '0 2px 8px rgba(220, 38, 38,0.3)' }}
                   title="Thêm vào nổi bật">
                   <Plus size={16} />
                 </button>
@@ -279,15 +279,15 @@ export default function HomeEditor() {
   const [dragOverIdx, setDragOverIdx] = useState(null);
 
   const SECTION_META = {
-    'hero': { label: 'Hero Banner', emoji: '✨', color: '#8b5cf6', gradient: 'linear-gradient(135deg, #0f172a 0%, #1e1b4b 100%)' },
-    'stats': { label: 'Thống Kê', emoji: '📊', color: '#6366f1', gradient: 'linear-gradient(135deg, #1e1b4b 0%, #0f172a 100%)' },
+    'hero': { label: 'Hero Banner', emoji: '✨', color: '#dc2626', gradient: 'linear-gradient(135deg, #0f172a 0%, #2b1010 100%)' },
+    'stats': { label: 'Thống Kê', emoji: '📊', color: '#dc2626', gradient: 'linear-gradient(135deg, #2b1010 0%, #0f172a 100%)' },
     'features': { label: 'Tính Năng', emoji: '🏆', color: '#f59e0b', gradient: '#0f172a' },
     'learning-path': { label: 'Lộ Trình Học', emoji: '🎯', color: '#10b981', gradient: '#0f172a' },
-    'visual-learning': { label: 'Học Trực Quan', emoji: '💻', color: '#3b82f6', gradient: '#0f172a' },
-    'courses': { label: 'Khóa Học Nổi Bật', emoji: '📚', color: '#8b5cf6', gradient: '#0f172a' },
+    'visual-learning': { label: 'Học Trực Quan', emoji: '💻', color: '#ef4444', gradient: '#0f172a' },
+    'courses': { label: 'Khóa Học Nổi Bật', emoji: '📚', color: '#dc2626', gradient: '#0f172a' },
     'testimonials': { label: 'Cảm Nhận', emoji: '💬', color: '#ec4899', gradient: '#0f172a' },
     'partners': { label: 'Đối Tác', emoji: '🤝', color: '#eab308', gradient: '#0f172a' },
-    'cta': { label: 'Kêu Gọi Hành Động', emoji: '🚀', color: '#7c3aed', gradient: 'linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%)' },
+    'cta': { label: 'Kêu Gọi Hành Động', emoji: '🚀', color: '#b91c1c', gradient: 'linear-gradient(135deg, #b91c1c 0%, #b91c1c 100%)' },
   };
 
   const toggleSectionVisibility = (sectionId) => {

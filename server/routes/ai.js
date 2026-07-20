@@ -2,6 +2,8 @@
 const router = express.Router();
 const { GoogleGenerativeAI } = require('@google/generative-ai');
 const https = require('https');
+const http = require('http');
+const { URL } = require('url');
 const { authenticate, authorize } = require('../middleware/auth');
 const {
   MIN_ARTICLE_WORDS,
@@ -10,14 +12,21 @@ const {
   buildExpandStyleNote,
   buildLongFormFallback,
 } = require('../lib/articleQuality');
-const { COPYWRITER_SYSTEM_PROMPT, BRAND } = require('../lib/copywriterPrompt');
+const { COPYWRITER_SYSTEM_PROMPT, BRAND, BRAND_PROFILE_FACTS, detectTopicIntent, resolveTopicEntity, isBrandWhoIsTopic, buildIntentAddon } = require('../lib/copywriterPrompt');
 
 const sleep = (ms) => new Promise(r => setTimeout(r, ms));
 
 const GEMINI_WRITE_MODELS = [
   'gemini-2.0-flash',
+  'gemini-2.5-flash',
   'gemini-1.5-flash',
   'gemini-2.0-flash-lite',
+];
+
+const GEMINI_GROUNDING_MODELS = [
+  'gemini-2.0-flash',
+  'gemini-2.5-flash',
+  'gemini-1.5-flash',
 ];
 
 function getGenAI() {
@@ -54,15 +63,24 @@ async function fetchGoogleSearchOnce(query, num = 6) {
   }));
 }
 
-/** Nhiều truy vấn Google CSE → gộp, bỏ trùng URL */
 async function fetchGoogleSearch(topic) {
   const year = new Date().getFullYear();
-  const queries = [
-    topic,
-    `${topic} hướng dẫn`,
-    `${topic} FAQ`,
-    `${topic} ${year}`,
-  ];
+  const intent = detectTopicIntent(topic);
+  const entity = resolveTopicEntity(topic);
+  const queries = intent === 'who_is'
+    ? [
+      topic,
+      `${entity} là ai`,
+      `${BRAND.name} ${entity}`,
+      `site:${BRAND.sites} giới thiệu`,
+      `${entity} dạy tin học`,
+    ]
+    : [
+      topic,
+      `${topic} hướng dẫn`,
+      `${topic} FAQ`,
+      `${topic} ${year}`,
+    ];
   const apiKey = process.env.GOOGLE_SEARCH_API_KEY?.trim();
   const cx = process.env.GOOGLE_SEARCH_CX?.trim();
   if (!apiKey || !cx) return null;
@@ -87,9 +105,12 @@ async function fetchGoogleSearch(topic) {
 async function fetchFreeWebResearch(topic) {
   const results = [];
   const year = new Date().getFullYear();
+  const intent = detectTopicIntent(topic);
+  const entity = resolveTopicEntity(topic);
+  const searchQ = intent === 'who_is' ? `${entity} tin học` : topic;
 
   try {
-    const wikiUrl = `https://vi.wikipedia.org/w/api.php?action=query&list=search&srsearch=${encodeURIComponent(topic)}&srlimit=4&format=json&origin=*`;
+    const wikiUrl = `https://vi.wikipedia.org/w/api.php?action=query&list=search&srsearch=${encodeURIComponent(searchQ)}&srlimit=4&format=json&origin=*`;
     const wiki = await httpsGetJson(wikiUrl);
     const hits = wiki?.query?.search || [];
     for (const h of hits) {
@@ -108,44 +129,51 @@ async function fetchFreeWebResearch(topic) {
   } catch { /* ignore */ }
 
   try {
-    const ddgUrl = `https://api.duckduckgo.com/?q=${encodeURIComponent(topic)}&format=json&no_html=1&skip_disambig=1`;
-    const ddg = await httpsGetJson(ddgUrl);
-    if (ddg?.AbstractText) {
-      results.push({
-        title: ddg.Heading || `DuckDuckGo: ${topic}`,
-        snippet: String(ddg.AbstractText).slice(0, 500),
-        link: ddg.AbstractURL || ddg.AbstractSource || '',
-        engine: 'duckduckgo',
-      });
-    }
-    const related = Array.isArray(ddg?.RelatedTopics) ? ddg.RelatedTopics : [];
-    for (const rt of related.slice(0, 5)) {
-      if (rt?.Text && rt?.FirstURL) {
+    const ddgQueries = intent === 'who_is'
+      ? [`${entity} là ai`, `${BRAND.name}`, topic]
+      : [topic];
+    for (const q of ddgQueries) {
+      const ddgUrl = `https://api.duckduckgo.com/?q=${encodeURIComponent(q)}&format=json&no_html=1&skip_disambig=1`;
+      const ddg = await httpsGetJson(ddgUrl);
+      if (ddg?.AbstractText) {
         results.push({
-          title: String(rt.Text).slice(0, 80),
-          snippet: String(rt.Text).slice(0, 400),
-          link: rt.FirstURL,
+          title: ddg.Heading || `DuckDuckGo: ${q}`,
+          snippet: String(ddg.AbstractText).slice(0, 500),
+          link: ddg.AbstractURL || ddg.AbstractSource || '',
           engine: 'duckduckgo',
         });
       }
-      if (Array.isArray(rt?.Topics)) {
-        for (const t of rt.Topics.slice(0, 2)) {
-          if (t?.Text && t?.FirstURL) {
-            results.push({
-              title: String(t.Text).slice(0, 80),
-              snippet: String(t.Text).slice(0, 400),
-              link: t.FirstURL,
-              engine: 'duckduckgo',
-            });
-          }
+      const related = Array.isArray(ddg?.RelatedTopics) ? ddg.RelatedTopics : [];
+      for (const rt of related.slice(0, 4)) {
+        if (rt?.Text && rt?.FirstURL) {
+          results.push({
+            title: String(rt.Text).slice(0, 80),
+            snippet: String(rt.Text).slice(0, 400),
+            link: rt.FirstURL,
+            engine: 'duckduckgo',
+          });
         }
       }
     }
   } catch { /* ignore */ }
 
-  // Gợi ý entity Microsoft Learn khi chủ đề văn phòng
+  if (intent === 'who_is' || isBrandWhoIsTopic(topic)) {
+    results.unshift({
+      title: `${BRAND.teacher} — Giới thiệu ${BRAND.name}`,
+      snippet: `${BRAND.teacher} là giáo viên tin học văn phòng của ${BRAND.name}. ${BRAND.training}. Chuyên môn: ${BRAND.fields}.`,
+      link: `https://${BRAND.sites}/gioi-thieu`,
+      engine: 'brand',
+    });
+    results.push({
+      title: `${BRAND.name} — Trang chủ`,
+      snippet: `Website chính ${BRAND.sites}: đào tạo tin học văn phòng, học online 1 kèm 1.`,
+      link: `https://${BRAND.sites}/`,
+      engine: 'brand',
+    });
+  }
+
   const officeHint = /excel|word|powerpoint|office|mos|tin học|máy tính/i.test(topic);
-  if (officeHint) {
+  if (officeHint && intent !== 'who_is') {
     results.push({
       title: 'Microsoft Support / Learn (tham khảo chính thức)',
       snippet: `Tài liệu chính thức Microsoft về Office / Windows — dùng để đối chiếu thao tác, phím tắt, phiên bản ${year}. Không sao chép nguyên văn; diễn giải bằng tiếng Việt dễ hiểu.`,
@@ -161,7 +189,8 @@ function formatSearchContext(results) {
   if (!results?.length) return '';
   return results.map((r, i) => {
     const eng = r.engine ? ` (${r.engine})` : '';
-    return `[Nguồn ${i + 1}]${eng} ${r.title}\n${r.snippet}\nURL: ${r.link || '(không có URL)'}`;
+    const body = r.excerpt ? `\nNội dung trích:\n${r.excerpt}` : '';
+    return `[Nguồn ${i + 1}]${eng} ${r.title}\n${r.snippet || ''}${body}\nURL: ${r.link || '(không có URL)'}`;
   }).join('\n\n');
 }
 
@@ -180,6 +209,161 @@ function mergeSearchResults(...lists) {
     }
   }
   return out;
+}
+
+function htmlToPlainText(html) {
+  return String(html || '')
+    .replace(/<script[\s\S]*?<\/script>/gi, ' ')
+    .replace(/<style[\s\S]*?<\/style>/gi, ' ')
+    .replace(/<noscript[\s\S]*?<\/noscript>/gi, ' ')
+    .replace(/<!--[\s\S]*?-->/g, ' ')
+    .replace(/<[^>]+>/g, ' ')
+    .replace(/&nbsp;/gi, ' ')
+    .replace(/&amp;/gi, '&')
+    .replace(/&lt;/gi, '<')
+    .replace(/&gt;/gi, '>')
+    .replace(/&quot;/gi, '"')
+    .replace(/\s+/g, ' ')
+    .trim();
+}
+
+/** Tải HTML công khai → trích text (không crawl sâu / không bypass auth) */
+function fetchUrlText(rawUrl, maxChars = 4500) {
+  return new Promise((resolve) => {
+    let parsed;
+    try { parsed = new URL(rawUrl); } catch { return resolve(null); }
+    if (!/^https?:$/i.test(parsed.protocol)) return resolve(null);
+    // Bỏ trang login / mạng xã hội nặng JS
+    if (/facebook\.com|instagram\.com|tiktok\.com|youtube\.com|login|signin/i.test(parsed.hostname + parsed.pathname)) {
+      return resolve(null);
+    }
+
+    const lib = parsed.protocol === 'http:' ? http : https;
+    const req = lib.get(rawUrl, {
+      timeout: 10000,
+      headers: {
+        'User-Agent': 'Mozilla/5.0 (compatible; ThangTinHocResearch/1.0; +https://thangtinhoc.edu.vn)',
+        Accept: 'text/html,application/xhtml+xml',
+      },
+    }, (res) => {
+      // Follow 1 redirect
+      if (res.statusCode >= 300 && res.statusCode < 400 && res.headers.location) {
+        const next = new URL(res.headers.location, rawUrl).toString();
+        res.resume();
+        return fetchUrlText(next, maxChars).then(resolve);
+      }
+      if (res.statusCode !== 200) {
+        res.resume();
+        return resolve(null);
+      }
+      const ctype = String(res.headers['content-type'] || '');
+      if (!/html|text|xml/i.test(ctype) && ctype) {
+        res.resume();
+        return resolve(null);
+      }
+      let data = '';
+      let size = 0;
+      res.on('data', (c) => {
+        size += c.length;
+        if (size > 350000) {
+          req.destroy();
+          return;
+        }
+        data += c;
+      });
+      res.on('end', () => {
+        const text = htmlToPlainText(data).slice(0, maxChars);
+        resolve(text.length > 120 ? text : null);
+      });
+    });
+    req.on('timeout', () => { req.destroy(); resolve(null); });
+    req.on('error', () => resolve(null));
+  });
+}
+
+/** Đọc 4–6 trang từ kết quả tìm kiếm để Gemini có nội dung thật */
+async function enrichResultsWithPageText(results, limit = 5) {
+  if (!results?.length) return results || [];
+  const candidates = results
+    .filter((r) => r.link && /^https?:\/\//i.test(r.link) && r.engine !== 'brand')
+    .slice(0, limit);
+
+  await Promise.all(candidates.map(async (item) => {
+    try {
+      const excerpt = await fetchUrlText(item.link);
+      if (excerpt) item.excerpt = excerpt;
+    } catch { /* ignore */ }
+  }));
+
+  const withBody = results.filter((r) => r.excerpt).length;
+  if (withBody) console.log(`  ✅ [1c] Đã đọc nội dung ${withBody} trang web`);
+  return results;
+}
+
+/**
+ * Gemini + Google Search Grounding: bắt buộc tìm bài trên mạng rồi tóm tắt.
+ */
+async function groundedWebDiscovery(cleanTopic, webContext = '') {
+  const genAI = getGenAI();
+  if (!genAI) return '';
+
+  const year = new Date().getFullYear();
+  const intent = detectTopicIntent(cleanTopic);
+  const entity = resolveTopicEntity(cleanTopic);
+
+  const prompt = `Bạn PHẢI dùng Google Search để tìm bài viết / trang web thật về chủ đề sau, rồi tổng hợp.
+
+Chủ đề search: "${cleanTopic}"
+Thực thể: "${entity}"
+Ý định bài: ${intent}
+Năm: ${year}
+
+${webContext ? `Gợi ý URL/snippet đã có (đối chiếu thêm bằng Google Search):\n${webContext.slice(0, 5000)}\n` : ''}
+
+YÊU CẦU OUTPUT (tiếng Việt):
+A) Liệt kê 5–8 nguồn tìm được trên mạng: Tiêu đề | URL | 4–6 ý chính (diễn giải, không copy nguyên văn dài).
+B) Tổng hợp kiến thức thống nhất để viết bài (bullet).
+C) Với intent who_is: ưu tiên trang giới thiệu / profile; trả lời rõ "là ai?".
+D) Ghi rõ thông tin nào KHÔNG tìm thấy trên mạng (không bịa).
+
+CẤM bịa URL. CẤM viết giáo án lệch chủ đề.`;
+
+  let lastErr;
+  for (const modelName of GEMINI_GROUNDING_MODELS) {
+    try {
+      const model = genAI.getGenerativeModel({
+        model: modelName,
+        tools: [{ googleSearch: {} }],
+      });
+      const r = await model.generateContent(prompt);
+      const text = r.response?.text?.() || '';
+      if (text.length > 250) {
+        // Trích citation nếu API trả về
+        let cites = '';
+        try {
+          const meta = r.response?.candidates?.[0]?.groundingMetadata;
+          const chunks = meta?.groundingChunks || [];
+          if (chunks.length) {
+            cites = '\n\n=== URL Google Search (grounding) ===\n' + chunks
+              .map((c, i) => {
+                const u = c.web?.uri || c.web?.url || '';
+                const t = c.web?.title || '';
+                return u ? `[G${i + 1}] ${t}\n${u}` : '';
+              })
+              .filter(Boolean)
+              .join('\n');
+          }
+        } catch { /* ignore */ }
+        console.log(`  ✅ [2a] Gemini Grounding discovery (${modelName}): ${text.length} chars`);
+        return text + cites;
+      }
+    } catch (e) {
+      lastErr = e;
+      console.log(`  ⏭️ [2a] Grounding ${modelName}: ${e.message?.slice(0, 100)}`);
+    }
+  }
+  if (lastErr) console.log(`  ⚠️ [2a] Grounding all failed: ${lastErr.message?.slice(0, 120)}`);
+  return '';
 }
 
 function parseAIJson(text) {
@@ -237,8 +421,32 @@ const VARIANT_ANGLES = [
   },
 ];
 
-function getVariantMeta(variantIndex) {
-  return VARIANT_ANGLES[variantIndex % VARIANT_ANGLES.length];
+const WHO_IS_VARIANT_ANGLES = [
+  {
+    titleSuffix: 'Giới Thiệu Chi Tiết & Cách Dạy',
+    excerptHint: 'trả lời thẳng là ai, chuyên môn, phương pháp 1 kèm 1',
+    angle: 'bài PROFILE: đoạn đầu trả lời "là ai?", rồi chuyên môn + cách dạy + đối tượng',
+  },
+  {
+    titleSuffix: 'Thương Hiệu & Phương Pháp Online',
+    excerptHint: 'thương hiệu Thắng Tin Học, UltraViewer, đối tượng học',
+    angle: 'nhấn mạnh thương hiệu + học online 1 kèm 1 — vẫn là bài giới thiệu người, không giáo án Excel',
+  },
+  {
+    titleSuffix: 'FAQ Người Mới Hay Hỏi',
+    excerptHint: 'FAQ danh tính, hình thức học, đăng ký tư vấn',
+    angle: 'FAQ xoay quanh danh tính và đăng ký — cấm FAQ "tin học khó không" làm trục',
+  },
+  {
+    titleSuffix: 'Vì Sao Nhiều Người Tìm Hiểu',
+    excerptHint: 'lý do search là ai, khác gì tự học, CTA mềm',
+    angle: 'góc "vì sao mọi người hỏi là ai" + khác biệt vs tự học clip',
+  },
+];
+
+function getVariantMeta(variantIndex, intent = 'general') {
+  const list = intent === 'who_is' ? WHO_IS_VARIANT_ANGLES : VARIANT_ANGLES;
+  return list[variantIndex % list.length];
 }
 
 function buildAvoidBlock(avoid) {
@@ -279,82 +487,110 @@ function normalizePostData(raw, cleanTopic) {
 
 function buildSEOPrompt(cleanTopic, researchData, googleContext, variantIndex = 0, avoid = []) {
   const year = new Date().getFullYear();
-  const variant = getVariantMeta(variantIndex);
+  const intent = detectTopicIntent(cleanTopic);
+  const entity = resolveTopicEntity(cleanTopic);
+  const variant = getVariantMeta(variantIndex, intent);
   let dataContext = '';
+  if (isBrandWhoIsTopic(cleanTopic) || intent === 'who_is') {
+    dataContext += `=== HỒ SƠ THƯƠNG HIỆU (ưu tiên dùng, không bịa thêm) ===\n${BRAND_PROFILE_FACTS}\n\n`;
+  }
   if (researchData) dataContext += `=== NGHIÊN CỨU (Gemini / grounding) ===\n${researchData}\n\n`;
-  if (googleContext) dataContext += `=== NGUỒN MẠNG (bắt buộc dùng) ===\n${googleContext}\n\n`;
+  if (googleContext) dataContext += `=== NGUỒN MẠNG ===\n${googleContext}\n\n`;
 
   const hasSources = !!(researchData || googleContext);
+  const intentAddon = buildIntentAddon(intent);
 
-  return `Viết bài như GIÁO VIÊN THẬT đang soạn giáo án + bài blog — không viết "bài SEO khuôn".
+  return `Viết bài TIẾNG VIỆT tập trung đúng ý định người đọc — không viết lệch chủ đề, không "bài SEO khuôn".
+
+═══ Ý ĐỊNH PHÁT HIỆN: ${intent.toUpperCase()} ═══
+Câu chủ đề người nhập: "${cleanTopic}"
+Tên dùng trong câu văn (BẮT BUỘC): "${entity}" — CẤM dán nguyên câu chủ đề vào giữa câu như một kỹ năng.
+${intentAddon}
 
 ═══ PHIÊN BẢN ${variantIndex + 1} ═══
 Góc nhìn: ${variant.angle}
-Tiêu đề: tự nhiên, hấp dẫn, có thể gợi ý cụm "${variant.titleSuffix}" nhưng ĐƯỢC phép viết khác nếu hay hơn.
+Tiêu đề: tự nhiên; gợi ý cụm "${variant.titleSuffix}" (được viết khác nếu hay hơn). Với bài who_is: tiêu đề phải trả lời/định danh người — CẤM "Có khó không?".
 ${buildAvoidBlock(avoid)}
-═══ CHỦ ĐỀ ═══
-Từ khóa: "${cleanTopic}" | Năm: ${year}
-Đối tượng: người Việt — văn phòng, sinh viên, người mới / mất gốc.
+═══ NĂM: ${year} ═══
 
-═══ NGUỒN THAM KHẢO ═══
-${dataContext || `Không có snippet web. Viết từ chuyên môn Tin học văn phòng Việt Nam; KHÔNG bịa số liệu/%/"nghiên cứu".`}
+═══ NGUỒN THAM KHẢO (bắt buộc dựa vào bài/trang đã tìm trên mạng) ═══
+${dataContext || `Viết từ hồ sơ thương hiệu / chuyên môn; KHÔNG bịa số liệu.`}
 
-${hasSources ? `QUY TẮC NGUỒN (quan trọng):
-- Chọn 4–10 ý từ nguồn trên, DIỄN GIẢI lại tiếng Việt dễ hiểu — không copy nguyên văn.
-- Không bịa URL / số liệu không có trong nguồn.
-- Thêm mục <h2>Nguồn tham khảo</h2> với 3–8 link thật từ danh sách URL ở trên.
-- Nếu nguồn mâu thuẫn nhau, ưu tiên Microsoft / Wikipedia / trang chính thức.
+${hasSources ? `QUY TẮC NGUỒN (bắt buộc):
+- Bài viết phải dựa trên các trang/bài đã tìm trên mạng ở trên (tóm tắt nghiên cứu + nội dung trích trang).
+- Diễn giải lại tiếng Việt; không copy nguyên văn dài.
+- Không bịa URL. Thêm <h2>Nguồn tham khảo</h2> với 3–8 link thật từ danh sách.
+- Nếu nguồn mỏng: nói rõ phần suy luận từ chuyên môn, không bịa như đã đọc báo.
 ` : ''}
 
 ${EDITORIAL_STYLE_PROMPT}
 
-═══ YÊU CẦU LINH HOẠT ═══
-- Độ dài mục tiêu ${TARGET_ARTICLE_WORDS} từ (không đệm chữ vô nghĩa).
-- 4–8 <h2> theo logic chủ đề — CẤM dùng cùng khung H2 cho mọi bài.
-- Ít nhất 1 bảng <table> hữu ích (so sánh / lộ trình / checklist / phím tắt).
-- FAQ 4–8 câu; kết + CTA mềm ${BRAND.name}.
-- 3–6 internal link; hashtag ngắn cuối bài.
-- CẤM mở bài bằng: "Trong kỷ nguyên số", "Bài viết này sẽ", "Dưới đây là", "Không thể phủ nhận".
+═══ YÊU CẦU ═══
+- Độ dài mục tiêu ${TARGET_ARTICLE_WORDS} từ — ưu tiên đúng trọng tâm.
+- Đoạn 1–2 phải trả lời thẳng câu hỏi / vấn đề chính.
+- 4–8 <h2> theo logic ý định ${intent}.
+- Ít nhất 1 bảng hữu ích (với who_is: bảng tóm tắt hồ sơ / so sánh tự học vs 1 kèm 1).
+- FAQ 4–8 câu ĐÚNG chủ đề; kết + CTA mềm ${BRAND.name}.
+- CẤM mở: "Trong kỷ nguyên số", "Bài viết này sẽ", "Dưới đây là".
+- CẤM câu kiểu: "làm chủ ${cleanTopic}", "học ${cleanTopic}", "lộ trình cho ${cleanTopic}" nếu ${cleanTopic} là câu hỏi "là ai?".
 
 ═══ HTML ═══
 h2,h3,h4,p,ul,ol,li,strong,em,blockquote,table,thead,tbody,tr,th,td,figure,img,figcaption,a
-KHÔNG: h1, script, style tùy tiện
+KHÔNG: h1, script
 
 ═══ OUTPUT — CHỈ JSON ═══
-{"title":"...","excerpt":"120-160 ký tự","content":"<p>...</p>...","focusKeyword":"...","metaTitle":"55-60 ký tự","metaDescription":"140-160 ký tự","tags":["..."],"slug":"slug-khong-dau","suggestions":[{"title":"...","snippet":"..."}]}`;
+{"title":"...","excerpt":"120-160 ký tự","content":"<p>...</p>...","focusKeyword":"${cleanTopic}","metaTitle":"55-60 ký tự","metaDescription":"140-160 ký tự","tags":["..."],"slug":"slug-khong-dau","suggestions":[{"title":"...","snippet":"..."}]}`;
 }
 
 function buildExpandPrompt(cleanTopic, postData) {
-  return `Bài viết tiếng Việt về "${cleanTopic}" còn QUÁ NGẮN hoặc THIẾU BẢNG / thiếu đoạn văn dài.
-${buildExpandStyleNote()}
-Thêm bảng <table> hữu ích nếu thiếu, ví dụ thực tế, FAQ — không đệm chữ sáo. Trả về JSON: title, excerpt, content, focusKeyword, metaTitle, metaDescription, tags, slug, suggestions.
+  const intent = detectTopicIntent(cleanTopic);
+  const entity = resolveTopicEntity(cleanTopic);
+  return `Bài viết tiếng Việt về "${cleanTopic}" (ý định: ${intent}, dùng tên "${entity}" trong câu) còn QUÁ NGẮN.
+${buildExpandStyleNote(intent)}
+Trả về JSON: title, excerpt, content, focusKeyword, metaTitle, metaDescription, tags, slug, suggestions.
+CẤM nhét nguyên câu "${cleanTopic}" vào giữa câu như một kỹ năng.
 
 Nội dung hiện tại:
 ${(postData.content || '').substring(0, 12000)}`;
 }
 
-async function generateWithGemini(prompt, { jsonMode = true, temperature = 0.75, systemHint = true } = {}) {
+async function generateWithGemini(prompt, { jsonMode = true, temperature = 0.75, systemHint = true, useGrounding = false } = {}) {
   const genAI = getGenAI();
   if (!genAI) return null;
 
   const fullPrompt = systemHint
-    ? `${COPYWRITER_SYSTEM_PROMPT}\n\nTarget ~${TARGET_ARTICLE_WORDS} Vietnamese words (min ~${MIN_ARTICLE_WORDS}). 1+ useful table, 4–8 FAQ, soft CTA. No SEO-template filler.\n\n${prompt}`
+    ? `${COPYWRITER_SYSTEM_PROMPT}
+
+Target ~${TARGET_ARTICLE_WORDS} Vietnamese words (min ~${MIN_ARTICLE_WORDS}). Bắt buộc dựa trên nguồn mạng / Google Search đã cung cấp. 1+ useful table, 4–8 FAQ, soft CTA. No SEO-template filler.
+
+${prompt}`
     : prompt;
 
   const generationConfig = {
     temperature: Math.min(0.95, temperature),
     maxOutputTokens: 8192,
-    ...(jsonMode ? { responseMimeType: 'application/json' } : {}),
+    ...(!useGrounding && jsonMode ? { responseMimeType: 'application/json' } : {}),
   };
 
+  const models = useGrounding ? GEMINI_GROUNDING_MODELS : GEMINI_WRITE_MODELS;
   let lastErr;
-  for (const modelName of GEMINI_WRITE_MODELS) {
+  for (const modelName of models) {
     for (let attempt = 1; attempt <= 2; attempt++) {
       try {
-        const model = genAI.getGenerativeModel({ model: modelName, generationConfig });
-        const result = await model.generateContent(fullPrompt);
+        const model = genAI.getGenerativeModel({
+          model: modelName,
+          generationConfig,
+          ...(useGrounding ? { tools: [{ googleSearch: {} }] } : {}),
+        });
+        const result = await model.generateContent(
+          useGrounding
+            ? `${fullPrompt}
+
+Trả về ĐÚNG một JSON hợp lệ (không markdown fence). Nếu vừa search web, hãy lồng ý từ kết quả search vào content và liệt kê URL thật ở mục Nguồn tham khảo.`
+            : fullPrompt
+        );
         const text = result.response.text();
-        if (text?.trim()) return { text, model: modelName };
+        if (text?.trim()) return { text, model: modelName, grounded: !!useGrounding };
       } catch (err) {
         lastErr = err;
         const msg = err.message || '';
@@ -362,7 +598,7 @@ async function generateWithGemini(prompt, { jsonMode = true, temperature = 0.75,
           await sleep(6000 * attempt);
           continue;
         }
-        console.error(`  ❌ Gemini ${modelName} attempt ${attempt}: ${msg}`);
+        console.error(`  ❌ Gemini ${modelName}${useGrounding ? ' (grounding)' : ''} attempt ${attempt}: ${msg}`);
         break;
       }
     }
@@ -371,51 +607,34 @@ async function generateWithGemini(prompt, { jsonMode = true, temperature = 0.75,
 }
 
 async function researchTopic(cleanTopic, webContext = '') {
+  // Ưu tiên: Gemini + Google Search tìm bài trên mạng
+  const grounded = await groundedWebDiscovery(cleanTopic, webContext);
+  if (grounded) return grounded;
+
   const genAI = getGenAI();
   if (!genAI) return '';
 
   const year = new Date().getFullYear();
-  const researchPrompt = `Bạn là trợ lý nghiên cứu nội dung giáo dục Tin học văn phòng (Việt Nam, ${year}).
+  const intent = detectTopicIntent(cleanTopic);
+  const entity = resolveTopicEntity(cleanTopic);
 
-Chủ đề: "${cleanTopic}"
-
-${webContext ? `Snippet web đã thu thập (dùng làm nền, kiểm chứng bằng Google Search nếu có):\n${webContext.slice(0, 6000)}\n` : ''}
-
-Hãy tổng hợp TIẾNG VIỆT, dạng bullet, CHỈ gồm ý kiểm chứng được:
-1) Khái niệm ngắn + đối tượng phù hợp
-2) Thao tác / công cụ / phiên bản phổ biến ${year}
-3) 5–8 lỗi học viên hay gặp + cách sửa cụ thể
-4) 4–6 câu hỏi People Also Ask
-5) Gợi ý 1 bảng so sánh hoặc checklist (cột rõ ràng)
-6) Liệt kê URL/tên nguồn nếu bạn lấy từ web (không bịa)
-
-CẤM: văn sáo, "trong kỷ nguyên số", bịa %, bịa nghiên cứu không nguồn.
-Viết cô đọng, đủ để copywriter viết bài dài.`;
-
-  // Grounding trước — lấy kiến thức mạng thật
-  try {
-    const groundingModel = genAI.getGenerativeModel({
-      model: 'gemini-2.0-flash',
-      tools: [{ googleSearch: {} }],
-    });
-    const r = await groundingModel.generateContent(researchPrompt);
-    const text = r.response.text();
-    if (text?.length > 200) {
-      console.log(`  ✅ [2] Gemini Grounding research: ${text.length} chars`);
-      return text;
-    }
-  } catch (e) {
-    console.log(`  ⏭️ [2] Grounding skipped: ${e.message?.slice(0, 80)}`);
-  }
+  const researchPrompt = intent === 'who_is'
+    ? `Nghiên cứu PROFILE về: "${entity}" (search: "${cleanTopic}"). Năm: ${year}.
+${isBrandWhoIsTopic(cleanTopic) ? `Hồ sơ:\n${BRAND_PROFILE_FACTS}\n` : ''}
+${webContext ? `Nội dung web đã đọc:\n${webContext.slice(0, 10000)}\n` : ''}
+Bullet dựa trên nguồn: là ai, vai trò, dạy gì, phương pháp, đối tượng, FAQ, URL thật. CẤM giáo án Excel.`
+    : `Tổng hợp từ nguồn web về "${cleanTopic}" (${entity}), năm ${year}.
+${webContext ? `Nguồn:\n${webContext.slice(0, 10000)}\n` : ''}
+Bullet: khái niệm, thao tác, lỗi hay gặp, PAA, bảng, URL thật. CẤM bịa %.`;
 
   try {
-    const simple = await generateWithGemini(researchPrompt, { jsonMode: false, temperature: 0.4, systemHint: false });
+    const simple = await generateWithGemini(researchPrompt, { jsonMode: false, temperature: 0.35, systemHint: false });
     if (simple?.text) {
-      console.log(`  ✅ [2] Gemini research (no grounding): ${simple.text.length} chars`);
+      console.log(`  ✅ [2b] Gemini research từ nguồn đã tải: ${simple.text.length} chars`);
       return simple.text;
     }
   } catch (e) {
-    console.error(`  ❌ [2] Gemini research failed: ${e.message}`);
+    console.error(`  ❌ [2b] Gemini research failed: ${e.message}`);
   }
   return '';
 }
@@ -487,27 +706,42 @@ function buildResponsePayload(postData, cleanTopic, usedSources, startTime, writ
   };
 }
 
-/** Template dài (~1400+ từ) khi AI không khả dụng */
+/** Template khi AI không khả dụng — theo ý định chủ đề */
 function generateRichTemplate(topic, variantIndex = 0) {
   const year = new Date().getFullYear();
-  const variant = getVariantMeta(variantIndex);
+  const intent = detectTopicIntent(topic);
+  const entity = resolveTopicEntity(topic);
+  const variant = getVariantMeta(variantIndex, intent);
   const slug = makeSlug(topic, variantIndex);
   const content = buildLongFormFallback(topic, variantIndex);
-  const title = variantIndex % 4 === 0
-    ? `${topic} Có Khó Không? ${variant.titleSuffix} (${year})`
-    : `${topic} — ${variant.titleSuffix} (${year})`;
+
+  let title;
+  if (intent === 'who_is') {
+    title = variantIndex % 2 === 0
+      ? `${entity} Là Ai? ${variant.titleSuffix} (${year})`
+      : `${entity} — ${variant.titleSuffix} (${year})`;
+  } else {
+    title = variantIndex % 4 === 0
+      ? `${entity} Có Khó Không? ${variant.titleSuffix} (${year})`
+      : `${entity} — ${variant.titleSuffix} (${year})`;
+  }
 
   return {
     title,
     slug,
-    excerpt: `${topic} ${year}: ${variant.excerptHint}. Khóa học Thắng Tin Học — học thử miễn phí.`,
+    excerpt: intent === 'who_is'
+      ? `${entity} là giáo viên / thương hiệu tin học văn phòng: chuyên môn, cách dạy 1 kèm 1, đối tượng phù hợp.`
+      : `${entity} ${year}: ${variant.excerptHint}. Khóa học Thắng Tin Học — học thử miễn phí.`,
     content,
     focusKeyword: topic.toLowerCase(),
-    metaTitle: `${topic} — ${variant.titleSuffix}`.substring(0, 60),
-    metaDescription: `${topic}: ${variant.excerptHint}. Tư vấn khóa học Thắng Tin Học.`.substring(0, 160),
-    tags: [topic, 'MOS', 'IC3', 'hoctinhoc', 'thangcomputer', 'tinhocvanphong'],
+    metaTitle: (intent === 'who_is' ? `${entity} là ai? ${variant.titleSuffix}` : `${entity} — ${variant.titleSuffix}`).substring(0, 60),
+    metaDescription: (intent === 'who_is'
+      ? `${entity} là ai? Giới thiệu ngắn, phương pháp dạy online 1 kèm 1 tại Thắng Tin Học.`
+      : `${entity}: ${variant.excerptHint}. Tư vấn khóa học Thắng Tin Học.`).substring(0, 160),
+    tags: [entity, 'MOS', 'IC3', 'hoctinhoc', 'thangcomputer', 'tinhocvanphong'],
     suggestions: [],
     variantIndex,
+    intent,
   };
 }
 
@@ -531,7 +765,7 @@ router.post('/generate-post', authenticate, authorize('admin'), async (req, res)
   const hasGemini = !!process.env.GEMINI_API_KEY?.trim();
 
   console.log(`\n${'═'.repeat(50)}`);
-  console.log(`🚀 AI Generate: "${cleanTopic}" v${variantIndex + 1} (gemini=${hasGemini})`);
+  console.log(`🚀 AI Generate: "${cleanTopic}" v${variantIndex + 1} intent=${detectTopicIntent(cleanTopic)} entity="${resolveTopicEntity(cleanTopic)}" (gemini=${hasGemini})`);
   console.log(`${'═'.repeat(50)}`);
 
   if (!hasGemini) {
@@ -570,17 +804,27 @@ router.post('/generate-post', authenticate, authorize('admin'), async (req, res)
     console.log(`  ⏭️ [1b] Free web: ${e.message}`);
   }
 
+  // [1c] Đọc nội dung thật từ vài trang tìm được
+  try {
+    webResults = await enrichResultsWithPageText(webResults, 5);
+    if (webResults.some((r) => r.excerpt)) usedSources.push('page-extract');
+  } catch (e) {
+    console.log(`  ⏭️ [1c] Page extract: ${e.message}`);
+  }
+
   const googleContext = formatSearchContext(webResults);
 
-  // [2] Gemini nghiên cứu + grounding (có kèm snippet web)
+  // [2] Gemini + Google Search: tìm hiểu bài trên mạng
   let researchData = '';
   if (hasGemini) {
     researchData = await researchTopic(cleanTopic, googleContext);
-    if (researchData) usedSources.push('gemini-research');
+    if (researchData) usedSources.push('gemini-web-research');
   }
 
   if (!researchData && !googleContext) {
-    researchData = `Chủ đề: "${cleanTopic}". Viết từ chuyên môn Tin học văn phòng VN — ví dụ thật, không bịa số liệu.`;
+    researchData = isBrandWhoIsTopic(cleanTopic) || detectTopicIntent(cleanTopic) === 'who_is'
+      ? `PROFILE:\n${BRAND_PROFILE_FACTS}\nViết bài giới thiệu tập trung "là ai?" — không giáo án kỹ năng.`
+      : `Chủ đề: "${cleanTopic}". Viết từ chuyên môn Tin học văn phòng VN — ví dụ thật, không bịa số liệu.`;
   }
 
   const seoPrompt = buildSEOPrompt(cleanTopic, researchData, googleContext, variantIndex, avoid);
@@ -591,14 +835,21 @@ router.post('/generate-post', authenticate, authorize('admin'), async (req, res)
     return postData;
   };
 
-  // Gemini viết bài (nghiên cứu + nguồn mạng đã gắn trong prompt)
+  // [3] Viết bài — ưu tiên Gemini kèm Google Search grounding
   try {
-    console.log(`  📝 [3] Gemini: writing (v${variantIndex + 1}, T=${temp})...`);
-    const g = await generateWithGemini(seoPrompt, { jsonMode: true, temperature: temp });
+    console.log(`  📝 [3] Gemini + Search writing (v${variantIndex + 1}, T=${temp})...`);
+    let g;
+    try {
+      g = await generateWithGemini(seoPrompt, { jsonMode: true, temperature: temp, useGrounding: true });
+      usedSources.push('gemini-grounded-write');
+    } catch (groundErr) {
+      console.log(`  ⏭️ [3] Grounded write fail: ${groundErr.message?.slice(0, 100)} — fallback no-tool`);
+      g = await generateWithGemini(seoPrompt, { jsonMode: true, temperature: temp, useGrounding: false });
+      usedSources.push('gemini');
+    }
     let postData = normalizePostData(parseAIJson(g.text), cleanTopic);
-    if (!usedSources.includes('gemini')) usedSources.push('gemini');
     postData = await finalize(postData, g.model);
-    console.log(`  ✅ [3] ${g.model} OK — ${countWords(postData.content)} words`);
+    console.log(`  ✅ [3] ${g.model} OK — ${countWords(postData.content)} words (grounded=${!!g.grounded})`);
     return res.json(buildResponsePayload(postData, cleanTopic, usedSources, startTime, g.model, variantIndex));
   } catch (e) {
     console.error(`  ❌ [3] Gemini write: ${e.message}`);
@@ -625,7 +876,7 @@ router.get('/search-info', authenticate, authorize('admin'), (req, res) => {
     engines: {
       gemini: {
         active: !!process.env.GEMINI_API_KEY?.trim(),
-        role: 'Nghiên cứu (Grounding) + viết bài — engine duy nhất',
+        role: 'Google Search Grounding + đọc trang web + viết bài',
         models: GEMINI_WRITE_MODELS,
         free: 'https://aistudio.google.com/apikey',
       },
@@ -641,7 +892,7 @@ router.get('/search-info', authenticate, authorize('admin'), (req, res) => {
     requirements: {
       minWords: 1800,
       minTables: 1,
-      note: 'Chỉ dùng Gemini. Số lần tạo phụ thuộc quota miễn phí Google AI Studio.',
+      note: 'Gemini tìm bài trên Google (Grounding), đọc nội dung trang, rồi viết. Phụ thuộc quota AI Studio.',
     },
   });
 });

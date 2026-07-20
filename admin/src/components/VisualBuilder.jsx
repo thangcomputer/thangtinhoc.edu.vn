@@ -17,15 +17,15 @@ const COLUMN_LAYOUTS = [
 ];
 
 const SECTION_DEFS = {
-  hero: { label: 'Hero Banner', emoji: '✨', icon: Layout, color: '#8b5cf6', desc: 'Banner chính với tiêu đề & nút CTA' },
-  stats: { label: 'Thống Kê', emoji: '📊', icon: BarChart, color: '#6366f1', desc: 'Số liệu ấn tượng' },
+  hero: { label: 'Hero Banner', emoji: '✨', icon: Layout, color: '#dc2626', desc: 'Banner chính với tiêu đề & nút CTA' },
+  stats: { label: 'Thống Kê', emoji: '📊', icon: BarChart, color: '#dc2626', desc: 'Số liệu ấn tượng' },
   features: { label: 'Tính Năng', emoji: '🏆', icon: Monitor, color: '#f59e0b', desc: 'Các công cụ & kỹ năng' },
   'learning-path': { label: 'Lộ Trình', emoji: '🎯', icon: Target, color: '#10b981', desc: '4 bước học tập' },
-  'visual-learning': { label: 'Học Trực Quan', emoji: '💻', icon: Laptop, color: '#3b82f6', desc: 'Kỹ năng máy tính 4.0' },
-  courses: { label: 'Khóa Học', emoji: '📚', icon: BookOpen, color: '#8b5cf6', desc: 'Khóa học nổi bật' },
+  'visual-learning': { label: 'Học Trực Quan', emoji: '💻', icon: Laptop, color: '#ef4444', desc: 'Kỹ năng máy tính 4.0' },
+  courses: { label: 'Khóa Học', emoji: '📚', icon: BookOpen, color: '#dc2626', desc: 'Khóa học nổi bật' },
   testimonials: { label: 'Cảm Nhận', emoji: '💬', icon: Quote, color: '#ec4899', desc: 'Đánh giá học viên' },
   partners: { label: 'Đối Tác', emoji: '🤝', icon: Handshake, color: '#eab308', desc: 'Logo đối tác' },
-  cta: { label: 'Kêu Gọi', emoji: '🚀', icon: Megaphone, color: '#7c3aed', desc: 'Call to Action cuối trang' },
+  cta: { label: 'Kêu Gọi', emoji: '🚀', icon: Megaphone, color: '#b91c1c', desc: 'Call to Action cuối trang' },
 };
 
 const ALL_SECTION_IDS = Object.keys(SECTION_DEFS);
@@ -147,7 +147,7 @@ export default function VisualBuilder({
     e.dataTransfer.setData('text/plain', sectionId);
     // Custom drag image
     const ghost = document.createElement('div');
-    ghost.style.cssText = 'position:fixed;top:-100px;padding:8px 16px;background:#6366f1;color:#fff;border-radius:8px;font-size:13px;font-weight:600;box-shadow:0 4px 20px rgba(0,0,0,0.3);pointer-events:none;z-index:9999;';
+    ghost.style.cssText = 'position:fixed;top:-100px;padding:8px 16px;background:#dc2626;color:#fff;border-radius:8px;font-size:13px;font-weight:600;box-shadow:0 4px 20px rgba(0,0,0,0.3);pointer-events:none;z-index:9999;';
     ghost.textContent = `${SECTION_DEFS[sectionId]?.emoji} ${SECTION_DEFS[sectionId]?.label}`;
     document.body.appendChild(ghost);
     e.dataTransfer.setDragImage(ghost, 0, 0);
@@ -243,19 +243,19 @@ export default function VisualBuilder({
         {isActive && (
           <div style={{
             position: 'absolute', inset: '4px', borderRadius: '10px',
-            border: '2px dashed #6366f1',
-            background: 'rgba(99, 102, 241, 0.08)',
+            border: '2px dashed #dc2626',
+            background: 'rgba(220, 38, 38, 0.08)',
             display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px',
             animation: 'dropZonePulse 1.5s ease-in-out infinite',
           }}>
             <div style={{
               width: '28px', height: '28px', borderRadius: '50%',
-              background: '#6366f1', display: 'flex', alignItems: 'center', justifyContent: 'center',
-              boxShadow: '0 0 15px rgba(99,102,241,0.4)',
+              background: '#dc2626', display: 'flex', alignItems: 'center', justifyContent: 'center',
+              boxShadow: '0 0 15px rgba(220, 38, 38,0.4)',
             }}>
               <Plus size={14} color="#fff" />
             </div>
-            <span style={{ fontSize: '0.72rem', fontWeight: 600, color: '#818cf8' }}>
+            <span style={{ fontSize: '0.72rem', fontWeight: 600, color: '#f87171' }}>
               {dragType === 'add-widget' ? 'Thả widget vào đây' : 'Di chuyển đến đây'}
             </span>
           </div>
@@ -266,7 +266,7 @@ export default function VisualBuilder({
           <div style={{
             position: 'absolute', left: '16px', right: '16px', top: '50%', transform: 'translateY(-50%)',
             height: '2px', borderRadius: '2px',
-            background: 'rgba(99, 102, 241, 0.2)',
+            background: 'rgba(220, 38, 38, 0.2)',
             transition: 'all 0.2s',
           }} />
         )}
@@ -296,23 +296,23 @@ export default function VisualBuilder({
     switch (sectionId) {
       case 'hero':
         return (
-          <div style={{ background: 'linear-gradient(135deg, #0f172a 0%, #1e1b4b 50%, #312e81 100%)', padding: '48px 32px', textAlign: 'center' }}>
-            <div style={{ fontSize: '0.7rem', background: 'rgba(139,92,246,0.3)', padding: '4px 14px', borderRadius: '99px', display: 'inline-flex', color: '#c4b5fd', marginBottom: '12px' }}>✨ Thắng Tin Học</div>
+          <div style={{ background: 'linear-gradient(135deg, #0f172a 0%, #2b1010 50%, #7f1d1d 100%)', padding: '48px 32px', textAlign: 'center' }}>
+            <div style={{ fontSize: '0.7rem', background: 'rgba(220, 38, 38,0.3)', padding: '4px 14px', borderRadius: '99px', display: 'inline-flex', color: '#fecaca', marginBottom: '12px' }}>✨ Thắng Tin Học</div>
             <h2 style={{ fontSize: '1.4rem', fontWeight: 900, color: '#fff', margin: '0 0 8px', lineHeight: 1.3 }}>{settings.hero_title || 'HỌC SỬ DỤNG MÁY VI TÍNH 1 KÈM 1 ONLINE'}</h2>
             <p style={{ fontSize: '0.8rem', color: 'rgba(255,255,255,0.6)', margin: '0 0 16px', maxWidth: '500px', marginInline: 'auto' }}>{settings.hero_subtitle || 'Hướng dẫn chi tiết từ cơ bản nhất'}</p>
             <div style={{ display: 'flex', gap: '10px', justifyContent: 'center' }}>
-              <span style={{ padding: '8px 20px', borderRadius: '8px', background: '#6366f1', color: '#fff', fontSize: '0.75rem', fontWeight: 700 }}>{settings.hero_btn_text || 'Đăng ký ngay'}</span>
+              <span style={{ padding: '8px 20px', borderRadius: '8px', background: '#dc2626', color: '#fff', fontSize: '0.75rem', fontWeight: 700 }}>{settings.hero_btn_text || 'Đăng ký ngay'}</span>
               <span style={{ padding: '8px 20px', borderRadius: '8px', border: '1px solid rgba(255,255,255,0.3)', color: '#fff', fontSize: '0.75rem' }}>Xem khóa học</span>
             </div>
           </div>
         );
       case 'stats':
         return (
-          <div style={{ background: 'linear-gradient(135deg, #1e1b4b 0%, #0f172a 100%)', padding: '24px 32px' }}>
+          <div style={{ background: 'linear-gradient(135deg, #2b1010 0%, #0f172a 100%)', padding: '24px 32px' }}>
             <div style={{ display: 'grid', gridTemplateColumns: `repeat(${Math.min(stats.length || 4, 4)}, 1fr)`, gap: '12px' }}>
               {(stats.length > 0 ? stats : [{value:'5,000+',label:'Học viên'},{value:'50+',label:'Khóa học'}]).map((s,i) => (
                 <div key={i} style={{ background: 'rgba(255,255,255,0.05)', borderRadius: '10px', padding: '16px', textAlign: 'center' }}>
-                  <div style={{ fontSize: '1.2rem', fontWeight: 800, color: '#818cf8' }}>{s.value}</div>
+                  <div style={{ fontSize: '1.2rem', fontWeight: 800, color: '#f87171' }}>{s.value}</div>
                   <div style={{ fontSize: '0.7rem', color: 'rgba(255,255,255,0.4)', marginTop: '4px' }}>{s.label}</div>
                 </div>
               ))}
@@ -340,7 +340,7 @@ export default function VisualBuilder({
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '10px' }}>
               {['01 Đăng Ký', '02 Chọn Khóa', '03 Học Online', '04 Chứng Chỉ'].map((s,i) => (
                 <div key={i} style={{ background: 'rgba(255,255,255,0.04)', borderRadius: '10px', padding: '14px', textAlign: 'center', color: '#fff', fontSize: '0.72rem' }}>
-                  <div style={{ width: '28px', height: '28px', borderRadius: '50%', background: '#6366f1', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.7rem', fontWeight: 800, margin: '0 auto 8px' }}>{s.split(' ')[0]}</div>
+                  <div style={{ width: '28px', height: '28px', borderRadius: '50%', background: '#dc2626', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.7rem', fontWeight: 800, margin: '0 auto 8px' }}>{s.split(' ')[0]}</div>
                   {s.split(' ').slice(1).join(' ')}
                 </div>
               ))}
@@ -396,7 +396,7 @@ export default function VisualBuilder({
             <div style={{ display: 'flex', gap: '12px', justifyContent: 'center', flexWrap: 'wrap' }}>
               {(partners.length > 0 ? partners : [{name:'FPT'},{name:'Viettel'},{name:'VinGroup'}]).map((p,i) => (
                 <div key={i} style={{ background: 'rgba(255,255,255,0.06)', padding: '10px 18px', borderRadius: '10px', display: 'flex', alignItems: 'center', gap: '8px' }}>
-                  {p.logo ? <img src={p.logo} alt="" style={{ height: '24px' }} /> : <Handshake size={16} style={{ color: '#818cf8' }} />}
+                  {p.logo ? <img src={p.logo} alt="" style={{ height: '24px' }} /> : <Handshake size={16} style={{ color: '#f87171' }} />}
                   <span style={{ fontSize: '0.72rem', fontWeight: 600, color: '#fff' }}>{p.name}</span>
                 </div>
               ))}
@@ -405,11 +405,11 @@ export default function VisualBuilder({
         );
       case 'cta':
         return (
-          <div style={{ background: 'linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%)', padding: '32px', textAlign: 'center' }}>
+          <div style={{ background: 'linear-gradient(135deg, #b91c1c 0%, #b91c1c 100%)', padding: '32px', textAlign: 'center' }}>
             <h3 style={{ fontSize: '1.1rem', fontWeight: 800, color: '#fff', margin: '0 0 6px' }}>{settings.cta_title || 'Sẵn Sàng Nâng Cấp Kỹ Năng?'}</h3>
             <p style={{ fontSize: '0.75rem', color: 'rgba(255,255,255,0.7)', margin: '0 0 14px' }}>{settings.cta_subtitle || 'Đăng ký ngay hôm nay'}</p>
             <div style={{ display: 'flex', gap: '10px', justifyContent: 'center' }}>
-              <span style={{ padding: '8px 20px', borderRadius: '8px', background: '#fff', color: '#4f46e5', fontSize: '0.75rem', fontWeight: 700 }}>{settings.cta_btn_text || 'Đăng Ký Ngay'}</span>
+              <span style={{ padding: '8px 20px', borderRadius: '8px', background: '#fff', color: '#b91c1c', fontSize: '0.75rem', fontWeight: 700 }}>{settings.cta_btn_text || 'Đăng Ký Ngay'}</span>
               <span style={{ padding: '8px 20px', borderRadius: '8px', border: '1px solid rgba(255,255,255,0.3)', color: '#fff', fontSize: '0.75rem' }}>{settings.cta_btn2_text || 'Xem Khóa Học'}</span>
             </div>
           </div>
@@ -430,7 +430,7 @@ export default function VisualBuilder({
                     <div style={{ fontSize: '0.68rem', color: 'rgba(255,255,255,0.5)', lineHeight: 1.5 }}>{item.desc || 'Mô tả'}</div>
                     {item.btnText && (
                       <div style={{ marginTop: '10px' }}>
-                        <span style={{ padding: '4px 12px', borderRadius: '6px', background: '#6366f1', color: '#fff', fontSize: '0.65rem', fontWeight: 600 }}>{item.btnText}</span>
+                        <span style={{ padding: '4px 12px', borderRadius: '6px', background: '#dc2626', color: '#fff', fontSize: '0.65rem', fontWeight: 600 }}>{item.btnText}</span>
                       </div>
                     )}
                   </div>
@@ -754,14 +754,14 @@ export default function VisualBuilder({
           <div style={{ display: 'flex', gap: '6px' }}>
             {hasChanges && (
               <button onClick={onSave} disabled={saving}
-                style={{ background: '#6366f1', border: 'none', color: '#fff', padding: '4px 12px', borderRadius: '6px', fontSize: '0.68rem', fontWeight: 600, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '4px' }}>
+                style={{ background: '#dc2626', border: 'none', color: '#fff', padding: '4px 12px', borderRadius: '6px', fontSize: '0.68rem', fontWeight: 600, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '4px' }}>
                 <Save size={11} /> {saving ? 'Lưu...' : 'Lưu'}
               </button>
             )}
             <button
               type="button"
               onClick={() => setLiveSitePreview((v) => !v)}
-              style={{ background: liveSitePreview ? 'rgba(99,102,241,0.35)' : 'rgba(255,255,255,0.06)', border: 'none', color: '#fff', padding: '4px 10px', borderRadius: '6px', fontSize: '0.65rem', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '4px' }}
+              style={{ background: liveSitePreview ? 'rgba(220, 38, 38,0.35)' : 'rgba(255,255,255,0.06)', border: 'none', color: '#fff', padding: '4px 10px', borderRadius: '6px', fontSize: '0.65rem', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '4px' }}
               title="Xem trang chủ thật (sau khi lưu)"
             >
               {liveSitePreview ? <PanelRightClose size={10} /> : <PanelRightOpen size={10} />}
@@ -846,7 +846,7 @@ export default function VisualBuilder({
             <div style={{ marginTop: '8px', display: 'flex', gap: '8px', justifyContent: 'center' }}>
               <button onClick={() => { setSidebarTab('widgets'); }}
                 style={{ padding: '10px 24px', borderRadius: '8px', border: '2px dashed rgba(255,255,255,0.15)', background: 'rgba(255,255,255,0.03)', cursor: 'pointer', fontSize: '0.75rem', fontWeight: 600, color: 'rgba(255,255,255,0.4)', display: 'flex', alignItems: 'center', gap: '8px', transition: 'all 0.2s' }}
-                onMouseEnter={e => { e.currentTarget.style.borderColor = '#6366f1'; e.currentTarget.style.color = '#818cf8'; }}
+                onMouseEnter={e => { e.currentTarget.style.borderColor = '#dc2626'; e.currentTarget.style.color = '#f87171'; }}
                 onMouseLeave={e => { e.currentTarget.style.borderColor = 'rgba(255,255,255,0.15)'; e.currentTarget.style.color = 'rgba(255,255,255,0.4)'; }}>
                 <Plus size={16} /> Thêm phần mới
               </button>

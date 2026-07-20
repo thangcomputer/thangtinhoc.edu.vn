@@ -7,7 +7,7 @@ import EmptyState from '../components/EmptyState';
 import { useConfirm } from '../components/ConfirmProvider';
 
 const STATUS_MAP = {
-  new:      { label: 'Mới',       color: '#6366f1', bg: '#6366f115' },
+  new:      { label: 'Mới',       color: '#dc2626', bg: '#dc262615' },
   read:     { label: 'Đã xem',    color: '#10b981', bg: '#10b98115' },
   resolved: { label: 'Đã xử lý', color: '#94a3b8', bg: '#94a3b815' },
 };
@@ -92,7 +92,7 @@ export default function Inquiries() {
           <h1>Tin Nhắn Tư Vấn</h1>
           <p className="subtitle">
             {messages.length} tin nhắn
-            {unreadCount > 0 && <span style={{ color: '#6366f1', fontWeight: 700 }}> • {unreadCount} chưa đọc</span>}
+            {unreadCount > 0 && <span style={{ color: '#dc2626', fontWeight: 700 }}> • {unreadCount} chưa đọc</span>}
           </p>
         </div>
         <button type="button" className="btn btn-outline btn-sm" onClick={fetchMessages} aria-label="Làm mới danh sách">
@@ -140,18 +140,18 @@ export default function Inquiries() {
                       cursor: 'pointer',
                       background: selected?.id === m.id
                         ? 'var(--bg-subtle)'
-                        : !m.isRead ? 'rgba(99,102,241,0.04)' : 'transparent',
+                        : !m.isRead ? 'rgba(220, 38, 38,0.04)' : 'transparent',
                     }}
                     onClick={() => handleSelect(m)}
                   >
                     <td data-label="Khách hàng">
                       <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                         {!m.isRead && (
-                          <span style={{ width: '7px', height: '7px', borderRadius: '50%', background: '#6366f1', flexShrink: 0 }} />
+                          <span style={{ width: '7px', height: '7px', borderRadius: '50%', background: '#dc2626', flexShrink: 0 }} />
                         )}
                         <div style={{
                           width: '30px', height: '30px', borderRadius: '50%',
-                          background: 'linear-gradient(135deg,#6366f1,#8b5cf6)',
+                          background: 'linear-gradient(135deg,#dc2626,#dc2626)',
                           display: 'flex', alignItems: 'center', justifyContent: 'center',
                           fontSize: '0.78rem', fontWeight: 800, color: '#fff', flexShrink: 0,
                         }}>
@@ -169,8 +169,8 @@ export default function Inquiries() {
                     <td data-label="Trạng thái">
                       <span style={{
                         padding: '3px 10px', borderRadius: '99px', fontSize: '0.72rem', fontWeight: 700,
-                        background: m.isRead ? '#10b98115' : '#6366f115',
-                        color: m.isRead ? '#10b981' : '#6366f1',
+                        background: m.isRead ? '#10b98115' : '#dc262615',
+                        color: m.isRead ? '#10b981' : '#dc2626',
                       }}>
                         {m.isRead ? 'Đã xem' : 'Mới'}
                       </span>
@@ -235,7 +235,7 @@ export default function Inquiries() {
                 <div>
                   <label style={{ fontSize: '0.72rem', color: 'var(--text-muted)', fontWeight: 600 }}>🏷️ Chủ đề</label>
                   <p style={{ margin: '3px 0' }}>
-                    <span style={{ display: 'inline-block', padding: '4px 12px', borderRadius: '99px', fontSize: '0.82rem', fontWeight: 600, background: 'rgba(99,102,241,0.15)', color: '#818cf8', border: '1px solid rgba(99,102,241,0.25)' }}>
+                    <span style={{ display: 'inline-block', padding: '4px 12px', borderRadius: '99px', fontSize: '0.82rem', fontWeight: 600, background: 'rgba(220, 38, 38,0.15)', color: '#f87171', border: '1px solid rgba(220, 38, 38,0.25)' }}>
                       {selected.subject}
                     </span>
                   </p>

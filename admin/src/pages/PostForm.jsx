@@ -381,12 +381,12 @@ export default function PostForm() {
     if (categories.length === 0) return toast.error('Chưa có danh mục. Hãy tạo danh mục trước!');
 
     setAiGenerating(true);
-    setAiStep('🔍 Đang lấy nguồn mạng (Wikipedia / tìm kiếm)...');
+    setAiStep('🔍 Đang tìm & đọc bài trên mạng...');
     try {
-      await new Promise(r => setTimeout(r, 600));
-      setAiStep('🤖 AI đang nghiên cứu + đối chiếu nguồn...');
+      await new Promise(r => setTimeout(r, 500));
+      setAiStep('🌐 Gemini đang search Google / tổng hợp nguồn...');
       await new Promise(r => setTimeout(r, 400));
-      setAiStep(`✍️ AI đang viết phiên bản ${aiResults.length + 1} (giọng giáo viên, có nguồn)...`);
+      setAiStep(`✍️ Gemini đang viết phiên bản ${aiResults.length + 1} từ nguồn mạng...`);
 
       const avoid = aiResults.map((r) => ({
         title: r.title,
@@ -502,7 +502,7 @@ export default function PostForm() {
             <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '22px' }}>
               <div style={{
                 width: '40px', height: '40px', borderRadius: '10px',
-                background: 'linear-gradient(135deg, #3b82f6, #6366f1)',
+                background: 'linear-gradient(135deg, #ef4444, #dc2626)',
                 display: 'flex', alignItems: 'center', justifyContent: 'center',
                 fontSize: '1.2rem',
               }}>🖼️</div>
@@ -597,7 +597,7 @@ export default function PostForm() {
                 style={{
                   display: 'flex', alignItems: 'center', gap: '8px',
                   padding: '9px 18px', borderRadius: '8px', border: 'none',
-                  background: imgUrl ? 'linear-gradient(135deg, #3b82f6, #6366f1)' : 'rgba(99,102,241,0.3)',
+                  background: imgUrl ? 'linear-gradient(135deg, #ef4444, #dc2626)' : 'rgba(220, 38, 38,0.3)',
                   color: 'white', fontWeight: 700, fontSize: '0.88rem',
                   cursor: imgUrl ? 'pointer' : 'not-allowed',
                 }}
@@ -621,7 +621,7 @@ export default function PostForm() {
             background: 'var(--bg-card)', borderRadius: '16px', padding: '28px',
             width: aiResults.length > 0 ? '720px' : '480px', maxWidth: '95vw',
             maxHeight: '90vh', overflowY: 'auto',
-            border: '1px solid rgba(139,92,246,0.3)',
+            border: '1px solid rgba(220, 38, 38,0.3)',
             boxShadow: '0 24px 60px rgba(0,0,0,0.5)',
             transition: 'width 0.3s',
           }}>
@@ -629,7 +629,7 @@ export default function PostForm() {
             <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '20px' }}>
               <div style={{
                 width: '44px', height: '44px', borderRadius: '12px',
-                background: 'linear-gradient(135deg, #8b5cf6, #6366f1)',
+                background: 'linear-gradient(135deg, #dc2626, #dc2626)',
                 display: 'flex', alignItems: 'center', justifyContent: 'center',
               }}>
                 <Sparkles size={22} color="white" />
@@ -637,7 +637,7 @@ export default function PostForm() {
               <div style={{ flex: 1 }}>
                 <h3 style={{ margin: 0, fontSize: '1.1rem', fontWeight: 700 }}>✨ Tạo Bài Viết SEO Bằng AI</h3>
                 <p style={{ margin: 0, fontSize: '0.75rem', color: 'var(--text-muted)' }}>
-                  Lấy nguồn mạng · Viết như giáo viên · Tối đa 3 phiên bản
+                  Gemini search mạng · Đọc trang · Viết từ nguồn · Tối đa 3 phiên bản
                 </p>
               </div>
               {!aiGenerating && (
@@ -672,9 +672,9 @@ export default function PostForm() {
                     <button key={i} onClick={() => setAiTopic(s)} disabled={aiGenerating} title={s}
                       style={{
                         padding: '4px 10px', borderRadius: '18px',
-                        border: `1px solid ${aiTopic === s ? 'rgba(139,92,246,0.5)' : 'var(--border)'}`,
-                        background: aiTopic === s ? 'rgba(139,92,246,0.15)' : 'var(--bg-subtle)',
-                        color: aiTopic === s ? '#a78bfa' : 'var(--text-secondary)',
+                        border: `1px solid ${aiTopic === s ? 'rgba(220, 38, 38,0.5)' : 'var(--border)'}`,
+                        background: aiTopic === s ? 'rgba(220, 38, 38,0.15)' : 'var(--bg-subtle)',
+                        color: aiTopic === s ? '#fca5a5' : 'var(--text-secondary)',
                         fontSize: '0.7rem', cursor: 'pointer', transition: '0.15s',
                         maxWidth: '190px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
                       }}
@@ -688,11 +688,11 @@ export default function PostForm() {
             {aiGenerating && (
               <div style={{
                 padding: '12px 16px', borderRadius: '10px', marginBottom: '14px',
-                background: 'rgba(139,92,246,0.1)', border: '1px solid rgba(139,92,246,0.2)',
+                background: 'rgba(220, 38, 38,0.1)', border: '1px solid rgba(220, 38, 38,0.2)',
                 display: 'flex', alignItems: 'center', gap: '10px',
               }}>
-                <Loader2 size={16} className="spinner" style={{ color: '#a78bfa' }} />
-                <span style={{ fontSize: '0.85rem', color: '#a78bfa', fontWeight: 600 }}>{aiStep}</span>
+                <Loader2 size={16} className="spinner" style={{ color: '#fca5a5' }} />
+                <span style={{ fontSize: '0.85rem', color: '#fca5a5', fontWeight: 600 }}>{aiStep}</span>
               </div>
             )}
 
@@ -710,10 +710,10 @@ export default function PostForm() {
                       style={{
                         padding: '14px 16px', borderRadius: '12px', cursor: 'pointer',
                         border: aiSelectedIdx === idx
-                          ? '2px solid #8b5cf6'
+                          ? '2px solid #dc2626'
                           : '1px solid var(--border)',
                         background: aiSelectedIdx === idx
-                          ? 'rgba(139,92,246,0.08)'
+                          ? 'rgba(220, 38, 38,0.08)'
                           : 'var(--bg-subtle)',
                         transition: 'all 0.2s',
                         position: 'relative',
@@ -722,7 +722,7 @@ export default function PostForm() {
                       {/* Preview hint */}
                       <div style={{
                         position: 'absolute', top: '-6px', right: '10px',
-                        background: aiSelectedIdx === idx ? '#8b5cf6' : '#3b82f6',
+                        background: aiSelectedIdx === idx ? '#dc2626' : '#ef4444',
                         color: 'white', fontSize: '0.62rem', fontWeight: 700,
                         padding: '2px 8px', borderRadius: '10px',
                       }}>{aiSelectedIdx === idx ? '✓ Đã chọn' : '👁 Click xem'}</div>
@@ -741,8 +741,8 @@ export default function PostForm() {
                       <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px' }}>
                         <span style={{
                           padding: '2px 8px', borderRadius: '99px', fontSize: '0.68rem', fontWeight: 700,
-                          background: idx === 0 ? '#3b82f620' : idx === 1 ? '#10b98120' : '#f59e0b20',
-                          color: idx === 0 ? '#3b82f6' : idx === 1 ? '#10b981' : '#f59e0b',
+                          background: idx === 0 ? '#ef444420' : idx === 1 ? '#10b98120' : '#f59e0b20',
+                          color: idx === 0 ? '#ef4444' : idx === 1 ? '#10b981' : '#f59e0b',
                         }}>Phiên bản {idx + 1}</span>
                         <span style={{
                           fontSize: '0.65rem',
@@ -769,7 +769,7 @@ export default function PostForm() {
                           {(r.tags || []).slice(0, 4).map((t, ti) => (
                             <span key={ti} style={{
                               padding: '1px 7px', borderRadius: '10px', fontSize: '0.62rem',
-                              background: 'rgba(139,92,246,0.1)', color: '#a78bfa', fontWeight: 600,
+                              background: 'rgba(220, 38, 38,0.1)', color: '#fca5a5', fontWeight: 600,
                             }}>#{t}</span>
                           ))}
                         </div>
@@ -792,7 +792,7 @@ export default function PostForm() {
                   background: 'var(--bg-card)', borderRadius: '16px',
                   width: '860px', maxWidth: '95vw', maxHeight: '88vh',
                   display: 'flex', flexDirection: 'column',
-                  border: '1px solid rgba(139,92,246,0.3)',
+                  border: '1px solid rgba(220, 38, 38,0.3)',
                   boxShadow: '0 30px 80px rgba(0,0,0,0.6)',
                   overflow: 'hidden',
                 }}>
@@ -802,7 +802,7 @@ export default function PostForm() {
                     display: 'flex', alignItems: 'center', gap: '12px',
                     background: 'var(--bg-subtle)', flexShrink: 0,
                   }}>
-                    <Eye size={20} style={{ color: '#8b5cf6' }} />
+                    <Eye size={20} style={{ color: '#dc2626' }} />
                     <div style={{ flex: 1 }}>
                       <div style={{ fontSize: '0.82rem', fontWeight: 700, color: 'var(--text)' }}>Xem trước — Phiên bản {aiPreviewIdx + 1}</div>
                       <div style={{ fontSize: '0.7rem', color: 'var(--text-muted)' }}>
@@ -837,7 +837,7 @@ export default function PostForm() {
                         {aiResults[aiPreviewIdx].tags.map((t, ti) => (
                           <span key={ti} style={{
                             padding: '3px 10px', borderRadius: '99px', fontSize: '0.72rem',
-                            background: 'rgba(139,92,246,0.1)', color: '#a78bfa', fontWeight: 600,
+                            background: 'rgba(220, 38, 38,0.1)', color: '#fca5a5', fontWeight: 600,
                           }}>#{t}</span>
                         ))}
                       </div>
@@ -910,8 +910,8 @@ export default function PostForm() {
                     display: 'flex', alignItems: 'center', gap: '8px',
                     padding: '10px 20px', borderRadius: '8px', border: 'none',
                     background: !aiTopic.trim() || aiGenerating
-                      ? 'rgba(139,92,246,0.4)'
-                      : 'linear-gradient(135deg, #8b5cf6, #6366f1)',
+                      ? 'rgba(220, 38, 38,0.4)'
+                      : 'linear-gradient(135deg, #dc2626, #dc2626)',
                     color: 'white', fontWeight: 700, fontSize: '0.9rem',
                     cursor: aiGenerating || !aiTopic.trim() ? 'not-allowed' : 'pointer',
                   }}
@@ -983,10 +983,10 @@ export default function PostForm() {
               style={{
                 display: 'flex', alignItems: 'center', gap: '8px',
                 padding: '9px 18px', borderRadius: '8px', border: 'none',
-                background: 'linear-gradient(135deg, #8b5cf6, #6366f1)',
+                background: 'linear-gradient(135deg, #dc2626, #dc2626)',
                 color: 'white', fontWeight: 700, fontSize: '0.85rem',
                 cursor: 'pointer', transition: '0.2s',
-                boxShadow: '0 4px 14px rgba(99,102,241,0.4)',
+                boxShadow: '0 4px 14px rgba(220, 38, 38,0.4)',
               }}
               onMouseOver={e => e.currentTarget.style.transform = 'translateY(-1px)'}
               onMouseOut={e => e.currentTarget.style.transform = 'none'}
@@ -1093,7 +1093,7 @@ export default function PostForm() {
                     style={{
                       display: 'flex', alignItems: 'center', gap: '5px',
                       padding: '5px 10px', borderRadius: '6px', border: 'none',
-                      background: 'linear-gradient(135deg, #3b82f6, #6366f1)',
+                      background: 'linear-gradient(135deg, #ef4444, #dc2626)',
                       color: 'white', fontSize: '0.78rem', fontWeight: 600, cursor: 'pointer',
                     }}>
                     🖼️ Chèn Ảnh
@@ -1128,7 +1128,7 @@ export default function PostForm() {
                   {/* Code */}
                   <button type="button" title="Code"
                     onClick={() => insertSnippet('<code>', '</code>')}
-                    style={{ padding: '4px 9px', borderRadius: '5px', border: '1px solid var(--border)', background: 'var(--bg-subtle)', color: '#a78bfa', fontSize: '0.78rem', fontFamily: 'monospace', cursor: 'pointer' }}>
+                    style={{ padding: '4px 9px', borderRadius: '5px', border: '1px solid var(--border)', background: 'var(--bg-subtle)', color: '#fca5a5', fontSize: '0.78rem', fontFamily: 'monospace', cursor: 'pointer' }}>
                     {'</>'}  
                   </button>
 
@@ -1531,8 +1531,8 @@ export default function PostForm() {
           </div>
 
           {/* SEO Tips - Updated */}
-          <div className="card" style={{ borderLeft: '3px solid #8b5cf6' }}>
-            <div className="card-header"><h3 className="card-title"><Sparkles size={16} style={{ color: '#8b5cf6' }} /> Mẹo SEO Chuyên Nghiệp</h3></div>
+          <div className="card" style={{ borderLeft: '3px solid #dc2626' }}>
+            <div className="card-header"><h3 className="card-title"><Sparkles size={16} style={{ color: '#dc2626' }} /> Mẹo SEO Chuyên Nghiệp</h3></div>
             <div className="card-body" style={{ fontSize: '0.78rem', color: 'var(--text-secondary)', lineHeight: 1.6 }}>
               <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
                 {[
@@ -1554,9 +1554,9 @@ export default function PostForm() {
         </div>
 
         {activeTab === 'ai' && (
-          <div className="card" style={{ border: '1px solid rgba(139, 92, 246, 0.35)' }}>
+          <div className="card" style={{ border: '1px solid rgba(220, 38, 38, 0.35)' }}>
             <div className="card-header">
-              <h3 className="card-title"><Sparkles size={16} style={{ color: '#8b5cf6' }} /> Tạo bài bằng AI</h3>
+              <h3 className="card-title"><Sparkles size={16} style={{ color: '#dc2626' }} /> Tạo bài bằng AI</h3>
             </div>
             <div className="card-body" style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
               <p style={{ margin: 0, fontSize: '0.85rem', color: 'var(--text-secondary)' }}>

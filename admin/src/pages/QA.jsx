@@ -116,8 +116,8 @@ function ReplyBox({ rootComment, parentId, mentionUser, userName, replyText, set
   return (
     <div style={{
       marginTop: '10px', padding: '14px',
-      background: 'rgba(99,102,241,0.05)',
-      border: '1px solid rgba(99,102,241,0.2)',
+      background: 'rgba(220, 38, 38,0.05)',
+      border: '1px solid rgba(220, 38, 38,0.2)',
       borderRadius: '12px',
     }}>
       <div style={{ fontSize: '0.78rem', fontWeight: 600, color: 'var(--primary)', marginBottom: '8px' }}>
@@ -136,8 +136,8 @@ function ReplyBox({ rootComment, parentId, mentionUser, userName, replyText, set
         />
         <label style={{
           position: 'absolute', right: '10px', top: '10px',
-          cursor: 'pointer', color: '#818cf8',
-          background: 'rgba(99,102,241,0.12)', borderRadius: '50%',
+          cursor: 'pointer', color: '#f87171',
+          background: 'rgba(220, 38, 38,0.12)', borderRadius: '50%',
           width: '30px', height: '30px',
           display: 'flex', alignItems: 'center', justifyContent: 'center',
           transition: '0.2s',
@@ -376,7 +376,7 @@ export default function QA() {
                         <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
                           <div style={{
                             width: '38px', height: '38px', borderRadius: '50%',
-                            background: 'linear-gradient(135deg, #6366f1, #818cf8)',
+                            background: 'linear-gradient(135deg, #dc2626, #f87171)',
                             display: 'flex', alignItems: 'center', justifyContent: 'center',
                             flexShrink: 0, overflow: 'hidden',
                             fontSize: '0.9rem', fontWeight: 700, color: 'white',
@@ -437,7 +437,7 @@ export default function QA() {
                             display: 'flex', alignItems: 'center', gap: '5px',
                             fontSize: '0.78rem', fontWeight: 600, cursor: 'pointer',
                             padding: '5px 12px', borderRadius: '20px', border: 'none',
-                            background: isReplying ? 'rgba(99,102,241,0.15)' : 'var(--bg-subtle)',
+                            background: isReplying ? 'rgba(220, 38, 38,0.15)' : 'var(--bg-subtle)',
                             color: isReplying ? 'var(--primary)' : 'var(--text-muted)',
                             transition: '0.15s',
                           }}
@@ -479,7 +479,7 @@ export default function QA() {
                     {isExpanded && hasReplies && (
                       <div style={{
                         marginLeft: '72px', marginRight: '24px', marginBottom: '16px',
-                        borderLeft: '2px solid rgba(99,102,241,0.25)',
+                        borderLeft: '2px solid rgba(220, 38, 38,0.25)',
                         paddingLeft: '16px',
                         display: 'flex', flexDirection: 'column', gap: '8px',
                       }}>
@@ -490,8 +490,8 @@ export default function QA() {
                             <div key={r.id}>
                               <div style={{
                                 padding: '10px 14px',
-                                background: isAdmin ? 'rgba(99,102,241,0.07)' : 'var(--bg-subtle)',
-                                border: isAdmin ? '1px solid rgba(99,102,241,0.2)' : '1px solid var(--border-light)',
+                                background: isAdmin ? 'rgba(220, 38, 38,0.07)' : 'var(--bg-subtle)',
+                                border: isAdmin ? '1px solid rgba(220, 38, 38,0.2)' : '1px solid var(--border-light)',
                                 borderRadius: isAdmin ? '4px 14px 14px 14px' : '4px 12px 12px 12px',
                               }}>
                                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '6px' }}>
@@ -500,7 +500,7 @@ export default function QA() {
                                       width: '26px', height: '26px', borderRadius: '50%', flexShrink: 0,
                                       display: 'flex', alignItems: 'center', justifyContent: 'center',
                                       fontSize: '0.75rem', fontWeight: 700,
-                                      background: isAdmin ? 'linear-gradient(135deg, #6366f1, #818cf8)' : '#374151', color: 'white',
+                                      background: isAdmin ? 'linear-gradient(135deg, #dc2626, #f87171)' : '#374151', color: 'white',
                                     }}>{isAdmin ? '👨‍🏫' : (r.user?.fullName?.[0] || '?')}</div>
                                     <strong style={{ fontSize: '0.82rem', color: isAdmin ? 'var(--primary-light)' : 'var(--text-primary)' }}>
                                       {isAdmin ? '👨‍🏫 Giảng Viên' : r.user?.fullName}
@@ -552,7 +552,7 @@ export default function QA() {
                                   {r.replies.map(sub => {
                                     const subAdmin = sub.user?.role === 'admin';
                                     return (
-                                      <div key={sub.id} style={{ padding: '8px 12px', background: subAdmin ? 'rgba(99,102,241,0.03)' : 'rgba(255,255,255,0.01)', borderRadius: '8px', border: '1px solid rgba(255,255,255,0.05)' }}>
+                                      <div key={sub.id} style={{ padding: '8px 12px', background: subAdmin ? 'rgba(220, 38, 38,0.03)' : 'rgba(255,255,255,0.01)', borderRadius: '8px', border: '1px solid rgba(255,255,255,0.05)' }}>
                                         <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '4px' }}>
                                           <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
                                             <div style={{ width: '18px', height: '18px', borderRadius: '50%', background: subAdmin ? 'var(--primary)' : '#4b5563', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.6rem', color: 'white' }}>

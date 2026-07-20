@@ -134,7 +134,7 @@ export default function Settings() {
 
   // Social button CRUD
   const addSocialBtn = () => {
-    setSocialButtons(prev => [...prev, { id: Date.now(), icon: 'facebook', label: 'Mới', color: '#6366f1', url: '', show_footer: true, show_chat: false }]);
+    setSocialButtons(prev => [...prev, { id: Date.now(), icon: 'facebook', label: 'Mới', color: '#dc2626', url: '', show_footer: true, show_chat: false }]);
   };
   const removeSocialBtn = (id) => setSocialButtons(prev => prev.filter(b => b.id !== id));
   const updateSocialBtn = (id, field, value) => setSocialButtons(prev => prev.map(b => b.id === id ? { ...b, [field]: value } : b));
@@ -291,12 +291,12 @@ export default function Settings() {
                   Chọn trang nào sẽ hiện nút Chat Widget (Tư Vấn Trực Tuyến) ở góc màn hình.
                 </p>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                  <label style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer', padding: '8px 12px', borderRadius: 'var(--radius)', background: chatPages.includes('all') ? 'rgba(99,102,241,0.12)' : 'var(--bg-subtle)', border: `1px solid ${chatPages.includes('all') ? 'var(--primary)' : 'var(--border)'}`, fontWeight: 600 }}>
+                  <label style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer', padding: '8px 12px', borderRadius: 'var(--radius)', background: chatPages.includes('all') ? 'rgba(220, 38, 38,0.12)' : 'var(--bg-subtle)', border: `1px solid ${chatPages.includes('all') ? 'var(--primary)' : 'var(--border)'}`, fontWeight: 600 }}>
                     <input type="checkbox" checked={chatPages.includes('all')} onChange={() => toggleChatPage('all')} />
                     🌐 Tất cả trang
                   </label>
                   {!chatPages.includes('all') && PAGE_OPTIONS.map(page => (
-                    <label key={page.path} style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer', padding: '8px 12px', borderRadius: 'var(--radius)', background: chatPages.includes(page.path) ? 'rgba(99,102,241,0.08)' : 'var(--bg-subtle)', border: `1px solid ${chatPages.includes(page.path) ? 'rgba(99,102,241,0.4)' : 'var(--border)'}` }}>
+                    <label key={page.path} style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer', padding: '8px 12px', borderRadius: 'var(--radius)', background: chatPages.includes(page.path) ? 'rgba(220, 38, 38,0.08)' : 'var(--bg-subtle)', border: `1px solid ${chatPages.includes(page.path) ? 'rgba(220, 38, 38,0.4)' : 'var(--border)'}` }}>
                       <input type="checkbox" checked={chatPages.includes(page.path)} onChange={() => toggleChatPage(page.path)} />
                       {page.label}
                       <span style={{ marginLeft: 'auto', fontSize: '0.72rem', color: 'var(--text-muted)' }}>{page.path}</span>
@@ -392,13 +392,13 @@ export default function Settings() {
                       display: 'flex', alignItems: 'center', gap: '12px',
                       padding: '12px 16px', borderRadius: 'var(--radius-sm)',
                       border: `2px solid ${(settings.loading_mode || 'spinner') === mode.id ? 'var(--primary)' : 'var(--border)'}`,
-                      background: (settings.loading_mode || 'spinner') === mode.id ? 'rgba(99,102,241,0.08)' : 'transparent',
+                      background: (settings.loading_mode || 'spinner') === mode.id ? 'rgba(220, 38, 38,0.08)' : 'transparent',
                       cursor: 'pointer', transition: 'all 0.2s',
                     }}>
                       <input type="radio" name="loading_mode" value={mode.id}
                         checked={(settings.loading_mode || 'spinner') === mode.id}
                         onChange={() => setSettings({ ...settings, loading_mode: mode.id })}
-                        style={{ accentColor: '#6366f1', width: '16px', height: '16px' }}
+                        style={{ accentColor: '#dc2626', width: '16px', height: '16px' }}
                       />
                       <div style={{ flex: 1 }}>
                         <div style={{ fontWeight: 700, fontSize: '0.88rem' }}>{mode.label}</div>

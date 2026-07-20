@@ -8,7 +8,7 @@ import {
 import api from '../lib/api';
 import Loading from '../components/Loading';
 
-const COLORS = ['#6366f1', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6', '#ec4899'];
+const COLORS = ['#dc2626', '#10b981', '#f59e0b', '#ef4444', '#dc2626', '#ec4899'];
 
 const CustomTooltip = ({ active, payload, label, isCurrency }) => {
   if (!active || !payload?.length) return null;
@@ -69,8 +69,8 @@ export default function Dashboard() {
       title: 'Tổng học viên', 
       value: stats.totalUsers, 
       icon: Users, 
-      bg: 'linear-gradient(135deg, #eef2ff 0%, #e0e7ff 100%)', 
-      iconColor: '#6366f1',
+      bg: 'linear-gradient(135deg, #fef2f2 0%, #fee2e2 100%)', 
+      iconColor: '#dc2626',
       trend: trends.usersRecent != null ? `+${trends.usersRecent} / 30 ngày` : null,
       trendUp: userTrendPct >= 0,
       sub: userTrendPct !== 0 ? `${userTrendPct > 0 ? '+' : ''}${userTrendPct}% so với kỳ trước` : null,
@@ -178,8 +178,8 @@ export default function Dashboard() {
               <AreaChart data={monthlyRevenue} margin={{ top: 10, right: 20, left: -10, bottom: 0 }}>
                 <defs>
                   <linearGradient id="gradientRevenue" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="0%" stopColor="#6366f1" stopOpacity={0.25} />
-                    <stop offset="100%" stopColor="#6366f1" stopOpacity={0} />
+                    <stop offset="0%" stopColor="#dc2626" stopOpacity={0.25} />
+                    <stop offset="100%" stopColor="#dc2626" stopOpacity={0} />
                   </linearGradient>
                 </defs>
                 <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" />
@@ -201,7 +201,7 @@ export default function Dashboard() {
                 <Area 
                   type="monotone" 
                   dataKey="revenue" 
-                  stroke="#6366f1" 
+                  stroke="#dc2626" 
                   strokeWidth={2.5}
                   fillOpacity={1} 
                   fill="url(#gradientRevenue)" 
