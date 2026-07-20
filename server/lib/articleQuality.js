@@ -1,29 +1,28 @@
 ﻿/**
  * Chuẩn chất lượng bài viết SEO (độ dài + Copywriter Master).
+ * Ưu tiên nội dung có nguồn + đọc được — không nhồi chữ khuôn mẫu.
  */
 const { COPYWRITER_TASK_PROMPT, BRAND } = require('./copywriterPrompt');
 
-const MIN_ARTICLE_WORDS = 2500;
-const TARGET_ARTICLE_WORDS = '2500–4000';
+const MIN_ARTICLE_WORDS = 1800;
+const TARGET_ARTICLE_WORDS = '1800–3200';
 
 const EDITORIAL_STYLE_PROMPT = `
 ${COPYWRITER_TASK_PROMPT}
 
-═══ BỔ SUNG KIỂM SOÁT CHẤT LƯỢNG ═══
-- Tối thiểu ${MIN_ARTICLE_WORDS} từ nội dung (mục tiêu ${TARGET_ARTICLE_WORDS}). CẤM dưới 2500 từ.
-- Mỗi <h2> có ≥2 đoạn <p> trước list/bảng; tối thiểu 6 <h2>.
-- Ít nhất 2 bảng <table>; checklist; 1–2 figure với ALT SEO.
-- FAQ: <h2>Câu Hỏi Thường Gặp</h2> + 5–10 cặp <h3> + <p>.
-- Internal link: ≥5 thẻ <a href="/..."> tới pillar silo với anchor đa dạng.
-- Topic cluster: <h2>Bài viết liên quan nên đọc</h2> + 5–10 gợi ý.
-- CTA cuối bài theo chuẩn Thắng Tin Học / Thầy Thắng / UltraViewer / 1 kèm 1.
-- Cấm nhắc API key, template, hay "bài mẫu" trong content.
+═══ KIỂM SOÁT CHẤT LƯỢNG (linh hoạt) ═══
+- Mục tiêu ${TARGET_ARTICLE_WORDS} từ; tối thiểu khoảng ${MIN_ARTICLE_WORDS} từ nếu chủ đề đủ sâu — ưu tiên chất lượng hơn đệm chữ.
+- 4–8 thẻ <h2> theo logic chủ đề (không ép khung cố định).
+- Ít nhất 1 bảng <table> hữu ích; checklist khi hợp lý.
+- FAQ 4–8 câu hỏi thật; kết + CTA mềm Thắng Tin Học / 1 kèm 1 / UltraViewer.
+- 3–6 internal link; nếu có nguồn web thì có mục Nguồn tham khảo.
+- Cấm nhắc API key, template, "bài mẫu", giọng AI sáo.
 `;
 
 function buildExpandStyleNote() {
-  return `Mở rộng bài đến TỐI THIỂU ${MIN_ARTICLE_WORDS} từ (mục tiêu ${TARGET_ARTICLE_WORDS}).
+  return `Mở rộng bài đến khoảng ${MIN_ARTICLE_WORDS}+ từ (mục tiêu ${TARGET_ARTICLE_WORDS}) bằng ví dụ thực tế, FAQ, bảng hữu ích — KHÔNG đệm đoạn sáo rỗng.
 ${EDITORIAL_STYLE_PROMPT}
-Giữ HTML h2/h3/p/table; mỗi h2 thêm đoạn văn dài, ví dụ thực tế.`;
+Giữ HTML h2/h3/p/table; bổ sung tình huống văn phòng VN, lỗi hay gặp, cách sửa.`;
 }
 
 /** Bài mẫu dài (~1400+ từ) khi AI không khả dụng — cấu trúc giống bài chuẩn SEO */

@@ -381,12 +381,12 @@ export default function PostForm() {
     if (categories.length === 0) return toast.error('Chưa có danh mục. Hãy tạo danh mục trước!');
 
     setAiGenerating(true);
-    setAiStep('🔍 Đang tìm kiếm dữ liệu Google...');
+    setAiStep('🔍 Đang lấy nguồn mạng (Wikipedia / tìm kiếm)...');
     try {
-      await new Promise(r => setTimeout(r, 800));
-      setAiStep('🤖 AI đang nghiên cứu chủ đề...');
       await new Promise(r => setTimeout(r, 600));
-      setAiStep(`✍️ AI đang viết phiên bản ${aiResults.length + 1}...`);
+      setAiStep('🤖 AI đang nghiên cứu + đối chiếu nguồn...');
+      await new Promise(r => setTimeout(r, 400));
+      setAiStep(`✍️ AI đang viết phiên bản ${aiResults.length + 1} (giọng giáo viên, có nguồn)...`);
 
       const avoid = aiResults.map((r) => ({
         title: r.title,
@@ -400,7 +400,7 @@ export default function PostForm() {
       const { data: d, source, sourceInfo, elapsed, message, wordCount: serverWords, hasTables, success } = res.data;
 
       if (success === false) {
-        toast.error(message || 'Chưa cấu hình API AI. Thêm GEMINI_API_KEY hoặc GROQ_API_KEY vào server/.env', { duration: 8000 });
+        toast.error(message || 'Chưa cấu hình API AI. Thêm GEMINI_API_KEY vào server/.env', { duration: 8000 });
         if (d?.content) {
           const wc = serverWords || (d.content || '').replace(/<[^>]*>/g, '').trim().split(/\s+/).filter(Boolean).length;
           setAiResults(prev => [...prev, { ...d, source: 'template', wordCount: wc, hasTables, elapsed, createdAt: new Date().toLocaleTimeString('vi-VN') }]);
@@ -425,13 +425,14 @@ export default function PostForm() {
       setAiSelectedIdx(aiResults.length);
       setAiStep('');
       if (source === 'template') {
-        toast(message || 'Đã dùng bài mẫu (AI quá tải). Thử lại sau hoặc thêm GROQ_API_KEY.', { icon: '⚠️', duration: 7000 });
+        toast(message || 'Đây là bài khuôn (template) — Gemini chưa chạy. Kiểm tra GEMINI_API_KEY hoặc thử lại sau khi hết quota.', { icon: '⚠️', duration: 9000 });
       } else {
-        const minWords = 1400;
+        const minWords = 1600;
+        const hasWeb = String(source || '').includes('web') || String(source || '').includes('google') || String(source || '').includes('gemini-research');
         if (wordCount < minWords) {
-          toast(`⚠️ Bài ~${wordCount} từ (chuẩn tối thiểu ${minWords}). Có GROQ_API_KEY sẽ dài và sâu hơn.`, { icon: 'ℹ️', duration: 6000 });
+          toast(`⚠️ Bài ~${wordCount} từ (mục tiêu ~1800+). Thử Tạo Thêm hoặc kiểm tra quota AI.`, { icon: 'ℹ️', duration: 6000 });
         } else {
-          toast.success(`✅ Bài AI sẵn sàng — ~${wordCount} từ${hasTables ? ', có bảng minh họa' : ''} (${source})`);
+          toast.success(`✅ Bài AI sẵn sàng — ~${wordCount} từ${hasTables ? ', có bảng' : ''}${hasWeb ? ', có nguồn mạng' : ''} (${source})`);
         }
       }
     } catch (err) {
@@ -636,7 +637,7 @@ export default function PostForm() {
               <div style={{ flex: 1 }}>
                 <h3 style={{ margin: 0, fontSize: '1.1rem', fontWeight: 700 }}>✨ Tạo Bài Viết SEO Bằng AI</h3>
                 <p style={{ margin: 0, fontSize: '0.75rem', color: 'var(--text-muted)' }}>
-                  Tạo tối đa 3 phiên bản · Chọn bài ưng ý nhất
+                  Lấy nguồn mạng · Viết như giáo viên · Tối đa 3 phiên bản
                 </p>
               </div>
               {!aiGenerating && (
@@ -743,8 +744,12 @@ export default function PostForm() {
                           background: idx === 0 ? '#3b82f620' : idx === 1 ? '#10b98120' : '#f59e0b20',
                           color: idx === 0 ? '#3b82f6' : idx === 1 ? '#10b981' : '#f59e0b',
                         }}>Phiên bản {idx + 1}</span>
-                        <span style={{ fontSize: '0.65rem', color: 'var(--text-muted)' }}>
-                          {r.wordCount} từ · {r.source} · {r.elapsed || ''}
+                        <span style={{
+                          fontSize: '0.65rem',
+                          color: r.source === 'template' || r.source === 'no-api-key' ? '#dc2626' : 'var(--text-muted)',
+                          fontWeight: r.source === 'template' ? 700 : 400,
+                        }}>
+                          {r.wordCount} từ · {r.source === 'template' ? '⚠️ khuôn mẫu (AI chưa chạy)' : r.source} · {r.elapsed || ''}
                         </span>
                       </div>
 
@@ -1531,7 +1536,7 @@ export default function PostForm() {
             <div className="card-body" style={{ fontSize: '0.78rem', color: 'var(--text-secondary)', lineHeight: 1.6 }}>
               <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
                 {[
-                  'Dùng AI tạo bài → Google Research + Groq/Gemini viết chuẩn E-E-A-T',
+                  'Dùng AI tạo bài → nguồn mạng + Gemini viết chuẩn E-E-A-T',
                   'Bài viết 1500+ từ, 5+ heading H2/H3, có FAQ để hiện Rich Snippet',
                   'Meta Title ≤ 60 ký tự, Meta Desc 120-160 ký tự, chứa từ khóa',
                   'Thêm ảnh bìa + ảnh trong bài với alt text để SEO hình ảnh',
