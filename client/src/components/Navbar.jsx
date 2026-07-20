@@ -108,7 +108,7 @@ export default function Navbar({ settings }) {
       <div className="container navbar-inner">
         <Link to="/" className="navbar-brand" onClick={closeDrawer}>
           {settings?.site_logo ? (
-            <img src={settings.site_logo} alt={settings?.site_name || 'Thắng Tin Học'} className="site-logo-img" width="200" height="88" loading="eager" fetchPriority="high" decoding="async" />
+            <img src={settings.site_logo} alt={settings?.site_name || 'Thắng Tin Học'} className="site-logo-img" width="200" height="72" loading="eager" fetchPriority="high" decoding="async" />
           ) : (
             <>
               <div className="brand-icon">
