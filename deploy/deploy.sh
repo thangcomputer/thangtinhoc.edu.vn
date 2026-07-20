@@ -1,5 +1,5 @@
 #!/bin/bash
-# Trien khai / cap nhat Thang Tin Hoc tren VPS Ubuntu
+# Trien khai / cap nhat Tin hoc 24h tren VPS Ubuntu
 # Chay: bash deploy/deploy.sh   (tu thu muc goc repo)
 set -e
 

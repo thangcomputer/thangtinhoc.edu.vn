@@ -2,7 +2,7 @@ export function getPublicSiteUrl() {
   const env = (import.meta.env.VITE_SITE_URL || import.meta.env.VITE_CLIENT_URL || '').trim();
   if (env) return env.replace(/\/+$/, '');
   if (import.meta.env.DEV) return 'http://localhost:5173';
-  return 'https://thangtinhoc.edu.vn';
+  return 'https://tinhoc24h.giasutinhoc24h.com';
 }
 
 export function blogPostUrl(slug) {

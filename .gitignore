@@ -19,4 +19,14 @@ yarn-error.log*
 .agents/
 
 site_dist/
+docs/_render-tmp/
 
+# Khong dung Netlify / Render (chi deploy VPS)
+netlify.toml
+render.yaml
+
+# Script tam / test mot lan (da xoa khoi repo)
+fix_likes.js
+fix_encoding.ps1
+server/test_gemini.js
+server/check_ids.js

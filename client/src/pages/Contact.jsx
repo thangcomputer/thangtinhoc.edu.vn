@@ -34,7 +34,7 @@ export default function Contact() {
 
   const address = settings?.address || '123 Đường Tin Học, Quận 1, TP.HCM';
   const phone = settings?.contact_phone || '0901 234 567';
-  const email = settings?.contact_email || 'info@thangtinhoc.vn';
+  const email = settings?.contact_email || 'contact@tinhoc24h.giasutinhoc24h.com';
 
   return (
     <div className="contact-page">

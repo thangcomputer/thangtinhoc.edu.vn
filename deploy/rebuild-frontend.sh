@@ -58,6 +58,6 @@ if ! grep -q 'src="/admin/assets/' site_dist/admin/index.html 2>/dev/null; then
 fi
 
 echo "OK! site_dist san sang."
-echo "  Website: https://thangtinhoc.vn/"
-echo "  Admin:   https://thangtinhoc.vn/admin/login"
+echo "  Website: https://tinhoc24h.giasutinhoc24h.com/"
+echo "  Admin:   https://tinhoc24h.giasutinhoc24h.com/admin/login"
 echo "Trong aaPanel dat Thu muc web = $ROOT/site_dist (KHONG phai client/dist)"

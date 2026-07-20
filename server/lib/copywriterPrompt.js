@@ -1,11 +1,11 @@
 ﻿/**
- * Master prompt — Copywriter & SEO (Thắng Computer / tin học văn phòng).
+ * Master prompt — Copywriter & SEO (Tin học 24h / tin học văn phòng).
  * Website render HTML → quy tắc Markdown được map sang thẻ HTML tương đương.
  */
 
 const BRAND = {
-  name: 'Thắng Computer',
-  sites: 'thangcomputer.com & giasutinhoc24h.com',
+  name: 'Tin học 24h',
+  sites: 'tinhoc24h.giasutinhoc24h.com',
   altName: 'Tin học 24h',
   certs: 'MOS (Word, Excel, PowerPoint, Access, Outlook) và IC3',
   training: 'Học 1 kèm 1 từ xa qua UltraViewer/TeamViewer — cầm tay chỉ việc, sửa lỗi trực tiếp trên máy học viên',

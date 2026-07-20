@@ -135,7 +135,7 @@ export default function Sidebar({ isOpen, closeSidebar, collapsed, onToggleColla
           <Terminal size={20} strokeWidth={2.5} />
         </div>
         <div className="logo-text">
-          <span className="logo-name">Thắng Admin</span>
+          <span className="logo-name">Tin học 24h</span>
           <span className="logo-sub">Bảng điều khiển</span>
         </div>
         {totalUnread > 0 && (

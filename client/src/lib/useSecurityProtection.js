@@ -1,7 +1,10 @@
 import { useEffect } from 'react';
 
+/** Chặn chuột phải / F12 / View Source — chỉ bật ở production. Local được xem code tự do. */
 export function useSecurityProtection() {
   useEffect(() => {
+    if (import.meta.env.DEV) return;
+
     const blockContext = (e) => e.preventDefault();
     const blockKeys = (e) => {
       if (e.key === 'F12') e.preventDefault();
