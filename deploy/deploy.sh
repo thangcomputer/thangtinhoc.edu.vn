@@ -16,7 +16,7 @@ if [ -f "$CONF" ]; then sed -i '1s/^\xEF\xBB\xBF//' "$CONF" 2>/dev/null || true;
 # shellcheck source=/dev/null
 source "$CONF"
 
-DOMAIN="${DOMAIN:-thangtinhoc.vn}"
+DOMAIN="${DOMAIN:-thangtinhoc.edu.vn}"
 ADMIN_DOMAIN="${ADMIN_DOMAIN:-admin.$DOMAIN}"
 APP_DIR="${APP_DIR:-/www/wwwroot/thangtinhoc}"
 PORT="${PORT:-5001}"
@@ -68,7 +68,7 @@ CORS_ORIGIN=${CORS}
 SITE_URL=https://${DOMAIN}
 GOOGLE_CLIENT_ID=${GOOGLE_CLIENT_ID:-}
 RESEND_API_KEY=${RESEND_API_KEY:-}
-EMAIL_FROM=${EMAIL_FROM:-noreply@thangtinhoc.vn}
+EMAIL_FROM=${EMAIL_FROM:-noreply@thangtinhoc.edu.vn}
 SERVE_FRONTEND=${SERVE_FRONTEND}
 GEMINI_API_KEY=
 GROQ_API_KEY=

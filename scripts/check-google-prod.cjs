@@ -1,7 +1,7 @@
 const https = require('https');
 
 const GOOGLE_ID = '940443885790-5tusmho5t1kupi2sctk5bdcj3l83hehn.apps.googleusercontent.com';
-const BASE = 'https://tinhoc24h.giasutinhoc24h.com';
+const BASE = 'https://thangtinhoc.edu.vn';
 
 function get(url) {
   return new Promise((resolve, reject) => {

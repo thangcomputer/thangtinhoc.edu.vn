@@ -45,7 +45,7 @@ export default function Settings() {
   const [settings, setSettings] = useState({
     site_name: 'Tin học 24h',
     site_description: 'Nền tảng đào tạo tin học văn phòng chuyên nghiệp',
-    contact_email: 'contact@tinhoc24h.giasutinhoc24h.com',
+    contact_email: 'contact@thangtinhoc.edu.vn',
     contact_phone: '0987-654-321',
     address: '123 Đường Tin Học, Quận 1, TP.HCM',
     facebook_url: '',

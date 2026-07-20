@@ -1,6 +1,6 @@
 const { Client } = require('ssh2');
 const password = process.env.VPS_PASS;
-const root = '/www/wwwroot/tinhoc24h.giasutinhoc24h.com';
+const root = '/www/wwwroot/thangtinhoc';
 
 const remoteScript = `#!/bin/bash
 set -e
@@ -16,7 +16,7 @@ sqlite3 prisma/dev.db "INSERT OR IGNORE INTO SystemSetting (key,value) VALUES ('
 echo "=== After update ==="
 sqlite3 prisma/dev.db "SELECT key,value FROM SystemSetting WHERE key IN ('site_name','footer_text','site_description');"
 echo
-curl -s "https://tinhoc24h.giasutinhoc24h.com/api/settings" | head -c 300
+curl -s "https://thangtinhoc.edu.vn/api/settings" | head -c 300
 echo
 `;
 

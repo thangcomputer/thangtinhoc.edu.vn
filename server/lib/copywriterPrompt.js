@@ -5,7 +5,7 @@
 
 const BRAND = {
   name: 'Tin học 24h',
-  sites: 'tinhoc24h.giasutinhoc24h.com',
+  sites: 'thangtinhoc.edu.vn',
   altName: 'Tin học 24h',
   certs: 'MOS (Word, Excel, PowerPoint, Access, Outlook) và IC3',
   training: 'Học 1 kèm 1 từ xa qua UltraViewer/TeamViewer — cầm tay chỉ việc, sửa lỗi trực tiếp trên máy học viên',

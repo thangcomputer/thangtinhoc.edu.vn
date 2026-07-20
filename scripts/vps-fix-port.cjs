@@ -1,8 +1,8 @@
 const { Client } = require('ssh2');
 
 const password = process.env.VPS_PASS;
-const domain = 'tinhoc24h.giasutinhoc24h.com';
-const conf = '/www/server/panel/vhost/apache/tinhoc24h.giasutinhoc24h.com.conf';
+const domain = 'thangtinhoc.edu.vn';
+const conf = '/www/server/panel/vhost/apache/thangtinhoc.edu.vn.conf';
 const port = '5001';
 
 const remoteScript = `#!/bin/bash

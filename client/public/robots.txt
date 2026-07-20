@@ -8,4 +8,4 @@ Disallow: /profile
 Disallow: /checkout
 Disallow: /learn/
 
-Sitemap: https://tinhoc24h.giasutinhoc24h.com/sitemap.xml
+Sitemap: https://thangtinhoc.edu.vn/sitemap.xml

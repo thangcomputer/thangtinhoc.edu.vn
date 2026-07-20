@@ -171,7 +171,7 @@ pm2 logs thangtinhoc-api --lines 20
 ```env
 GOOGLE_CLIENT_ID=472584566291-hh7r4rpo8tedqvfb10qgpv27a71a3hds.apps.googleusercontent.com
 RESEND_API_KEY=re_xxxxxxxx
-EMAIL_FROM=noreply@thangtinhoc.vn
+EMAIL_FROM=noreply@thangtinhoc.edu.vn
 SERVE_FRONTEND=false
 ```
 

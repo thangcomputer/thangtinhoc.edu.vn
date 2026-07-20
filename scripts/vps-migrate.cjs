@@ -1,7 +1,7 @@
 const { Client } = require('ssh2');
 
 const password = process.env.VPS_PASS;
-const root = '/www/wwwroot/tinhoc24h.giasutinhoc24h.com';
+const root = '/www/wwwroot/thangtinhoc';
 
 const remoteScript = `#!/bin/bash
 set -e
@@ -19,7 +19,7 @@ pm2 restart tinhoc24h
 sleep 3
 echo
 echo "=== Login test ==="
-curl -s -o /tmp/login.json -w "HTTP %{http_code}\\n" -X POST "https://tinhoc24h.giasutinhoc24h.com/api/auth/login" \\
+curl -s -o /tmp/login.json -w "HTTP %{http_code}\\n" -X POST "https://thangtinhoc.edu.vn/api/auth/login" \\
   -H "Content-Type: application/json" \\
   -d '{"email":"test@gmail.com","password":"user123","deviceId":"0123456789abcdef"}'
 head -c 300 /tmp/login.json

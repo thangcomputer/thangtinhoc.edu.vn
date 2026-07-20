@@ -1,6 +1,6 @@
 const { Client } = require('ssh2');
 const password = process.env.VPS_PASS;
-const root = '/www/wwwroot/tinhoc24h.giasutinhoc24h.com';
+const root = '/www/wwwroot/thangtinhoc';
 
 const remoteScript = `#!/bin/bash
 set -e
@@ -12,7 +12,7 @@ echo "=== Run seed (creates admin@gmail.com) ==="
 npm run db:seed 2>&1 | tail -15
 echo
 echo "=== Admin login test ==="
-curl -s -o /tmp/admin.json -w "HTTP %{http_code}\\n" -X POST "https://tinhoc24h.giasutinhoc24h.com/api/auth/login" \\
+curl -s -o /tmp/admin.json -w "HTTP %{http_code}\\n" -X POST "https://thangtinhoc.edu.vn/api/auth/login" \\
   -H "Content-Type: application/json" \\
   -d '{"email":"admin@gmail.com","password":"admin123","deviceId":"0123456789abcdef"}'
 head -c 350 /tmp/admin.json

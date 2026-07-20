@@ -1,7 +1,7 @@
 const { Client } = require('ssh2');
 
 const password = process.env.VPS_PASS;
-const domain = 'tinhoc24h.giasutinhoc24h.com';
+const domain = 'thangtinhoc.edu.vn';
 
 const remoteScript = `#!/bin/bash
 set -e
@@ -21,7 +21,7 @@ echo "=== Apache vhosts for domain ==="
 ls -la /www/server/panel/vhost/apache/ | grep tinhoc || true
 grep -l "${domain}" /www/server/panel/vhost/apache/*.conf 2>/dev/null || true
 echo
-for f in /www/server/panel/vhost/apache/tinhoc24h.giasutinhoc24h.com.conf /www/server/panel/vhost/apache/tinhoc24h.giasutinhoc24h.com.conf.bak.*; do
+for f in /www/server/panel/vhost/apache/thangtinhoc.edu.vn.conf /www/server/panel/vhost/apache/thangtinhoc.edu.vn.conf.bak.*; do
   [ -f "$f" ] || continue
   echo "--- $f ---"
   grep -E 'ServerName|ProxyPass|VirtualHost' "$f" | head -20 || true

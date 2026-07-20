@@ -72,8 +72,8 @@ async function main() {
     { key: 'site_logo',       value: '/logo.webp',        forceUpdate: true },
     { key: 'hero_media_url',  value: '/hero-banner.webp', forceUpdate: true },
     { key: 'hero_media_type', value: 'image',            forceUpdate: true },
-    { key: 'site_name',       value: 'Tin học 24h',    forceUpdate: true },
-    { key: 'site_description', value: 'Trung tâm đào tạo tin học văn phòng chuyên nghiệp', forceUpdate: false },
+    { key: 'site_name',       value: 'Thắng Tin Học',    forceUpdate: true },
+    { key: 'site_description', value: 'Thắng Tin Học thangtinhoc.edu.vn — Trung tâm đào tạo tin học văn phòng chuyên nghiệp', forceUpdate: false },
   ];
   for (const s of defaultSettings) {
     const existing = await prisma.systemSetting.findUnique({ where: { key: s.key } });

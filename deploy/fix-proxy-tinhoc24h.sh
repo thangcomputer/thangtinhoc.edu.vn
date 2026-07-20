@@ -1,11 +1,11 @@
 #!/bin/bash
-# Sua proxy Apache cho tinhoc24h.giasutinhoc24h.com
+# Sua proxy Apache cho thangtinhoc.edu.vn
 # Chay tren VPS (root): bash deploy/fix-proxy-tinhoc24h.sh
 
 set -euo pipefail
 
-DOMAIN="${DOMAIN:-tinhoc24h.giasutinhoc24h.com}"
-ROOT="${ROOT:-/www/wwwroot/tinhoc24h.giasutinhoc24h.com}"
+DOMAIN="${DOMAIN:-thangtinhoc.edu.vn}"
+ROOT="${ROOT:-/www/wwwroot/thangtinhoc}"
 PORT="${PORT:-5002}"
 
 PROXY_BLOCK="# tinhoc24h API proxy (auto-added)

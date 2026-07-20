@@ -1,11 +1,11 @@
-DOMAIN=thangtinhoc.vn
-ADMIN_DOMAIN=admin.thangtinhoc.vn
+DOMAIN=thangtinhoc.edu.vn
+ADMIN_DOMAIN=thangtinhoc.edu.vn
 APP_DIR=/www/wwwroot/thangtinhoc
 PORT=5001
 JWT_SECRET=
 RUN_SEED=true
 RESEND_API_KEY=
-EMAIL_FROM=noreply@thangtinhoc.vn
+EMAIL_FROM=noreply@thangtinhoc.edu.vn
 GOOGLE_CLIENT_ID=
 # aaPanel: Apache serve site_dist — API khong serve static
 SERVE_FRONTEND=false

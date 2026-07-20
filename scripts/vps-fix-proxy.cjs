@@ -2,7 +2,7 @@ const { Client } = require('ssh2');
 
 const host = process.env.VPS_HOST || '103.124.92.238';
 const password = process.env.VPS_PASS;
-const domain = process.env.VPS_DOMAIN || 'tinhoc24h.giasutinhoc24h.com';
+const domain = process.env.VPS_DOMAIN || 'thangtinhoc.edu.vn';
 const port = process.env.VPS_API_PORT || '5002';
 
 if (!password) {

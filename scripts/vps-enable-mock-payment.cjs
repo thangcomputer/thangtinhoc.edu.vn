@@ -1,6 +1,6 @@
 const { Client } = require('ssh2');
 const password = process.env.VPS_PASS;
-const root = '/www/wwwroot/tinhoc24h.giasutinhoc24h.com';
+const root = '/www/wwwroot/thangtinhoc';
 
 const remoteScript = `#!/bin/bash
 set -e
