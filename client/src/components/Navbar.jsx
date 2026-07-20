@@ -108,14 +108,14 @@ export default function Navbar({ settings }) {
       <div className="container navbar-inner">
         <Link to="/" className="navbar-brand" onClick={closeDrawer}>
           {settings?.site_logo ? (
-            <img src={settings.site_logo} alt={settings?.site_name || 'Tin học 24h'} className="site-logo-img" width="126" height="56" loading="eager" fetchPriority="high" decoding="async" />
+            <img src={settings.site_logo} alt={settings?.site_name || 'Thắng Tin Học'} className="site-logo-img" width="126" height="56" loading="eager" fetchPriority="high" decoding="async" />
           ) : (
             <>
               <div className="brand-icon">
                 <BookOpen size={22} />
               </div>
               <div className="brand-text">
-                <span className="brand-name">{settings?.site_name || 'Tin học 24h'}</span>
+                <span className="brand-name">{settings?.site_name || 'Thắng Tin Học'}</span>
                 <span className="brand-sub">Trung Tâm Đào Tạo</span>
               </div>
             </>

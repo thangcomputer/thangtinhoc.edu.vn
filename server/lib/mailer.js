@@ -1,10 +1,10 @@
 ﻿/**
- * Mailer — Tin học 24h
+ * Mailer — Thắng Tin Học
  * Sử dụng Resend API qua fetch (HTTP) — không cần SMTP port
  */
 
 const RESEND_API_KEY = process.env.RESEND_API_KEY;
-const FROM = process.env.EMAIL_FROM || 'Tin học 24h <onboarding@resend.dev>';
+const FROM = process.env.EMAIL_FROM || 'Thắng Tin Học <onboarding@resend.dev>';
 const siteUrl = process.env.SITE_URL || 'http://localhost:5173';
 const adminUrl = process.env.ADMIN_URL || 'http://localhost:5174';
 
@@ -40,17 +40,17 @@ const sendEmail = async ({ to, subject, html }) => {
 const sendWelcomeEmail = (user) => {
   return sendEmail({
     to: user.email,
-    subject: 'Chào mừng bạn đến với Tin học 24h!',
+    subject: 'Chào mừng bạn đến với Thắng Tin Học!',
     html: `
       <div style="font-family: sans-serif; max-width: 600px; margin: auto; border: 1px solid #eee; padding: 20px;">
         <h2 style="color: #2563eb;">Chào mừng ${user.fullName},</h2>
-        <p>Cảm ơn bạn đã đăng ký tài khoản tại <strong>Tin học 24h</strong>.</p>
+        <p>Cảm ơn bạn đã đăng ký tài khoản tại <strong>Thắng Tin Học</strong>.</p>
         <p>Chúng tôi rất vui mừng được đồng hành cùng bạn trên con đường chinh phục kỹ năng Tin học văn phòng.</p>
         <div style="text-align: center; margin: 30px 0;">
           <a href="${siteUrl}/login" style="background: #2563eb; color: white; padding: 12px 25px; text-decoration: none; border-radius: 5px; font-weight: bold;">Vào Học Ngay</a>
         </div>
         <hr style="border: none; border-top: 1px solid #eee;">
-        <p style="font-size: 12px; color: #888;">© 2024 Tin học 24h</p>
+        <p style="font-size: 12px; color: #888;">© 2024 Thắng Tin Học</p>
       </div>
     `,
   });
@@ -94,7 +94,7 @@ const sendOrderSuccessEmail = (user, order) => {
 const sendPasswordResetEmail = (user, resetUrl) => {
   return sendEmail({
     to: user.email,
-    subject: 'Quên mật khẩu - Tin học 24h',
+    subject: 'Quên mật khẩu - Thắng Tin Học',
     html: `
       <div style="font-family: sans-serif; max-width: 600px; margin: auto; border: 1px solid #eee; padding: 20px;">
         <h2 style="color: #f59e0b;">Yêu Cầu Lấy Lại Mật Khẩu</h2>

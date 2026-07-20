@@ -1,5 +1,5 @@
 {
-  "name": "tinhoc24h",
+  "name": "thangtinhoc",
   "private": true,
   "scripts": {
     "merge:site": "node scripts/merge-site-dist.cjs",

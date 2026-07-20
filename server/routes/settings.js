@@ -29,7 +29,7 @@ router.get('/', async (req, res) => {
 // Update settings (admin)
 router.post('/bulk', authenticate, authorize('admin'), async (req, res) => {
   try {
-    const { settings } = req.body; // { site_name: "Tin học 24h", ... }
+    const { settings } = req.body; // { site_name: "Thắng Tin Học", ... }
     for (const [key, value] of Object.entries(settings)) {
       await prisma.systemSetting.upsert({
         where: { key },

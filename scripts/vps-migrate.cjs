@@ -14,8 +14,8 @@ cd server
 npm ci --omit=dev 2>&1 | tail -3 || npm install --omit=dev 2>&1 | tail -3
 npx prisma migrate deploy 2>&1
 echo
-echo "=== Restart PM2 tinhoc24h ==="
-pm2 restart tinhoc24h
+echo "=== Restart PM2 thangtinhoc-api ==="
+pm2 restart thangtinhoc-api
 sleep 3
 echo
 echo "=== Login test ==="

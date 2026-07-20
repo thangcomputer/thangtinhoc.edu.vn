@@ -6,7 +6,8 @@ const remoteScript = `#!/bin/bash
 set -e
 cd "${root}"
 echo "=== Patch brand + domain thangtinhoc.edu.vn on VPS ==="
-sed -i 's/Thắng Admin/Thắng Tin Học/g' admin/src/components/Sidebar.jsx 2>/dev/null || true
+sed -i 's/Tin học 24h/Thắng Tin Học/g' client/index.html admin/index.html admin/public/index.html 2>/dev/null || true
+sed -i 's/Tin học 24h/Thắng Tin Học/g' client/src/components/*.jsx client/src/pages/*.jsx admin/src/pages/*.jsx 2>/dev/null || true
 sed -i 's|https://tinhoc24h.giasutinhoc24h.com|https://thangtinhoc.edu.vn|g' client/index.html admin/src/lib/siteUrl.js client/public/robots.txt 2>/dev/null || true
 sed -i 's/contact@tinhoc24h.giasutinhoc24h.com/contact@thangtinhoc.edu.vn/g' client/src/components/Footer.jsx client/src/pages/Contact.jsx admin/src/pages/Settings.jsx 2>/dev/null || true
 sed -i "s/sites: '[^']*'/sites: 'thangtinhoc.edu.vn'/g" server/lib/copywriterPrompt.js 2>/dev/null || true

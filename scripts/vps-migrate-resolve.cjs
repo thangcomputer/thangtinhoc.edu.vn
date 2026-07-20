@@ -15,7 +15,7 @@ echo
 echo "=== Check UserSession table ==="
 sqlite3 prisma/dev.db ".tables" | tr ' ' '\\n' | grep -i session || true
 echo
-pm2 restart tinhoc24h
+pm2 restart thangtinhoc-api
 sleep 3
 echo "=== Login test ==="
 curl -s -o /tmp/login.json -w "HTTP %{http_code}\\n" -X POST "https://thangtinhoc.edu.vn/api/auth/login" \\

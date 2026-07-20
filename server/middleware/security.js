@@ -1,5 +1,5 @@
 ﻿/**
- * Security Middleware — Tin học 24h
+ * Security Middleware — Thắng Tin Học
  * Rate Limiting, Input Sanitization, HTTPS Redirect, Audit Logging
  */
 const { rateLimit, ipKeyGenerator } = require('express-rate-limit');

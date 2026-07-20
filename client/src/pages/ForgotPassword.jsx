@@ -10,7 +10,7 @@ export default function ForgotPassword() {
   const [loading, setLoading] = useState(false);
   const [isSent, setIsSent] = useState(false);
   const [siteLogo, setSiteLogo] = useState(null);
-  const [siteName, setSiteName] = useState('Tin học 24h');
+  const [siteName, setSiteName] = useState('Thắng Tin Học');
 
   useEffect(() => {
     api.get('/settings').then(res => {

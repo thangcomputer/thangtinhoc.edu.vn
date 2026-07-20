@@ -297,7 +297,7 @@ export default function VisualBuilder({
       case 'hero':
         return (
           <div style={{ background: 'linear-gradient(135deg, #0f172a 0%, #1e1b4b 50%, #312e81 100%)', padding: '48px 32px', textAlign: 'center' }}>
-            <div style={{ fontSize: '0.7rem', background: 'rgba(139,92,246,0.3)', padding: '4px 14px', borderRadius: '99px', display: 'inline-flex', color: '#c4b5fd', marginBottom: '12px' }}>✨ Tin học 24h</div>
+            <div style={{ fontSize: '0.7rem', background: 'rgba(139,92,246,0.3)', padding: '4px 14px', borderRadius: '99px', display: 'inline-flex', color: '#c4b5fd', marginBottom: '12px' }}>✨ Thắng Tin Học</div>
             <h2 style={{ fontSize: '1.4rem', fontWeight: 900, color: '#fff', margin: '0 0 8px', lineHeight: 1.3 }}>{settings.hero_title || 'HỌC SỬ DỤNG MÁY VI TÍNH 1 KÈM 1 ONLINE'}</h2>
             <p style={{ fontSize: '0.8rem', color: 'rgba(255,255,255,0.6)', margin: '0 0 16px', maxWidth: '500px', marginInline: 'auto' }}>{settings.hero_subtitle || 'Hướng dẫn chi tiết từ cơ bản nhất'}</p>
             <div style={{ display: 'flex', gap: '10px', justifyContent: 'center' }}>

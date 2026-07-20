@@ -1,6 +1,6 @@
 #!/bin/bash
 # Sua proxy Apache cho thangtinhoc.edu.vn
-# Chay tren VPS (root): bash deploy/fix-proxy-tinhoc24h.sh
+# Chay tren VPS (root): bash deploy/fix-proxy-thangtinhoc.sh
 
 set -euo pipefail
 
@@ -8,7 +8,7 @@ DOMAIN="${DOMAIN:-thangtinhoc.edu.vn}"
 ROOT="${ROOT:-/www/wwwroot/thangtinhoc}"
 PORT="${PORT:-5002}"
 
-PROXY_BLOCK="# tinhoc24h API proxy (auto-added)
+PROXY_BLOCK="# thangtinhoc API proxy (auto-added)
 <IfModule mod_proxy.c>
   ProxyPreserveHost On
   ProxyPass /api http://127.0.0.1:${PORT}/api
@@ -24,7 +24,7 @@ if curl -sf "http://127.0.0.1:${PORT}/api/health" >/dev/null; then
   echo ""
 else
   echo "FAIL: backend khong phan hoi tai :${PORT}"
-  echo "Kiem tra: pm2 list && pm2 logs tinhoc24h --lines 30"
+  echo "Kiem tra: pm2 list && pm2 logs thangtinhoc-api --lines 30"
   exit 1
 fi
 
@@ -59,7 +59,7 @@ echo ""
 echo "========== 3. Chen / cap nhat ProxyPass =========="
 cp "$VHOST" "${VHOST}.bak.$(date +%Y%m%d%H%M%S)"
 
-if grep -q "tinhoc24h API proxy" "$VHOST"; then
+if grep -q "thangtinhoc API proxy" "$VHOST"; then
   echo "Da co proxy block — cap nhat port ${PORT}"
   sed -i "s|ProxyPass /api http://127.0.0.1:[0-9]*/api|ProxyPass /api http://127.0.0.1:${PORT}/api|g" "$VHOST"
   sed -i "s|ProxyPassReverse /api http://127.0.0.1:[0-9]*/api|ProxyPassReverse /api http://127.0.0.1:${PORT}/api|g" "$VHOST"

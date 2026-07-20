@@ -11,7 +11,7 @@ export default function About() {
     api.get('/settings').then(res => setSettings(res.data.data || {})).catch(() => {});
   }, []);
 
-  const siteName = settings?.site_name || 'Tin học 24h';
+  const siteName = settings?.site_name || 'Thắng Tin Học';
 
   const milestones = [
     { year: '2018', title: 'Thành lập', desc: 'Bắt đầu hành trình đào tạo tin học với 2 giáo viên' },

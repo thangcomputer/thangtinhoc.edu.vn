@@ -12,7 +12,7 @@ import './PageLoader.css';
  */
 const MODES = ['spinner', 'pulse', 'dots', 'wave', 'progress'];
 
-export default function PageLoader({ mode = 'spinner', siteName = 'Tin học 24h', logo }) {
+export default function PageLoader({ mode = 'spinner', siteName = 'Thắng Tin Học', logo }) {
   const [progressWidth, setProgressWidth] = useState(0);
 
   useEffect(() => {

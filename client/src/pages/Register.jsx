@@ -18,7 +18,7 @@ function RegisterPage() {
   const { login } = useAuthStore();
   const navigate = useNavigate();
   const [siteLogo, setSiteLogo] = useState(null);
-  const [siteName, setSiteName] = useState('Tin học 24h');
+  const [siteName, setSiteName] = useState('Thắng Tin Học');
 
   useEffect(() => {
     api.get('/settings').then((res) => {

@@ -21,7 +21,7 @@ async function main() {
     create: {
       email: 'admin@gmail.com',
       password: adminPass,
-      fullName: 'Admin Tin học 24h',
+      fullName: 'Admin Thắng Tin Học',
       role: 'admin',
     },
   });

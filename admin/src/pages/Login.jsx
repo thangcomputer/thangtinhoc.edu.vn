@@ -119,7 +119,7 @@ export default function Login() {
           </div>
           <div>
             <div style={{ fontWeight: 800, fontSize: '1.35rem', color: 'var(--text-primary)', letterSpacing: '-0.5px' }}>
-              Tin học 24h Admin
+              Thắng Tin Học Admin
             </div>
             <div style={{ fontSize: '0.72rem', color: 'var(--text-muted)', fontWeight: 500, letterSpacing: '1px', textTransform: 'uppercase' }}>
               Bảng điều khiển

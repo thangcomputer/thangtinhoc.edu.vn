@@ -12,7 +12,7 @@ echo 'ALLOW_MOCK_PAYMENT=true' >> "${envFile}.tmp"
 mv "${envFile}.tmp" "${envFile}"
 echo "=== Fixed .env ==="
 grep -E 'MAX_FILE_SIZE|ALLOW_MOCK|NODE_ENV' "${envFile}"
-pm2 restart tinhoc24h --update-env
+pm2 restart thangtinhoc-api --update-env
 sleep 2
 cd "${root}/server"
 node -e "require('dotenv').config(); const {isMockPaymentAllowed}=require('./lib/validate'); console.log('isMockPaymentAllowed:', isMockPaymentAllowed());"

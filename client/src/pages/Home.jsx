@@ -113,7 +113,7 @@ export default function Home({ settings }) {
   try { testimonials = JSON.parse(settings?.home_testimonials || '[]'); } catch(e) { testimonials = []; }
   if (testimonials.length === 0) {
     testimonials = [
-      { name: 'Phạm Thị Lan', role: 'Kế Toán Viên', text: 'Khóa học Excel tại Tin học 24h đã giúp tôi tăng tốc công việc lên 3 lần. Thầy giảng dạy rất tận tâm và dễ hiểu!', rating: 5, avatar: '' },
+      { name: 'Phạm Thị Lan', role: 'Kế Toán Viên', text: 'Khóa học Excel tại Thắng Tin Học đã giúp tôi tăng tốc công việc lên 3 lần. Thầy giảng dạy rất tận tâm và dễ hiểu!', rating: 5, avatar: '' },
       { name: 'Nguyễn Văn Hùng', role: 'Nhân Viên Văn Phòng', text: 'Tôi đã học Word và PowerPoint ở đây. Giờ tôi tự tin trình bày báo cáo trước hàng chục người. Cảm ơn thầy Thắng!', rating: 5, avatar: '' },
       { name: 'Trần Thanh Mai', role: 'Quản Lý Dự Án', text: 'Khóa học Excel nâng cao và Dashboard giúp tôi báo cáo KPI cho ban giám đốc một cách chuyên nghiệp. Rất đáng đầu tư!', rating: 5, avatar: '' },
     ];
@@ -442,7 +442,7 @@ export default function Home({ settings }) {
           <ScrollReveal animation={anim.testimonials} className="section-center">
             <div className="section-tag"><MessageSquare size={14} /> Học Viên Nói Gì?</div>
             <h2 className="section-title">Phản Hồi <span className="highlight">Thực Tế</span> Từ Học Viên</h2>
-            <p className="section-subtitle">Hàng nghìn học viên đã thay đổi sự nghiệp nhờ các khóa học tại Tin học 24h</p>
+            <p className="section-subtitle">Hàng nghìn học viên đã thay đổi sự nghiệp nhờ các khóa học tại Thắng Tin Học</p>
           </ScrollReveal>
           <StaggerReveal animation={anim.testimonials} staggerDelay={200} className="grid-3 testimonials-grid">
             {testimonials.map((t, i) => (

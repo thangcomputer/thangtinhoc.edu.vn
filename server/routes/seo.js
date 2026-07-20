@@ -139,11 +139,11 @@ router.get('/api/seo/post/:slug', async (req, res) => {
       "dateModified": post.updatedAt?.toISOString(),
       "author": {
         "@type": "Person",
-        "name": post.author?.fullName || "Tin học 24h",
+        "name": post.author?.fullName || "Thắng Tin Học",
       },
       "publisher": {
         "@type": "Organization",
-        "name": "Tin học 24h",
+        "name": "Thắng Tin Học",
         "logo": {
           "@type": "ImageObject",
           "url": `${baseUrl}/logo.png`,
@@ -201,7 +201,7 @@ router.get('/api/seo/post/:slug', async (req, res) => {
       noIndex: !!post.noIndex,
       canonical: postUrl,
       type: 'article',
-      author: post.author?.fullName || 'Tin học 24h',
+      author: post.author?.fullName || 'Thắng Tin Học',
       publishedTime: post.createdAt?.toISOString(),
       modifiedTime: post.updatedAt?.toISOString(),
       category: post.category?.name || '',

@@ -14,7 +14,7 @@ else
 fi
 echo "=== After ==="
 grep -E 'ALLOW_MOCK|NODE_ENV' "$ENV_FILE"
-pm2 restart tinhoc24h --update-env
+pm2 restart thangtinhoc-api --update-env
 sleep 3
 echo "=== Test mock order (need token - check env only) ==="
 node -e "require('dotenv').config({path:'${root}/server/.env'}); console.log('ALLOW_MOCK_PAYMENT=', process.env.ALLOW_MOCK_PAYMENT); console.log('NODE_ENV=', process.env.NODE_ENV);"
