@@ -1,20 +1,34 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import { Star, Users, Clock, BookOpen, CheckCircle, Play, ShoppingCart, Lock, X, ArrowRight, Link2, MessageSquare } from 'lucide-react';
 import toast from 'react-hot-toast';
 import api from '../lib/api';
 import useAuthStore from '../store/authStore';
 import { getYoutubeId } from '../lib/youtube';
+import {
+  usePageSeo,
+  SITE_URL,
+  buildBreadcrumbSchema,
+  buildOrganizationSchema,
+  buildPersonSchema,
+} from '../lib/usePageSeo';
 import './CourseDetail.css';
 
 function formatPrice(price) {
   return price === 0 ? 'Miễn phí' : new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(price);
 }
 
+function stripHtml(html) {
+  return String(html || '')
+    .replace(/<[^>]+>/g, ' ')
+    .replace(/\s+/g, ' ')
+    .trim();
+}
+
 export default function CourseDetail() {
   const { slug } = useParams();
   const navigate = useNavigate();
-  const { isAuthenticated, user } = useAuthStore();
+  const { isAuthenticated } = useAuthStore();
 
   const [course, setCourse] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -25,55 +39,6 @@ export default function CourseDetail() {
   const [progress, setProgress] = useState([]);
   const [activeTab, setActiveTab] = useState('content');
   const [featured, setFeatured] = useState([]);
-  const [fakeNotif, setFakeNotif] = useState(null);
-
-  // 30 fake enrollments for social proof
-  const fakeUsers = [
-    { name: 'Nguyễn Minh Anh', email: 'minhanh****@gmail.com' },
-    { name: 'Trần Bích Mi', email: 'bichmi****@yahoo.com' },
-    { name: 'Lê Hoàng Nam', email: 'hoangnam****@gmail.com' },
-    { name: 'Phạm Thu Hà', email: 'thuha****@outlook.com' },
-    { name: 'Võ Đức Trí', email: 'ductri****@gmail.com' },
-    { name: 'Ngô Thị Lan', email: 'ngolan****@yahoo.com' },
-    { name: 'Đặng Quốc Bảo', email: 'quocbao****@gmail.com' },
-    { name: 'Huỳnh Thanh Tâm', email: 'thanhtam****@gmail.com' },
-    { name: 'Bùi Văn Khoa', email: 'vankhoa****@outlook.com' },
-    { name: 'Dương Thùy Linh', email: 'thuylinh****@gmail.com' },
-    { name: 'Trịnh Hữu Phúc', email: 'huuphuc****@yahoo.com' },
-    { name: 'Lý Ngọc Diệp', email: 'ngocdiep****@gmail.com' },
-    { name: 'Hồ Minh Tuấn', email: 'minhtuan****@gmail.com' },
-    { name: 'Mai Thị Hồng', email: 'maihong****@outlook.com' },
-    { name: 'Phan Anh Dũng', email: 'anhdung****@gmail.com' },
-    { name: 'Tô Gia Hân', email: 'giahan****@yahoo.com' },
-    { name: 'Châu Minh Đức', email: 'minhduc****@gmail.com' },
-    { name: 'Lương Thị Yến', email: 'luongyen****@gmail.com' },
-    { name: 'Đinh Công Vinh', email: 'congvinh****@outlook.com' },
-    { name: 'Vương Thảo Vy', email: 'thaovy****@gmail.com' },
-    { name: 'Kiều Bảo Ngọc', email: 'baongoc****@yahoo.com' },
-    { name: 'Tạ Quang Huy', email: 'quanghuy****@gmail.com' },
-    { name: 'Cao Nhật Minh', email: 'nhatminh****@gmail.com' },
-    { name: 'Đỗ Phương Thảo', email: 'pthao****@outlook.com' },
-    { name: 'Nguyễn Hải Đăng', email: 'haidang****@gmail.com' },
-    { name: 'Trần Khánh Linh', email: 'khanhlinh****@yahoo.com' },
-    { name: 'Lê Tấn Phát', email: 'tanphat****@gmail.com' },
-    { name: 'Phạm Quỳnh Như', email: 'quynhnhu****@gmail.com' },
-    { name: 'Hoàng Sỹ Long', email: 'sylong****@outlook.com' },
-    { name: 'Vũ Thị Mỹ Duyên', email: 'myduyen****@gmail.com' },
-  ];
-
-  // Social proof notification timer
-  useEffect(() => {
-    if (!course || enrolled) return;
-    const showNotif = () => {
-      const randomUser = fakeUsers[Math.floor(Math.random() * fakeUsers.length)];
-      const timeAgo = Math.floor(Math.random() * 30) + 1;
-      setFakeNotif({ ...randomUser, timeAgo });
-      setTimeout(() => setFakeNotif(null), 5000);
-    };
-    const firstTimer = setTimeout(showNotif, 4000);
-    const interval = setInterval(showNotif, Math.floor(Math.random() * 7000) + 8000);
-    return () => { clearTimeout(firstTimer); clearInterval(interval); };
-  }, [course, enrolled]);
 
   useEffect(() => {
     api.get(`/courses/${slug}`).then(res => {
@@ -107,6 +72,63 @@ export default function CourseDetail() {
       setFeatured((res.data.data || []).filter(c => c.slug !== slug).slice(0, 4));
     }).catch(() => { });
   }, [slug]);
+
+  const pageSeo = useMemo(() => {
+    if (!course) return { enabled: false };
+    const plain = stripHtml(course.shortDescription || course.description || course.title);
+    const description = (plain || `Khóa học ${course.title} tại Thắng Tin Học — học online 1 kèm 1.`).slice(0, 160);
+    const canonical = `${SITE_URL}/courses/${course.slug}`;
+    const image = course.thumbnail?.startsWith('http')
+      ? course.thumbnail
+      : (course.thumbnail ? `${SITE_URL}${course.thumbnail}` : `${SITE_URL}/hero-banner.png`);
+
+    const courseSchema = {
+      '@context': 'https://schema.org',
+      '@type': 'Course',
+      name: course.title,
+      description,
+      url: canonical,
+      image,
+      provider: {
+        '@type': 'Organization',
+        name: 'Thắng Tin Học',
+        url: SITE_URL,
+      },
+      offers: {
+        '@type': 'Offer',
+        url: canonical,
+        price: Number(course.price) || 0,
+        priceCurrency: 'VND',
+        availability: 'https://schema.org/InStock',
+        category: course.price === 0 ? 'Free' : 'Paid',
+      },
+      ...(course.level ? { educationalLevel: course.level } : {}),
+    };
+
+    return {
+      enabled: true,
+      title: course.title,
+      description,
+      keywords: [course.title, course.category?.name, 'khóa học tin học', 'Thắng Tin Học', 'học online 1 kèm 1']
+        .filter(Boolean)
+        .join(', '),
+      canonical,
+      image,
+      type: 'website',
+      schemas: [
+        buildBreadcrumbSchema([
+          { name: 'Trang chủ', url: '/' },
+          { name: 'Khóa học', url: '/courses' },
+          { name: course.title, url: `/courses/${course.slug}` },
+        ]),
+        courseSchema,
+        buildOrganizationSchema(),
+        buildPersonSchema(),
+      ],
+    };
+  }, [course]);
+
+  usePageSeo(pageSeo);
 
   const handleEnroll = async () => {
     if (!isAuthenticated) { navigate('/login'); return; }
@@ -460,32 +482,6 @@ export default function CourseDetail() {
               ) : (
                 <video src={previewVideo.videoUrl} controls autoPlay style={{ width: '100%' }} />
               )}
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* Social Proof Notification */}
-      {fakeNotif && (
-        <div className="sp-notif">
-          <div className="sp-notif-accent"></div>
-          <div className="sp-notif-content">
-            <div className="sp-notif-top">
-              <div className="sp-notif-avatar">
-                {fakeNotif.name[0]}
-              </div>
-              <div className="sp-notif-info">
-                <p className="sp-notif-name">{fakeNotif.name}</p>
-                <p className="sp-notif-email">{fakeNotif.email}</p>
-              </div>
-              <button className="sp-notif-close" onClick={() => setFakeNotif(null)}>✕</button>
-            </div>
-            <div className="sp-notif-bottom">
-              <p className="sp-notif-msg">
-
-                Đã đăng ký khóa học <strong>"{course.title}"</strong>
-              </p>
-              <span className="sp-notif-time">{fakeNotif.timeAgo} phút trước</span>
             </div>
           </div>
         </div>

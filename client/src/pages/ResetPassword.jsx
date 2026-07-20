@@ -1,15 +1,16 @@
 ﻿import { useState, useEffect } from 'react';
 import { Link, useNavigate, useSearchParams } from 'react-router-dom';
-import { Lock, Save, BookOpen } from 'lucide-react';
+import { Lock, Save } from 'lucide-react';
 import toast from 'react-hot-toast';
 import api from '../lib/api';
+import AuthShell, { AuthField, AuthSwitch } from '../components/AuthShell';
 import './Auth.css';
 
 export default function ResetPassword() {
   const [searchParams] = useSearchParams();
   const token = searchParams.get('token');
   const email = searchParams.get('email');
-  
+
   const navigate = useNavigate();
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
@@ -18,7 +19,7 @@ export default function ResetPassword() {
   const [siteName, setSiteName] = useState('Thắng Tin Học');
 
   useEffect(() => {
-    api.get('/settings').then(res => {
+    api.get('/settings').then((res) => {
       const s = res.data.data;
       if (s?.site_logo) setSiteLogo(s.site_logo);
       if (s?.site_name) setSiteName(s.site_name);
@@ -31,7 +32,7 @@ export default function ResetPassword() {
       return toast.error('Mật khẩu nhập lại không khớp!');
     }
     if (password.length < 8) {
-      return toast.error('Mật khẩu phải từ 6 ký tự trở lên');
+      return toast.error('Mật khẩu phải từ 8 ký tự trở lên');
     }
 
     setLoading(true);
@@ -48,70 +49,78 @@ export default function ResetPassword() {
 
   if (!token || !email) {
     return (
-      <div className="auth-page">
-        <div className="auth-bg">
-          <div className="auth-orb orb1" />
-          <div className="auth-orb orb2" />
-        </div>
-        <div className="auth-card" style={{ textAlign: 'center' }}>
-          <h2 className="auth-title">Liên Kết Không Hợp Lệ</h2>
-          <p className="auth-subtitle">Không tìm thấy thông tin xác thực.</p>
-          <Link to="/forgot-password" className="btn btn-primary" style={{ marginTop: '1rem', display: 'inline-block' }}>Yêu Cầu Lại</Link>
-        </div>
-      </div>
+      <AuthShell
+        siteLogo={siteLogo}
+        siteName={siteName}
+        title="Liên kết không hợp lệ"
+        subtitle="Không tìm thấy thông tin xác thực."
+        panelTitle="Đặt lại mật khẩu"
+        panelItems={[
+          'Dùng link trong email gần nhất',
+          'Link chỉ dùng được một lần',
+          'Yêu cầu lại nếu đã hết hạn',
+        ]}
+        footer={
+          <AuthSwitch>
+            <Link to="/forgot-password">Yêu cầu liên kết mới</Link>
+          </AuthSwitch>
+        }
+      >
+        <Link to="/forgot-password" className="btn btn-primary auth-submit">
+          Yêu cầu lại
+        </Link>
+      </AuthShell>
     );
   }
 
   return (
-    <div className="auth-page">
-      <div className="auth-bg">
-        <div className="auth-orb orb1" />
-        <div className="auth-orb orb2" />
-      </div>
-      <div className="auth-card">
-        <div className="auth-brand">
-          {siteLogo ? (
-            <img src={siteLogo} alt={siteName} className="auth-brand-logo" />
-          ) : (
-            <div className="brand-icon"><BookOpen size={22} /></div>
-          )}
-        </div>
-        <h2 className="auth-title">Tạo Mật Khẩu Mới</h2>
-        <p className="auth-subtitle">Vui lòng thiết lập mật khẩu mới cho tài khoản {email}</p>
+    <AuthShell
+      siteLogo={siteLogo}
+      siteName={siteName}
+      title="Tạo mật khẩu mới"
+      subtitle={`Thiết lập mật khẩu mới cho ${email}`}
+      panelTitle="Bảo mật tài khoản"
+      panelItems={[
+        'Chọn mật khẩu mạnh, dễ nhớ',
+        'Không dùng lại mật khẩu cũ',
+        'Đăng nhập ngay sau khi đổi',
+      ]}
+      footer={
+        <AuthSwitch>
+          Nhớ mật khẩu? <Link to="/login">Đăng nhập</Link>
+        </AuthSwitch>
+      }
+    >
+      <form className="auth-form" onSubmit={handleSubmit}>
+        <AuthField label="Mật khẩu mới" icon={Lock}>
+          <input
+            type="password"
+            required
+            className="auth-input"
+            placeholder="Tối thiểu 8 ký tự"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            autoComplete="new-password"
+          />
+        </AuthField>
 
-        <form className="auth-form" onSubmit={handleSubmit}>
-          <div className="form-group">
-            <label>
-              <Lock size={16} /> Mật Khẩu Mới
-            </label>
-            <input 
-              type="password" 
-              required 
-              className="form-control" 
-              placeholder="Nhập tối thiểu 8 ký tự"
-              value={password}
-              onChange={e => setPassword(e.target.value)}
-            />
-          </div>
-          <div className="form-group">
-            <label>
-              <Lock size={16} /> Nhập Lại Mật Khẩu Mới
-            </label>
-            <input 
-              type="password" 
-              required 
-              className="form-control" 
-              placeholder="Xác nhận lại mật khẩu"
-              value={confirmPassword}
-              onChange={e => setConfirmPassword(e.target.value)}
-            />
-          </div>
-          
-          <button type="submit" className="btn btn-primary" style={{ width: '100%', padding: '0.8rem', marginTop: '1rem', justifyContent: 'center' }} disabled={loading}>
-            <Save size={18} /> {loading ? 'Đang Lưu...' : 'Xác Nhận'}
-          </button>
-        </form>
-      </div>
-    </div>
+        <AuthField label="Nhập lại mật khẩu" icon={Lock}>
+          <input
+            type="password"
+            required
+            className="auth-input"
+            placeholder="Xác nhận mật khẩu"
+            value={confirmPassword}
+            onChange={(e) => setConfirmPassword(e.target.value)}
+            autoComplete="new-password"
+          />
+        </AuthField>
+
+        <button type="submit" className="btn btn-primary auth-submit" disabled={loading}>
+          <Save size={18} />
+          {loading ? 'Đang lưu...' : 'Xác nhận'}
+        </button>
+      </form>
+    </AuthShell>
   );
 }

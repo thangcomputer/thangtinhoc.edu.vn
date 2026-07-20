@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import { BookOpen, GraduationCap } from 'lucide-react';
+import { BookOpen, CheckCircle2, Sparkles } from 'lucide-react';
 
 export function AuthField({ label, icon: Icon, children, hint, labelExtra, className = '' }) {
   return (
@@ -33,6 +33,7 @@ export default function AuthShell({
   title,
   subtitle,
   panelTitle,
+  panelLead = 'Học Word, Excel, PowerPoint online 1 kèm 1 cùng Thầy Thắng.',
   panelItems = [],
   footer,
   children,
@@ -56,29 +57,43 @@ export default function AuthShell({
       <div className="auth-shell">
         <aside className="auth-panel">
           <div className="auth-panel-inner">
-            <h2 className="auth-panel-title">{panelTitle}</h2>
-            <ul className="auth-panel-list">
-              {items.map((text) => (
-                <li key={text}>
-                  <GraduationCap size={18} />
-                  <span>{text}</span>
-                </li>
-              ))}
-            </ul>
+            <div className="auth-panel-top">
+              <Link to="/" className="auth-panel-brand">
+                <span className="auth-panel-mark"><BookOpen size={18} /></span>
+                <span>{siteName}</span>
+              </Link>
+              <span className="auth-panel-badge">
+                <Sparkles size={12} /> Học online 1 kèm 1
+              </span>
+            </div>
+
+            <div className="auth-panel-mid">
+              <h2 className="auth-panel-title">{panelTitle}</h2>
+              {panelLead && <p className="auth-panel-lead">{panelLead}</p>}
+              <ul className="auth-panel-list">
+                {items.map((text) => (
+                  <li key={text}>
+                    <CheckCircle2 size={18} strokeWidth={2} />
+                    <span>{text}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+
+            <p className="auth-panel-foot">
+              UltraViewer · Zoom · Ghi hình buổi học
+            </p>
           </div>
         </aside>
 
         <div className="auth-card">
           <div className="auth-card-head">
-            <div className="auth-brand">
-              {siteLogo ? (
-                <img src={siteLogo} alt={siteName} className="auth-brand-logo" />
-              ) : (
-                <div className="auth-brand-icon">
-                  <BookOpen size={22} />
-                </div>
-              )}
-            </div>
+            <Link to="/" className="auth-brand" aria-label={siteName}>
+              <div className="auth-brand-icon">
+                <BookOpen size={22} />
+              </div>
+            </Link>
+            <p className="auth-brand-name">{siteName}</p>
             <h1 className="auth-title">{title}</h1>
             {subtitle && <p className="auth-subtitle">{subtitle}</p>}
           </div>

@@ -169,35 +169,40 @@ export default function BlogDetail() {
     <div className="blog-detail">
       <div className="bd-hero">
         <div className="bd-hero-bg" />
-        <div className="container bd-hero-content">
-          <SeoBreadcrumb items={[
-            { name: 'Trang chủ', to: '/' },
-            { name: 'Blog', to: '/blog' },
-            { name: post.title },
-          ]} />
-          <Link to="/blog" className="btn btn-ghost btn-sm" style={{ marginBottom: '1.5rem' }}>
-            <ArrowLeft size={16} /> Quay Lại Blog
-          </Link>
-          {post.category?.name && (
-            <span className="badge badge-primary"><Tag size={12} /> {post.category.name}</span>
-          )}
-          <h1 className="bd-title">{post.title}</h1>
-          <div className="bd-meta">
-            <div className="bd-author">
-              <div className="author-avatar-sm">{post.author?.fullName?.[0] || 'T'}</div>
-              <span>
-                <Link to="/gioi-thieu" className="bd-author-link">
-                  {post.author?.fullName || 'Thắng Tin Học'}
-                </Link>
-              </span>
+        <div className="container">
+          <div className="bd-shell bd-hero-inner">
+            <SeoBreadcrumb items={[
+              { name: 'Trang chủ', to: '/' },
+              { name: 'Blog', to: '/blog' },
+              { name: post.title },
+            ]} />
+            <div className="bd-hero-actions">
+              <Link to="/blog" className="btn btn-ghost btn-sm bd-back">
+                <ArrowLeft size={16} /> Quay Lại Blog
+              </Link>
+              {post.category?.name && (
+                <span className="badge badge-primary"><Tag size={12} /> {post.category.name}</span>
+              )}
             </div>
-            <span><Clock size={14} />{timeAgo(post.createdAt)} · {mins} phút đọc</span>
-            <span><Eye size={14} />{post.views} lượt xem</span>
+            <h1 className="bd-title">{post.title}</h1>
+            <div className="bd-meta">
+              <div className="bd-author">
+                <div className="author-avatar-sm">{post.author?.fullName?.[0] || 'T'}</div>
+                <span>
+                  <Link to="/gioi-thieu" className="bd-author-link">
+                    {post.author?.fullName || 'Thắng Tin Học'}
+                  </Link>
+                </span>
+              </div>
+              <span><Clock size={14} />{timeAgo(post.createdAt)} · {mins} phút đọc</span>
+              <span><Eye size={14} />{post.views} lượt xem</span>
+            </div>
           </div>
         </div>
       </div>
 
-      <div className="bd-layout container">
+      <div className="container bd-body">
+        <div className={`bd-shell bd-layout${toc.length === 0 ? ' bd-layout--solo' : ''}`}>
         {toc.length > 0 && (
           <aside className="bd-toc-sidebar">
             <div className="bd-toc-box">
@@ -317,6 +322,7 @@ export default function BlogDetail() {
             </div>
           </div>
         </main>
+        </div>
       </div>
     </div>
   );

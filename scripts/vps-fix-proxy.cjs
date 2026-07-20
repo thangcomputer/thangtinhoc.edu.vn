@@ -33,6 +33,10 @@ if ! grep -q 'ProxyPass.*/api' "\${VHOST}"; then
       print "  ProxyPassReverse /api http://127.0.0.1:" p "/api"
       print "  ProxyPass /uploads http://127.0.0.1:" p "/uploads"
       print "  ProxyPassReverse /uploads http://127.0.0.1:" p "/uploads"
+      print "  ProxyPass /sitemap.xml http://127.0.0.1:" p "/sitemap.xml"
+      print "  ProxyPassReverse /sitemap.xml http://127.0.0.1:" p "/sitemap.xml"
+      print "  ProxyPass /robots.txt http://127.0.0.1:" p "/robots.txt"
+      print "  ProxyPassReverse /robots.txt http://127.0.0.1:" p "/robots.txt"
       print "</IfModule>"
       done=1
     }
@@ -41,11 +45,33 @@ if ! grep -q 'ProxyPass.*/api' "\${VHOST}"; then
   echo ADDED_PROXY
 else
   echo PROXY_EXISTS
+  if ! grep -q 'ProxyPass.*/sitemap.xml' "\${VHOST}"; then
+    cp "\${VHOST}" "\${VHOST}.bak.seo.$(date +%s)"
+    awk -v p="\${PORT}" '
+      /ProxyPass \\/uploads/ && !done {
+        print
+        getline
+        print
+        print "  ProxyPass /sitemap.xml http://127.0.0.1:" p "/sitemap.xml"
+        print "  ProxyPassReverse /sitemap.xml http://127.0.0.1:" p "/sitemap.xml"
+        print "  ProxyPass /robots.txt http://127.0.0.1:" p "/robots.txt"
+        print "  ProxyPassReverse /robots.txt http://127.0.0.1:" p "/robots.txt"
+        done=1
+        next
+      }
+      { print }
+    ' "\${VHOST}" > "\${VHOST}.tmp" && mv "\${VHOST}.tmp" "\${VHOST}"
+    echo ADDED_SEO_PROXY
+  fi
 fi
 /etc/init.d/httpd reload 2>&1 || systemctl reload httpd 2>&1 || apachectl graceful 2>&1
 sleep 2
 echo "=== Domain health ==="
 curl -s "https://\${DOMAIN}/api/health" | head -c 300
+echo
+echo "=== Sitemap check ==="
+curl -sI "https://\${DOMAIN}/sitemap.xml" | head -5
+curl -s "https://\${DOMAIN}/sitemap.xml" | head -c 200
 echo
 echo "=== Login test status ==="
 curl -s -o /dev/null -w "%{http_code}" -X POST "https://\${DOMAIN}/api/auth/login" \\

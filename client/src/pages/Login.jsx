@@ -72,8 +72,9 @@ function LoginPage() {
       siteLogo={siteLogo}
       siteName={siteName}
       title="Đăng nhập"
-      subtitle="Tiếp tục hành trình học tập"
+      subtitle="Vào lớp học và tiếp tục lộ trình của bạn"
       panelTitle="Chào mừng trở lại!"
+      panelLead="Đăng nhập để tiếp tục lộ trình Word, Excel, PowerPoint cùng Thầy Thắng."
       panelItems={[
         'Tiếp tục khóa học đang học',
         'Đồng bộ tiến độ trên mọi thiết bị',

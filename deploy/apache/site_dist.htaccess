@@ -12,9 +12,11 @@
   RewriteCond %{REQUEST_FILENAME} !-d
   RewriteRule ^admin(/.*)?$ /admin/index.html [L]
 
-  # API / uploads — do Apache proxy xu ly (khong rewrite ve index.html)
+  # API / uploads / SEO — Apache proxy xu ly (khong rewrite ve index.html)
   RewriteCond %{REQUEST_URI} ^/api [OR]
-  RewriteCond %{REQUEST_URI} ^/uploads
+  RewriteCond %{REQUEST_URI} ^/uploads [OR]
+  RewriteCond %{REQUEST_URI} ^/sitemap\.xml$ [OR]
+  RewriteCond %{REQUEST_URI} ^/robots\.txt$
   RewriteRule ^ - [L]
 
   # Public site SPA

@@ -15,6 +15,10 @@ PROXY_BLOCK="# thangtinhoc API proxy (auto-added)
   ProxyPassReverse /api http://127.0.0.1:${PORT}/api
   ProxyPass /uploads http://127.0.0.1:${PORT}/uploads
   ProxyPassReverse /uploads http://127.0.0.1:${PORT}/uploads
+  ProxyPass /sitemap.xml http://127.0.0.1:${PORT}/sitemap.xml
+  ProxyPassReverse /sitemap.xml http://127.0.0.1:${PORT}/sitemap.xml
+  ProxyPass /robots.txt http://127.0.0.1:${PORT}/robots.txt
+  ProxyPassReverse /robots.txt http://127.0.0.1:${PORT}/robots.txt
 </IfModule>"
 
 echo "========== 1. Kiem tra backend :${PORT} =========="

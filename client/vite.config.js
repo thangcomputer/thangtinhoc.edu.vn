@@ -10,6 +10,7 @@ export default defineConfig({
       '/api': { target: 'http://127.0.0.1:5000', changeOrigin: true },
       '/uploads': { target: 'http://127.0.0.1:5000', changeOrigin: true },
       '/sitemap.xml': { target: 'http://127.0.0.1:5000', changeOrigin: true },
+      '/robots.txt': { target: 'http://127.0.0.1:5000', changeOrigin: true },
     },
   },
   // Same proxy for `vite preview` so local production testing can reach the API
@@ -19,6 +20,7 @@ export default defineConfig({
       '/api': { target: 'http://127.0.0.1:5000', changeOrigin: true },
       '/uploads': { target: 'http://127.0.0.1:5000', changeOrigin: true },
       '/sitemap.xml': { target: 'http://127.0.0.1:5000', changeOrigin: true },
+      '/robots.txt': { target: 'http://127.0.0.1:5000', changeOrigin: true },
     },
   },
   build: {

@@ -139,6 +139,7 @@ export default function Navbar({ settings }) {
         </div>
 
         <div className="navbar-right">
+          <SearchBox />
           <NotificationBell />
           {isAuthenticated ? (
             <div className="user-menu-wrap" ref={menuRef}>

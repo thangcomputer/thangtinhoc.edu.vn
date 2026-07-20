@@ -79,6 +79,7 @@ function RegisterPage() {
       title="Tạo tài khoản"
       subtitle="Chỉ mất khoảng 1 phút"
       panelTitle="Bắt đầu học ngay hôm nay"
+      panelLead="Tạo tài khoản để đăng ký lớp 1 kèm 1 và theo dõi tiến độ học tập."
       panelItems={[
         'Hàng trăm bài học & khóa học',
         'Học trên mọi thiết bị',

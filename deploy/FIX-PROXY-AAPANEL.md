@@ -28,6 +28,8 @@ bash deploy/check-vps.sh
 |----------------------|----------|
 | `/api` | `http://127.0.0.1:5001` |
 | `/uploads` | `http://127.0.0.1:5001` |
+| `/sitemap.xml` | `http://127.0.0.1:5001` |
+| `/robots.txt` | `http://127.0.0.1:5001` |
 
 **KHONG** dung:
 - `https://127.0.0.1:5001` (Node khong co SSL local)
@@ -49,6 +51,10 @@ bash deploy/check-vps.sh
   ProxyPassReverse /api http://127.0.0.1:5001/api
   ProxyPass /uploads http://127.0.0.1:5001/uploads
   ProxyPassReverse /uploads http://127.0.0.1:5001/uploads
+  ProxyPass /sitemap.xml http://127.0.0.1:5001/sitemap.xml
+  ProxyPassReverse /sitemap.xml http://127.0.0.1:5001/sitemap.xml
+  ProxyPass /robots.txt http://127.0.0.1:5001/robots.txt
+  ProxyPassReverse /robots.txt http://127.0.0.1:5001/robots.txt
 </IfModule>
 ```
 
@@ -70,6 +76,14 @@ curl -s https://thangtinhoc.edu.vn/api/auth/ping
 curl -s -X POST https://thangtinhoc.edu.vn/api/auth/login \
   -H "Content-Type: application/json" \
   -d '{"email":"admin@gmail.com","password":"admin123","deviceId":"0123456789abcdef"}' | head -c 150
+```
+
+Kiem tra SEO (phai thay XML / text, KHONG phai HTML SPA):
+
+```bash
+curl -sI https://thangtinhoc.edu.vn/sitemap.xml | head -5
+curl -s https://thangtinhoc.edu.vn/sitemap.xml | head -20
+curl -s https://thangtinhoc.edu.vn/robots.txt
 ```
 
 Neu thay `"token"` → mo trinh duyet **Ctrl+Shift+R** tai `/admin/login`.

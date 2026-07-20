@@ -128,26 +128,51 @@ export default function About() {
   return (
     <div className="about-page">
       <section className="about-hero">
-        <div className="container">
-          <SeoBreadcrumb items={[
-            { name: 'Trang chủ', to: '/' },
-            { name: 'Giới thiệu Thắng Tin Học' },
-          ]} />
-          <ScrollReveal animation="fade-up">
-            <div className="about-badge"><Award size={14} /> Thầy Thắng Tin Học</div>
+        <div className="about-hero-bg" aria-hidden />
+        <div className="container about-hero-grid">
+          <div className="about-hero-copy">
+            <SeoBreadcrumb items={[
+              { name: 'Trang chủ', to: '/' },
+              { name: 'Giới thiệu Thắng Tin Học' },
+            ]} />
+            <p className="about-eyebrow">Giảng viên · Tin học văn phòng</p>
             <h1>
-              <span className="highlight">{siteName}</span> là ai?
+              <span className="highlight">{siteName}</span>
+              <span className="about-hero-rest"> là ai?</span>
             </h1>
             <p className="about-hero-desc">
-              Thắng Tin Học — giáo viên chuyên đào tạo tin học văn phòng, giúp người mới
-              và nhân viên văn phòng thành thạo Word, Excel, PowerPoint qua hình thức
-              học online 1 kèm 1 và học từ xa.
+              Giáo viên đào tạo tin học văn phòng — giúp người mới và nhân viên văn phòng
+              thành thạo Word, Excel, PowerPoint qua học online 1 kèm 1 và học từ xa.
             </p>
             <div className="about-hero-ctas">
-              <Link to="/dich-vu" className="btn btn-primary">Xem dịch vụ đào tạo</Link>
-              <Link to="/lien-he" className="btn btn-outline-light">Đăng ký học 1 kèm 1</Link>
+              <Link to="/dich-vu" className="btn btn-primary about-btn-primary">Xem dịch vụ đào tạo</Link>
+              <Link to="/lien-he" className="btn btn-ghost about-btn-secondary">Đăng ký học 1 kèm 1</Link>
             </div>
-          </ScrollReveal>
+            <ul className="about-hero-trust">
+              <li>Online · Từ xa</li>
+              <li>1 kèm 1</li>
+              <li>UltraViewer</li>
+              <li>Có ghi hình</li>
+            </ul>
+          </div>
+
+          <aside className="about-hero-card" aria-label="Điểm nổi bật">
+            <div className="about-hero-card-badge">
+              <Award size={16} /> Thầy Thắng Tin Học
+            </div>
+            <p className="about-hero-card-quote">
+              “Mỗi học viên một lộ trình — mục tiêu là dùng được tin học trong công việc thật.”
+            </p>
+            <ul className="about-hero-card-list">
+              <li><CheckCircle size={16} /> Word · Excel · PowerPoint</li>
+              <li><CheckCircle size={16} /> Học qua UltraViewer / Zoom</li>
+              <li><CheckCircle size={16} /> Lộ trình cá nhân hóa</li>
+              <li><CheckCircle size={16} /> Hỗ trợ sau khóa học</li>
+            </ul>
+            <Link to="/gioi-thieu#dang-ky" className="about-hero-card-link">
+              Đăng ký tư vấn nhanh →
+            </Link>
+          </aside>
         </div>
       </section>
 
