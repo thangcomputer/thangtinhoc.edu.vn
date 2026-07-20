@@ -1,6 +1,6 @@
 const https = require('https');
 
-const GOOGLE_ID = '940443885790-5tusmho5t1kupi2sctk5bdcj3l83hehn.apps.googleusercontent.com';
+const GOOGLE_ID = '940443885790-kfl0ojpg3addp8kj3g3l4v4t99tafmo4.apps.googleusercontent.com';
 const BASE = 'https://thangtinhoc.edu.vn';
 
 function get(url) {

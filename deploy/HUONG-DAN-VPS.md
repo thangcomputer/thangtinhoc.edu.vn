@@ -31,7 +31,7 @@ git pull origin main
 
 # Google login (them 1 lan neu chua co)
 nano server/.env
-# GOOGLE_CLIENT_ID=472584566291-hh7r4rpo8tedqvfb10qgpv27a71a3hds.apps.googleusercontent.com
+# GOOGLE_CLIENT_ID=940443885790-kfl0ojpg3addp8kj3g3l4v4t99tafmo4.apps.googleusercontent.com
 
 cd server && npm ci --omit=dev && npx prisma migrate deploy
 pm2 restart thangtinhoc-api
@@ -169,7 +169,7 @@ pm2 logs thangtinhoc-api --lines 20
 ### server/.env tren VPS (vi du)
 
 ```env
-GOOGLE_CLIENT_ID=472584566291-hh7r4rpo8tedqvfb10qgpv27a71a3hds.apps.googleusercontent.com
+GOOGLE_CLIENT_ID=940443885790-kfl0ojpg3addp8kj3g3l4v4t99tafmo4.apps.googleusercontent.com
 RESEND_API_KEY=re_xxxxxxxx
 EMAIL_FROM=noreply@thangtinhoc.edu.vn
 SERVE_FRONTEND=false
