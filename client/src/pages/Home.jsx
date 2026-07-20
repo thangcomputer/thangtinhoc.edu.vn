@@ -1,10 +1,10 @@
-﻿import { useState, useEffect, useCallback, useRef, useMemo } from 'react';
+﻿import { useState, useEffect, useRef, useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import {
-  ArrowRight, Play, Star, Users, BookOpen, Award, TrendingUp,
+  ArrowRight, Star, Users, BookOpen, Award, TrendingUp,
   CheckCircle, Zap, Shield, Clock, ChevronRight, Quote,
-  FileText, Layout, Table, GraduationCap, Monitor, Sparkles,
-  Target, BarChart3, Laptop, MessageSquare, ChevronDown, ChevronUp
+  GraduationCap, Monitor, Sparkles,
+  Target, MessageSquare, ChevronDown, ChevronUp,
 } from 'lucide-react';
 import api from '../lib/api';
 import { sanitizeHTML } from '../lib/sanitize';
@@ -19,47 +19,108 @@ import {
   SITE_URL,
   SITE_NAME,
 } from '../lib/usePageSeo';
+import { getZaloChatUrl, isExternalHref } from '../lib/zalo';
 import './Home.css';
 
-const IconMap = { Zap, Shield, Award, Users, Clock, TrendingUp, BookOpen, Target, Monitor, GraduationCap, CheckCircle, Star };
+const IconMap = {
+  Zap, Shield, Award, Users, Clock, TrendingUp, BookOpen, Target,
+  Monitor, GraduationCap, CheckCircle, Star, MessageSquare, Sparkles,
+};
+
+function ZaloIcon({ size = 20 }) {
+  return (
+    <svg viewBox="0 0 614.501 613.667" width={size} height={size} fill="currentColor" aria-hidden="true">
+      <path d="M464.721,301.399c-13.984-0.014-23.707,11.478-23.944,28.312c-0.251,17.771,9.168,29.208,24.037,29.202c14.287-0.007,23.799-11.095,24.01-27.995C489.028,313.536,479.127,301.399,464.721,301.399z" />
+      <path d="M291.83,301.392c-14.473-0.316-24.578,11.603-24.604,29.024c-0.02,16.959,9.294,28.259,23.496,28.502c15.072,0.251,24.592-10.87,24.539-28.707C315.214,313.318,305.769,301.696,291.83,301.392z" />
+      <path d="M310.518,3.158C143.102,3.158,7.375,138.884,7.375,306.3s135.727,303.142,303.143,303.142c167.415,0,303.143-135.727,303.143-303.142S477.933,3.158,310.518,3.158z M217.858,391.083c-33.364,0.818-66.828,1.353-100.133-0.343c-21.326-1.095-27.652-18.647-14.248-36.583c21.55-28.826,43.886-57.065,65.792-85.621c2.546-3.305,6.214-5.996,7.15-12.705c-16.609,0-32.784,0.04-48.958-0.013c-19.195-0.066-28.278-5.805-28.14-17.652c0.132-11.768,9.175-17.329,28.397-17.348c25.159-0.026,50.324-0.06,75.476,0.026c9.637,0.033,19.604,0.105,25.304,9.789c6.22,10.561,0.284,19.512-5.646,27.454c-21.26,28.497-43.015,56.624-64.559,84.902c-2.599,3.41-5.119,6.88-9.453,12.725c23.424,0,44.123-0.053,64.816,0.026c8.674,0.026,16.662,1.873,19.941,11.267C237.892,379.329,231.368,390.752,217.858,391.083z M350.854,330.211c0,13.417-0.093,26.841,0.039,40.265c0.073,7.599-2.599,13.647-9.512,17.084c-7.296,3.642-14.71,3.028-20.304-2.968c-3.997-4.281-6.214-3.213-10.488-0.422c-17.955,11.728-39.908,9.96-56.597-3.866c-29.928-24.789-30.026-74.803-0.211-99.776c16.194-13.562,39.592-15.462,56.709-4.143c3.951,2.619,6.201,4.815,10.396-0.053c5.39-6.267,13.055-6.761,20.271-3.357c7.454,3.509,9.935,10.165,9.776,18.265C350.67,304.222,350.86,317.217,350.854,330.211z M395.617,369.579c-0.118,12.837-6.398,19.783-17.196,19.908c-10.779,0.132-17.593-6.966-17.646-19.512c-0.179-43.352-0.185-86.696,0.007-130.041c0.059-12.256,7.302-19.921,17.896-19.222c11.425,0.752,16.992,7.448,16.992,18.833c0,22.104,0,44.216,0,66.327C395.677,327.105,395.828,348.345,395.617,369.579z M463.981,391.868c-34.399-0.336-59.037-26.444-58.786-62.289c0.251-35.66,25.304-60.713,60.383-60.396c34.631,0.304,59.374,26.306,58.998,61.986C524.207,366.492,498.534,392.205,463.981,391.868z" />
+    </svg>
+  );
+}
+
+/** Nút tư vấn — mở cùng link Zalo với nút nổi bên phải */
+function ZaloConsultButton({ href, className = '', children, size = 'lg' }) {
+  const label = children || 'Đăng ký tư vấn Zalo';
+  const cls = `btn-zalo btn-zalo--${size} ${className}`.trim();
+  if (isExternalHref(href)) {
+    return (
+      <a href={href} target="_blank" rel="noopener noreferrer" className={cls}>
+        <ZaloIcon size={size === 'lg' ? 22 : 18} />
+        <span>{label}</span>
+      </a>
+    );
+  }
+  return (
+    <Link to={href} className={cls}>
+      <ZaloIcon size={size === 'lg' ? 22 : 18} />
+      <span>{label}</span>
+    </Link>
+  );
+}
+
+const MARKETING_HIDDEN = {
+  stats: true,
+  'visual-learning': true,
+  courses: true,
+  partners: true,
+};
 
 export default function Home({ settings }) {
   const [featuredCourses, setFeaturedCourses] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
   const [currentSection, setCurrentSection] = useState(0);
   const [showNav, setShowNav] = useState(false);
   const [showPromo, setShowPromo] = useState(false);
 
   const sectionIdsRef = useRef([]);
 
+  const zaloHref = useMemo(() => getZaloChatUrl(settings), [settings]);
+
   const homeSeo = useMemo(() => ({
-    title: `${SITE_NAME} - Trung Tâm Đào Tạo Tin Học Văn Phòng | thangtinhoc.edu.vn`,
+    title: `${SITE_NAME} — Học tin học online 1 kèm 1 | Tư vấn Zalo`,
     description: settings?.site_description
-      || 'Thắng Tin Học — đào tạo tin học văn phòng, Excel, Word, PowerPoint online 1 kèm 1 qua UltraViewer. Học máy tính cho người mới bắt đầu.',
-    keywords: 'Thắng Tin Học, thầy thắng tin học, tin học văn phòng, học Excel online, học Word online, học máy vi tính, dạy Excel 1 kèm 1, UltraViewer',
+      || 'Tuyển sinh học tin học văn phòng online 1 kèm 1 tại Thắng Tin Học. Hướng dẫn tận tâm, sửa bài trực tiếp qua UltraViewer. Nhắn Zalo để được tư vấn lộ trình miễn phí.',
+    keywords: 'học tin học 1 kèm 1, học Excel online, học Word online, UltraViewer, tuyển sinh tin học, Thắng Tin Học, tư vấn Zalo',
     canonical: `${SITE_URL}/`,
     schemas: [buildOrganizationSchema(), buildPersonSchema()],
   }), [settings?.site_description]);
 
   usePageSeo(homeSeo);
 
+  // Parse section_order & section_visibility early (for courses fetch)
+  const defaultOrder = ['hero', 'features', 'learning-path', 'testimonials', 'cta'];
+  let sectionOrder = defaultOrder;
+  try {
+    const parsed = JSON.parse(settings?.section_order || '[]');
+    if (parsed.length > 0) sectionOrder = parsed;
+  } catch (e) { /* keep default */ }
+
+  let sectionVisibility = { ...MARKETING_HIDDEN };
+  try {
+    const parsed = JSON.parse(settings?.section_visibility || '{}');
+    sectionVisibility = { ...MARKETING_HIDDEN, ...parsed };
+  } catch (e) { /* keep defaults */ }
+
+  const showCourses = sectionOrder.includes('courses') && !sectionVisibility.courses;
+
   useEffect(() => {
+    if (!showCourses) return undefined;
+    setLoading(true);
     api.get('/courses?featured=true&limit=6').then(res => {
       setFeaturedCourses(res.data.data || []);
     }).catch(() => {}).finally(() => setLoading(false));
-  }, []);
+    return undefined;
+  }, [showCourses]);
 
-  // Promo popup — delay so it không làm hỏng FCP/LCP trên mobile
   useEffect(() => {
-    if (settings?.promo_enabled !== 'true') return;
+    if (settings?.promo_enabled !== 'true') return undefined;
     const dismissed = sessionStorage.getItem('promo_dismissed');
     if (!dismissed) {
       const timer = setTimeout(() => setShowPromo(true), 8000);
       return () => clearTimeout(timer);
     }
+    return undefined;
   }, [settings]);
 
-  // Track which section is current (uses ref for dynamic sections)
   useEffect(() => {
     const handleScroll = () => {
       setShowNav(window.scrollY > 100);
@@ -88,15 +149,11 @@ export default function Home({ settings }) {
       const nextId = ids[currentSection + 1];
       const el = document.getElementById(nextId);
       if (el) {
-        const offset = el.offsetTop - 60;
-        window.scrollTo({ top: offset, behavior: 'smooth' });
+        window.scrollTo({ top: el.offsetTop - 60, behavior: 'smooth' });
       }
     }
   };
 
-  // Parse animation settings
-  // Khi settings chưa load (null) → tạm tắt animation (none) để tránh chạy sai
-  // Khi settings đã load → dùng giá trị từ API, fallback 'fade-up' nếu không có
   const settingsLoaded = settings !== null && settings !== undefined;
   const anim = {
     hero: settingsLoaded ? (settings.anim_hero || 'fade-up') : 'none',
@@ -109,31 +166,24 @@ export default function Home({ settings }) {
     cta: settingsLoaded ? (settings.anim_cta || 'fade-up') : 'none',
   };
 
-  const officeFeatures = [
-    { title: 'Microsoft Word', desc: 'Soạn thảo văn bản chuyên nghiệp, mail merge, tạo template báo cáo và hợp đồng chuẩn doanh nghiệp.', icon: '/word_icon_3d.webp', color: '#2b579a' },
-    { title: 'Microsoft Excel', desc: 'Hàm nâng cao, Pivot Table, Dashboard động, VBA macro tự động hóa và xử lý dữ liệu lớn.', icon: '/excel_icon_3d.webp', color: '#217346' },
-    { title: 'PowerPoint', desc: 'Thiết kế slide chuyên nghiệp, animation, infographic và kỹ năng thuyết trình ấn tượng.', icon: '/ppt_icon_3d.webp', color: '#b7472a' },
-    { title: 'Kỹ Năng Máy Tính', desc: 'Windows, quản lý file, bảo mật dữ liệu, sử dụng AI và công cụ đám mây hiệu quả.', icon: 'Zap', color: '#6366f1' },
-  ];
-
   let features = [];
-  try { features = JSON.parse(settings?.home_features || '[]'); } catch(e) { features = []; }
+  try { features = JSON.parse(settings?.home_features || '[]'); } catch (e) { features = []; }
   if (features.length === 0) {
     features = [
-      { icon: 'Zap', title: 'Học Linh Hoạt', desc: 'Học mọi lúc, mọi nơi trên mọi thiết bị' },
-      { icon: 'Shield', title: 'Cam Kết Chất Lượng', desc: 'Hoàn tiền 100% nếu không hài lòng trong 7 ngày' },
-      { icon: 'Award', title: 'Chứng Chỉ Uy Tín', desc: 'Nhận chứng chỉ được công nhận sau khi hoàn thành' },
-      { icon: 'Users', title: 'Hỗ Trợ 24/7', desc: 'Đội ngũ hỗ trợ sẵn sàng giải đáp mọi thắc mắc' },
+      { icon: 'Users', title: 'Học online 1 kèm 1', desc: 'Một thầy – một trò. Lịch linh hoạt, tiến độ theo đúng khả năng của bạn — không bị bỏ lại phía sau.' },
+      { icon: 'Monitor', title: 'Sửa bài trực tiếp trên máy bạn', desc: 'Học qua UltraViewer: thầy điều khiển và hướng dẫn ngay trên máy tính của bạn, hiệu quả như ngồi cạnh nhau.' },
+      { icon: 'Target', title: 'Lộ trình riêng cho từng người', desc: 'Word, Excel, PowerPoint hay tin học văn phòng — thiết kế đúng mục tiêu công việc và trình độ hiện tại của bạn.' },
+      { icon: 'Award', title: 'Kỹ năng hướng dẫn chỉ có tại Thắng Tin Học', desc: 'Cách truyền đạt dễ hiểu, kiên nhẫn, thực chiến — giúp người mới bắt đầu thành thạo thật sự, không chỉ “học cho có”.' },
     ];
   }
 
   let testimonials = [];
-  try { testimonials = JSON.parse(settings?.home_testimonials || '[]'); } catch(e) { testimonials = []; }
+  try { testimonials = JSON.parse(settings?.home_testimonials || '[]'); } catch (e) { testimonials = []; }
   if (testimonials.length === 0) {
     testimonials = [
-      { name: 'Phạm Thị Lan', role: 'Kế Toán Viên', text: 'Khóa học Excel tại Thắng Tin Học đã giúp tôi tăng tốc công việc lên 3 lần. Thầy giảng dạy rất tận tâm và dễ hiểu!', rating: 5, avatar: '' },
-      { name: 'Nguyễn Văn Hùng', role: 'Nhân Viên Văn Phòng', text: 'Tôi đã học Word và PowerPoint ở đây. Giờ tôi tự tin trình bày báo cáo trước hàng chục người. Cảm ơn thầy Thắng!', rating: 5, avatar: '' },
-      { name: 'Trần Thanh Mai', role: 'Quản Lý Dự Án', text: 'Khóa học Excel nâng cao và Dashboard giúp tôi báo cáo KPI cho ban giám đốc một cách chuyên nghiệp. Rất đáng đầu tư!', rating: 5, avatar: '' },
+      { name: 'Phạm Thị Lan', role: 'Kế Toán Viên', text: 'Học 1 kèm 1 với thầy Thắng giúp tôi tăng tốc Excel lên rõ rệt. Thầy giảng rất tận tâm và dễ hiểu!', rating: 5, avatar: '' },
+      { name: 'Nguyễn Văn Hùng', role: 'Nhân Viên Văn Phòng', text: 'Ban đầu tôi sợ máy tính. Nhờ học online kèm riêng, giờ tôi tự tin Word và PowerPoint trong công việc.', rating: 5, avatar: '' },
+      { name: 'Trần Thanh Mai', role: 'Quản Lý Dự Án', text: 'Cách hướng dẫn thực chiến và sửa bài trực tiếp trên máy tôi — đúng thứ tôi cần. Rất đáng để bắt đầu.', rating: 5, avatar: '' },
     ];
   }
 
@@ -145,10 +195,10 @@ export default function Home({ settings }) {
   ];
 
   const learningPath = [
-    { step: '01', title: 'Đăng Ký Tài Khoản', desc: 'Tạo tài khoản miễn phí chỉ trong 30 giây', icon: Target },
-    { step: '02', title: 'Chọn Khóa Học', desc: 'Chọn lộ trình phù hợp với mục tiêu của bạn', icon: BookOpen },
-    { step: '03', title: 'Học Online / Offline', desc: 'Học 1:1 trực tiếp hoặc qua video bài giảng', icon: Monitor },
-    { step: '04', title: 'Nhận Chứng Chỉ', desc: 'Hoàn thành khóa học và nhận chứng chỉ uy tín', icon: GraduationCap },
+    { step: '01', title: 'Nhắn Zalo tư vấn', desc: 'Gửi tin nhắn, nói rõ mục tiêu học (Excel, Word, tin học văn phòng…)', icon: MessageSquare },
+    { step: '02', title: 'Tư vấn lộ trình', desc: 'Được gợi ý lịch học và nội dung phù hợp trình độ của bạn', icon: Target },
+    { step: '03', title: 'Học 1 kèm 1 online', desc: 'Học trực tiếp với thầy qua UltraViewer — sửa bài ngay trên máy bạn', icon: Monitor },
+    { step: '04', title: 'Thành thạo kỹ năng', desc: 'Áp dụng được vào công việc thực tế, tự tin hơn mỗi ngày', icon: GraduationCap },
   ];
 
   const partnersList = [
@@ -160,44 +210,31 @@ export default function Home({ settings }) {
     { name: 'MISA', logo: '/logo_misa.webp' },
   ];
 
-  // Parse dynamic partners from settings
   let dynamicPartners = [];
-  try { dynamicPartners = JSON.parse(settings?.home_partners || '[]'); } catch(e) {}
+  try { dynamicPartners = JSON.parse(settings?.home_partners || '[]'); } catch (e) { /* empty */ }
   const finalPartners = dynamicPartners.length > 0 ? dynamicPartners : partnersList;
 
-  // Parse section_order & section_visibility from settings
-  const defaultOrder = ['hero', 'stats', 'features', 'learning-path', 'visual-learning', 'courses', 'testimonials', 'partners', 'cta'];
-  let sectionOrder = defaultOrder;
-  try { 
-    const parsed = JSON.parse(settings?.section_order || '[]');
-    if (parsed.length > 0) sectionOrder = parsed;
-  } catch(e) {}
-  
-  let sectionVisibility = {};
-  try { sectionVisibility = JSON.parse(settings?.section_visibility || '{}'); } catch(e) {}
-
-  // Parse custom containers
   let customSections = {};
-  try { customSections = JSON.parse(settings?.custom_sections || '{}'); } catch(e) {}
+  try { customSections = JSON.parse(settings?.custom_sections || '{}'); } catch (e) { /* empty */ }
 
-  // Map section IDs to DOM element IDs for scroll navigator
   const SECTION_DOM_MAP = {
-    'hero': 'hero', 'stats': 'stats-banner', 'features': 'features-section',
-    'learning-path': 'learning-path', 'visual-learning': 'visual-learning',
-    'courses': 'courses-section', 'testimonials': 'testimonials',
-    'partners': 'partners', 'cta': 'cta-section',
+    hero: 'hero',
+    stats: 'stats-banner',
+    features: 'features-section',
+    'learning-path': 'learning-path',
+    'visual-learning': 'visual-learning',
+    courses: 'courses-section',
+    testimonials: 'testimonials',
+    partners: 'partners',
+    cta: 'cta-section',
   };
-  // Add container IDs to DOM map dynamically
   sectionOrder.forEach(id => { if (id.startsWith('container-')) SECTION_DOM_MAP[id] = id; });
-  
-  // Only visible + ordered sections
-  const visibleSections = sectionOrder.filter(id => !sectionVisibility[id]);
-  const SECTION_IDS_NAV = visibleSections.map(id => SECTION_DOM_MAP[id]).filter(Boolean);
-  sectionIdsRef.current = SECTION_IDS_NAV;
 
-  // Section renderers
+  const visibleSections = sectionOrder.filter(id => !sectionVisibility[id]);
+  sectionIdsRef.current = visibleSections.map(id => SECTION_DOM_MAP[id]).filter(Boolean);
+
   const sectionRenderers = {
-    'hero': () => (
+    hero: () => (
       <section className="hero" id="hero" key="hero">
         <div className="hero-bg">
           <div className="hero-orb orb1" />
@@ -210,28 +247,26 @@ export default function Home({ settings }) {
           <ScrollReveal animation={anim.hero} duration={1000} className="hero-text">
             <div className="hero-badge">
               <Sparkles size={14} />
-              <span>Chuyên Gia Tin Học Văn Phòng 4.0</span>
+              <span>Tuyển sinh · Học online 1 kèm 1</span>
             </div>
+            <p className="hero-brand">Thắng Tin Học</p>
             <h1 className="hero-title">
               {settings?.hero_title ? (
                 settings.hero_title.split('\n').map((line, i) => <span key={i}>{i > 0 && <br />}{line}</span>)
               ) : (
-                <>Làm Chủ <span className="highlight-ai">Word, Excel</span><br />&amp; <span className="highlight-ai">PowerPoint</span></>
+                <>Học tin học online <span className="highlight-ai">1 kèm 1</span><br />Cách hướng dẫn chỉ có tại đây</>
               )}
             </h1>
             <p className="hero-desc">
-              {settings?.hero_subtitle || 'Khám phá lộ trình học tập chuyên sâu từ con số 0 đến bậc thầy tin học. Học kèm 1:1 online trực tiếp với chuyên gia, cam kết thành thạo sau khóa học.'}
+              {settings?.hero_subtitle
+                || 'Không học đại trà. Thầy Thắng kèm riêng từng học viên — sửa bài trực tiếp trên máy bạn qua UltraViewer. Cam kết hiểu và làm được, không chỉ “nghe cho xong”.'}
             </p>
             <div className="hero-actions">
-              <Link to={settings?.hero_btn_url || '/courses'} className="btn btn-primary btn-lg hero-cta">
-                {settings?.hero_btn_text || 'Bắt Đầu Học Ngay'} <ArrowRight size={20} />
-              </Link>
-              <Link to="/gioi-thieu" className="btn-play-premium">
-                <div className="play-icon-ai"><Play size={20} fill="white" /></div>
-                <span>Giới thiệu Thắng Tin Học</span>
-              </Link>
-              <Link to="/dich-vu" className="btn btn-ghost btn-lg" style={{ marginLeft: 0 }}>
-                Dịch vụ đào tạo <ChevronRight size={18} />
+              <ZaloConsultButton href={zaloHref} className="hero-cta">
+                {settings?.hero_btn_text || 'Đăng ký tư vấn Zalo'}
+              </ZaloConsultButton>
+              <Link to="/gioi-thieu" className="btn btn-ghost btn-lg">
+                Giới thiệu Thắng Tin Học <ChevronRight size={18} />
               </Link>
             </div>
             <div className="hero-trust">
@@ -242,9 +277,9 @@ export default function Home({ settings }) {
               </div>
               <div className="hero-trust-text">
                 <div className="hero-trust-stars">
-                  {[1,2,3,4,5].map(i => <Star key={i} size={12} fill="#f59e0b" color="#f59e0b" />)}
+                  {[1, 2, 3, 4, 5].map(i => <Star key={i} size={12} fill="#f59e0b" color="#f59e0b" />)}
                 </div>
-                <span>5,000+ học viên tin tưởng</span>
+                <span>Hàng nghìn học viên đã bắt đầu từ một tin nhắn Zalo</span>
               </div>
             </div>
           </ScrollReveal>
@@ -263,7 +298,7 @@ export default function Home({ settings }) {
                 <div className="main-3d-character">
                   <img
                     src={settings?.hero_media_url || '/hero-banner.webp'}
-                    alt="Hero Banner"
+                    alt="Học tin học online 1 kèm 1 tại Thắng Tin Học"
                     width="400"
                     height="340"
                     sizes="(max-width: 768px) 90vw, 400px"
@@ -287,16 +322,15 @@ export default function Home({ settings }) {
               </div>
               <div className="hero-glass-card stats-card float-slow">
                 <Users size={16} color="var(--primary-light)" />
-                <span>+250 Học viên mới tháng này</span>
+                <span>Học 1 kèm 1 · Online toàn quốc</span>
               </div>
             </div>
           </ScrollReveal>
         </div>
-
       </section>
     ),
 
-    'stats': () => (
+    stats: () => (
       <section className="stats-banner" id="stats-banner" key="stats">
         <div className="container">
           <StaggerReveal animation={anim.stats} staggerDelay={120} className="stats-grid">
@@ -314,29 +348,32 @@ export default function Home({ settings }) {
       </section>
     ),
 
-    'features': () => (
+    features: () => (
       <section className="section-padding features-section" id="features-section" key="features">
         <div className="container">
           <ScrollReveal animation={anim.features} className="section-center">
-            <div className="section-tag"><Award size={14} /> Tại Sao Chọn Chúng Tôi?</div>
-            <h2 className="section-title">Công Cụ Bạn Sẽ <span className="highlight">Thành Thạo</span></h2>
-            <p className="section-subtitle">Chương trình đào tạo bài bản, thực chiến 100% — giúp bạn làm chủ mọi công cụ văn phòng</p>
+            <div className="section-tag"><Award size={14} /> Vì Sao Chọn Thắng Tin Học?</div>
+            <h2 className="section-title">
+              Cách hướng dẫn <span className="highlight">chỉ có tại đây</span>
+            </h2>
+            <p className="section-subtitle">
+              Không phải lớp đông. Là kèm riêng — kiên nhẫn, thực chiến, giúp bạn thành thạo thật sự.
+            </p>
           </ScrollReveal>
           <StaggerReveal animation={anim.features} staggerDelay={150} className="grid-4 features-grid">
-            {officeFeatures.map((f, i) => (
-              <div key={i} className="feature-card-premium" style={{ '--accent': f.color }}>
-                <div className="feature-icon-wrapper">
-                  {/\.(png|webp|jpe?g|svg)$/i.test(f.icon) ? (
-                    <img src={f.icon} alt={f.title} className="feature-3d-icon" width="80" height="80" loading="lazy" decoding="async" />
-                  ) : (
-                    <div className="feature-icon-fallback"><Zap size={32} /></div>
-                  )}
+            {features.map((f, i) => {
+              const Icon = IconMap[f.icon] || CheckCircle;
+              return (
+                <div key={i} className="feature-card-premium usp-card" style={{ '--accent': '#dc2626' }}>
+                  <div className="feature-icon-wrapper usp-icon-wrap">
+                    <div className="feature-icon-fallback"><Icon size={28} /></div>
+                  </div>
+                  <h3>{f.title}</h3>
+                  <p>{f.desc}</p>
+                  <div className="feature-border" />
                 </div>
-                <h3>{f.title}</h3>
-                <p>{f.desc}</p>
-                <div className="feature-border" />
-              </div>
-            ))}
+              );
+            })}
           </StaggerReveal>
         </div>
       </section>
@@ -346,9 +383,9 @@ export default function Home({ settings }) {
       <section className="section-padding learning-path-section" id="learning-path" key="learning-path">
         <div className="container">
           <ScrollReveal animation={anim.learningPath} className="section-center">
-            <div className="section-tag"><Target size={14} /> Lộ Trình Học</div>
-            <h2 className="section-title">Bắt Đầu Chỉ Với <span className="highlight">4 Bước</span></h2>
-            <p className="section-subtitle">Quy trình học tập đơn giản, hiệu quả — ai cũng có thể bắt đầu</p>
+            <div className="section-tag"><Target size={14} /> Quy Trình Tuyển Sinh</div>
+            <h2 className="section-title">Bắt đầu chỉ với <span className="highlight">4 bước</span></h2>
+            <p className="section-subtitle">Từ một tin nhắn Zalo đến buổi học 1 kèm 1 đầu tiên</p>
           </ScrollReveal>
           <StaggerReveal animation={anim.learningPath} staggerDelay={200} className="path-grid">
             {learningPath.map((item, i) => (
@@ -361,6 +398,9 @@ export default function Home({ settings }) {
               </div>
             ))}
           </StaggerReveal>
+          <div className="path-cta">
+            <ZaloConsultButton href={zaloHref}>Nhắn Zalo ngay</ZaloConsultButton>
+          </div>
         </div>
       </section>
     ),
@@ -390,49 +430,27 @@ export default function Home({ settings }) {
           </ScrollReveal>
           <ScrollReveal animation={anim.visual === 'fade-right' ? 'fade-left' : anim.visual} delay={200} className="visual-content">
             <div className="section-tag section-tag-ai">
-              {settings?.visual_subtitle || '💻 Kỹ Năng Máy Tính 4.0'}
+              {settings?.visual_subtitle || 'Học online qua UltraViewer'}
             </div>
             <h2 className="section-title text-left">
-              {settings?.visual_title || <>Học Tập <span className="highlight-ai">Trực Quan</span> &amp; Thực Hành</>}
+              {settings?.visual_title || <>Học trực tiếp trên <span className="highlight-ai">máy của bạn</span></>}
             </h2>
             <p className="v-desc">
-              {settings?.visual_description || 'Làm chủ mọi thao tác trên máy tính, từ quản lý file chuyên nghiệp đến việc ứng dụng AI vào công việc hàng ngày của bạn.'}
+              {settings?.visual_description || 'Thầy hướng dẫn và sửa bài ngay trên máy tính của bạn — hiệu quả như ngồi cạnh nhau, học từ mọi nơi.'}
             </p>
-            <ul className="visual-features-list">
-              {(() => {
-                let vfList = [];
-                try { vfList = JSON.parse(settings?.home_visual_features || '[]'); } catch(e) {}
-                if (vfList.length === 0) {
-                  vfList = [
-                    { emoji: '📁', title: 'Quản Lý Dữ Liệu', desc: 'Sắp xếp khoa học, tìm kiếm nhanh và backup an toàn.' },
-                    { emoji: '⚡', title: 'Tối Ưu Hiệu Suất', desc: 'Phím tắt, task manager, tối ưu Windows pro.' },
-                    { emoji: '🤖', title: 'Trợ Lý AI', desc: 'Ứng dụng ChatGPT, Copilot & AI vào công việc.' },
-                  ];
-                }
-                return vfList.map((vf, i) => (
-                  <li key={i}>
-                    <div className="v-icon-box">{vf.emoji}</div>
-                    <div className="v-text">
-                      <strong>{vf.title}</strong>
-                      <p>{vf.desc}</p>
-                    </div>
-                  </li>
-                ));
-              })()}
-            </ul>
-            <Link to="/courses" className="btn btn-primary" style={{ marginTop: '2rem', width: 'fit-content' }}>
-              Khám Phá Khóa Học <ArrowRight size={18} />
-            </Link>
+            <ZaloConsultButton href={zaloHref} className="visual-zalo-cta">
+              Tư vấn lịch học Zalo
+            </ZaloConsultButton>
           </ScrollReveal>
         </div>
       </section>
     ),
 
-    'courses': () => (
+    courses: () => (
       <section className="section-padding courses-section" id="courses-section" key="courses">
         <div className="container">
           <ScrollReveal animation="fade-up">
-             <div className="section-header">
+            <div className="section-header">
               <div>
                 <div className="section-tag"><BookOpen size={14} /> {settings?.courses_tag || 'Khóa Học Nổi Bật'}</div>
                 <h2 className="section-title">{settings?.courses_title || <>Khóa Học <span className="highlight">Được Yêu Thích</span></>}</h2>
@@ -457,24 +475,24 @@ export default function Home({ settings }) {
       </section>
     ),
 
-    'testimonials': () => (
+    testimonials: () => (
       <section className="section-padding testimonials-section" id="testimonials" key="testimonials">
         <div className="container">
           <ScrollReveal animation={anim.testimonials} className="section-center">
             <div className="section-tag"><MessageSquare size={14} /> Học Viên Nói Gì?</div>
-            <h2 className="section-title">Phản Hồi <span className="highlight">Thực Tế</span> Từ Học Viên</h2>
-            <p className="section-subtitle">Hàng nghìn học viên đã thay đổi sự nghiệp nhờ các khóa học tại Thắng Tin Học</p>
+            <h2 className="section-title">Phản hồi <span className="highlight">thực tế</span> từ học viên 1 kèm 1</h2>
+            <p className="section-subtitle">Những người đã bắt đầu bằng một tin nhắn tư vấn — và thay đổi cách làm việc mỗi ngày</p>
           </ScrollReveal>
           <StaggerReveal animation={anim.testimonials} staggerDelay={200} className="grid-3 testimonials-grid">
             {testimonials.map((t, i) => (
               <div key={i} className="testimonial-card">
                 <div className="testimonial-quote"><Quote size={28} /></div>
                 <div className="testimonial-stars stars">
-                  {[1,2,3,4,5].map(s => (
+                  {[1, 2, 3, 4, 5].map(s => (
                     <Star key={s} size={14} fill={s <= t.rating ? '#f59e0b' : 'none'} color="#f59e0b" />
                   ))}
                 </div>
-                <p className="testimonial-text">"{t.text}"</p>
+                <p className="testimonial-text">&ldquo;{t.text}&rdquo;</p>
                 <div className="testimonial-author">
                   {t.avatar ? (
                     <img src={t.avatar} alt={t.name} className="author-avatar-img" width="48" height="48" loading="lazy" decoding="async" />
@@ -493,7 +511,7 @@ export default function Home({ settings }) {
       </section>
     ),
 
-    'partners': () => (
+    partners: () => (
       <section className="section-padding partners-section" id="partners" key="partners">
         <div className="container">
           <ScrollReveal animation={anim.partners} className="section-center">
@@ -512,24 +530,24 @@ export default function Home({ settings }) {
       </section>
     ),
 
-    'cta': () => (
+    cta: () => (
       <section className="cta-section" id="cta-section" key="cta">
         <div className="cta-bg">
           <div className="cta-orb cta-orb1" />
           <div className="cta-orb cta-orb2" />
         </div>
         <ScrollReveal animation={anim.cta} className="container cta-content">
-          <div className="cta-badge"><Sparkles size={14} /> Bắt Đầu Hành Trình</div>
+          <div className="cta-badge"><Sparkles size={14} /> Sẵn sàng bắt đầu?</div>
           <h2 className="cta-title">
-            {settings?.cta_title || <>Sẵn Sàng Nâng Cấp<br/><span>Kỹ Năng Tin Học?</span></>}
+            {settings?.cta_title || <>Nhắn Zalo để được<br /><span>tư vấn lộ trình 1 kèm 1</span></>}
           </h2>
           <p className="cta-desc">
-            {settings?.cta_subtitle || <>Đăng ký ngay hôm nay để nhận ưu đãi giảm 30% cho tất cả khóa học.<br/>Cơ hội có hạn — đừng bỏ lỡ!</>}
+            {settings?.cta_subtitle || <>Miễn phí tư vấn — nói rõ mục tiêu học, nhận gợi ý lịch và nội dung phù hợp.<br />Chỉ một tin nhắn để bắt đầu.</>}
           </p>
           <div className="cta-actions">
-            <Link to={settings?.cta_btn_url || '/lien-he'} className="btn btn-primary btn-lg cta-btn">
-              {settings?.cta_btn_text || 'Đăng Ký Học 1 Kèm 1'} <ArrowRight size={20} />
-            </Link>
+            <ZaloConsultButton href={zaloHref} className="cta-btn">
+              {settings?.cta_btn_text || 'Đăng ký tư vấn Zalo'}
+            </ZaloConsultButton>
             <Link to={settings?.cta_btn2_url || '/gioi-thieu'} className="btn btn-ghost btn-lg">
               {settings?.cta_btn2_text || 'Về Thắng Tin Học'} <ChevronRight size={18} />
             </Link>
@@ -541,15 +559,13 @@ export default function Home({ settings }) {
 
   return (
     <div className="home">
-      {/* Render sections in dynamic order, skip hidden */}
       {visibleSections.map(sectionId => {
         const renderer = sectionRenderers[sectionId];
         if (renderer) return renderer();
-        // Custom container rendering
         if (sectionId.startsWith('container-') && customSections[sectionId]) {
           const cs = customSections[sectionId];
           return (
-            <section key={sectionId} id={sectionId} className="section-padding" style={{ background: cs.bgColor || '#0f172a' }}>
+            <section key={sectionId} id={sectionId} className="section-padding" style={{ background: cs.bgColor || '#fff5f5' }}>
               <div className="container">
                 <ScrollReveal animation="fade-up" className="section-center">
                   <h2 className="section-title">{cs.title}</h2>
@@ -557,10 +573,10 @@ export default function Home({ settings }) {
                 <ScrollReveal animation="fade-up" delay={150}>
                   <div style={{ display: 'grid', gridTemplateColumns: cs.layout || '1fr 1fr', gap: '24px' }}>
                     {(cs.items || []).map((item, i) => (
-                      <div key={i} style={{ background: 'rgba(255,255,255,0.04)', borderRadius: '16px', padding: '28px 24px', border: '1px solid rgba(255,255,255,0.06)', transition: 'all 0.3s' }}>
+                      <div key={i} className="home-custom-card">
                         <div style={{ fontSize: '2rem', marginBottom: '12px' }}>{item.icon || '📌'}</div>
-                        <h3 style={{ fontSize: '1.1rem', fontWeight: 700, color: '#fff', marginBottom: '8px' }}>{item.title}</h3>
-                        <p style={{ fontSize: '0.9rem', color: 'rgba(255,255,255,0.6)', lineHeight: 1.6, margin: 0 }}>{item.desc}</p>
+                        <h3 style={{ fontSize: '1.1rem', fontWeight: 700, color: '#0f172a', marginBottom: '8px' }}>{item.title}</h3>
+                        <p style={{ fontSize: '0.9rem', color: '#64748b', lineHeight: 1.6, margin: 0 }}>{item.desc}</p>
                         {item.btnText && (
                           <Link to={item.btnUrl || '#'} className="btn btn-primary" style={{ marginTop: '16px', display: 'inline-flex' }}>
                             {item.btnText} <ArrowRight size={16} />
@@ -577,15 +593,13 @@ export default function Home({ settings }) {
         return null;
       })}
 
-
-      {/* Promo Popup — CMS driven */}
       {showPromo && (
         <div className="promo-overlay" onClick={() => { setShowPromo(false); sessionStorage.setItem('promo_dismissed', '1'); }}>
           <div className="promo-popup" onClick={e => e.stopPropagation()}>
-            <button className="promo-close" onClick={() => { setShowPromo(false); sessionStorage.setItem('promo_dismissed', '1'); }}>✕</button>
+            <button type="button" className="promo-close" onClick={() => { setShowPromo(false); sessionStorage.setItem('promo_dismissed', '1'); }}>✕</button>
             {settings?.promo_image ? (
               <Link
-                to={settings?.promo_link || '/courses'}
+                to={settings?.promo_link || '/lien-he'}
                 onClick={() => { setShowPromo(false); sessionStorage.setItem('promo_dismissed', '1'); }}
               >
                 <img
@@ -620,8 +634,8 @@ export default function Home({ settings }) {
         </div>
       )}
 
-      {/* Smart Section Navigator */}
-      <button 
+      <button
+        type="button"
         className={`section-navigator ${showNav ? 'visible' : ''} ${isLastSection ? 'go-top' : ''}`}
         onClick={handleNavClick}
         aria-label={isLastSection ? 'Cuộn lên đầu trang' : 'Cuộn xuống phần tiếp'}
@@ -631,4 +645,3 @@ export default function Home({ settings }) {
     </div>
   );
 }
-

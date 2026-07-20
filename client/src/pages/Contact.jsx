@@ -3,8 +3,19 @@ import { Phone, Mail, MapPin, Clock, Send, Loader2, CheckCircle, MessageSquare }
 import toast from 'react-hot-toast';
 import api from '../lib/api';
 import ScrollReveal from '../components/ScrollReveal';
+import FilterSelect from '../components/FilterSelect';
+import { getZaloChatUrl, isExternalHref } from '../lib/zalo';
 import { usePageSeo, SITE_URL, buildBreadcrumbSchema } from '../lib/usePageSeo';
 import './Contact.css';
+
+const SUBJECT_OPTIONS = [
+  { value: '', label: '-- Chọn --' },
+  { value: 'Tư vấn khóa học', label: 'Tư vấn khóa học' },
+  { value: 'Đăng ký thi', label: 'Đăng ký thi' },
+  { value: 'Hỗ trợ kỹ thuật', label: 'Hỗ trợ kỹ thuật' },
+  { value: 'Hợp tác', label: 'Hợp tác' },
+  { value: 'Khác', label: 'Khác' },
+];
 
 export default function Contact() {
   const [settings, setSettings] = useState({});
@@ -27,6 +38,9 @@ export default function Contact() {
   useEffect(() => {
     api.get('/settings').then(res => setSettings(res.data.data || {})).catch(() => {});
   }, []);
+
+  const zaloHref = useMemo(() => getZaloChatUrl(settings), [settings]);
+  const showZalo = isExternalHref(zaloHref);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -111,8 +125,8 @@ export default function Contact() {
                     {settings?.youtube_url && (
                       <a href={settings.youtube_url} target="_blank" rel="noreferrer" className="social-link yt">YouTube</a>
                     )}
-                    {settings?.zalo_url && (
-                      <a href={settings.zalo_url} target="_blank" rel="noreferrer" className="social-link zl">Zalo</a>
+                    {showZalo && (
+                      <a href={zaloHref} target="_blank" rel="noreferrer" className="social-link zl">Zalo</a>
                     )}
                     {settings?.tiktok_url && (
                       <a href={settings.tiktok_url} target="_blank" rel="noreferrer" className="social-link tk">TikTok</a>
@@ -160,14 +174,14 @@ export default function Contact() {
                     </div>
                     <div className="cf-field">
                       <label>Chủ đề</label>
-                      <select value={form.subject} onChange={e => setForm({ ...form, subject: e.target.value })}>
-                        <option value="">-- Chọn --</option>
-                        <option value="Tư vấn khóa học">Tư vấn khóa học</option>
-                        <option value="Đăng ký thi">Đăng ký thi</option>
-                        <option value="Hỗ trợ kỹ thuật">Hỗ trợ kỹ thuật</option>
-                        <option value="Hợp tác">Hợp tác</option>
-                        <option value="Khác">Khác</option>
-                      </select>
+                      <FilterSelect
+                        variant="form"
+                        aria-label="Chủ đề"
+                        placeholder="-- Chọn --"
+                        value={form.subject}
+                        options={SUBJECT_OPTIONS}
+                        onChange={(v) => setForm({ ...form, subject: v })}
+                      />
                     </div>
                   </div>
                   <div className="cf-field">

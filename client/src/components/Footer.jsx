@@ -159,7 +159,7 @@ export default function Footer({ settings }) {
         <div className="footer-bottom">
           <p>{copyright}</p>
           <div className="footer-bottom-links">
-            <span>Được xây dựng với 💖 tại Việt Nam</span>
+            <span>Được xây dựng với Thắng Tin Học</span>
           </div>
         </div>
       </div>

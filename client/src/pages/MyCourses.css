@@ -8,14 +8,15 @@
 .enrolled-card {
   display: flex;
   gap: 1.25rem;
-  background: var(--bg-card);
-  border: 1px solid var(--border);
+  background: #ffffff;
+  border: 1px solid rgba(15, 23, 42, 0.1);
   border-radius: var(--radius-lg);
   overflow: hidden;
   transition: var(--transition);
   padding: 1rem;
+  box-shadow: 0 8px 24px rgba(15, 23, 42, 0.06);
 }
-.enrolled-card:hover { border-color: var(--primary-light); transform: translateY(-3px); box-shadow: var(--shadow-glow); }
+.enrolled-card:hover { border-color: rgba(220, 38, 38, 0.3); transform: translateY(-3px); box-shadow: 0 14px 32px rgba(220, 38, 38, 0.1); }
 .enrolled-img { width: 120px; height: 90px; border-radius: var(--radius); overflow: hidden; flex-shrink: 0; }
 .enrolled-img img { width: 100%; height: 100%; object-fit: cover; }
 .enrolled-placeholder { width: 100%; height: 100%; background: var(--gradient-card); display: flex; align-items: center; justify-content: center; color: var(--primary-light); }

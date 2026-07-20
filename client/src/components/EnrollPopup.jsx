@@ -3,7 +3,23 @@ import { createPortal } from 'react-dom';
 import { X, Send, Loader2, CheckCircle } from 'lucide-react';
 import toast from 'react-hot-toast';
 import api from '../lib/api';
+import FilterSelect from './FilterSelect';
 import './EnrollPopup.css';
+
+const LEVEL_OPTIONS = [
+  { value: '', label: '-- Chọn --' },
+  { value: 'beginner', label: 'Mới bắt đầu' },
+  { value: 'intermediate', label: 'Đã biết cơ bản' },
+  { value: 'advanced', label: 'Nâng cao' },
+];
+
+const SCHEDULE_OPTIONS = [
+  { value: '', label: '-- Chọn --' },
+  { value: 'sang', label: 'Sáng (8h-12h)' },
+  { value: 'chieu', label: 'Chiều (13h-17h)' },
+  { value: 'toi', label: 'Tối (18h-21h)' },
+  { value: 'flexible', label: 'Linh hoạt' },
+];
 
 export default function EnrollPopup({ isOpen, onClose }) {
   const [tab, setTab] = useState('course');
@@ -206,22 +222,25 @@ export default function EnrollPopup({ isOpen, onClose }) {
                   <div className="enroll-grid-2">
                     <div className="enroll-field">
                       <label>Mức độ hiện tại <span>*</span></label>
-                      <select value={courseForm.level} onChange={e => setCourseForm({ ...courseForm, level: e.target.value })}>
-                        <option value="">-- Chọn --</option>
-                        <option value="beginner">Mới bắt đầu</option>
-                        <option value="intermediate">Đã biết cơ bản</option>
-                        <option value="advanced">Nâng cao</option>
-                      </select>
+                      <FilterSelect
+                        variant="form"
+                        aria-label="Mức độ hiện tại"
+                        placeholder="-- Chọn --"
+                        value={courseForm.level}
+                        options={LEVEL_OPTIONS}
+                        onChange={(v) => setCourseForm({ ...courseForm, level: v })}
+                      />
                     </div>
                     <div className="enroll-field">
                       <label>Khung giờ học mong muốn <span>*</span></label>
-                      <select value={courseForm.schedule} onChange={e => setCourseForm({ ...courseForm, schedule: e.target.value })}>
-                        <option value="">-- Chọn --</option>
-                        <option value="sang">Sáng (8h-12h)</option>
-                        <option value="chieu">Chiều (13h-17h)</option>
-                        <option value="toi">Tối (18h-21h)</option>
-                        <option value="flexible">Linh hoạt</option>
-                      </select>
+                      <FilterSelect
+                        variant="form"
+                        aria-label="Khung giờ học mong muốn"
+                        placeholder="-- Chọn --"
+                        value={courseForm.schedule}
+                        options={SCHEDULE_OPTIONS}
+                        onChange={(v) => setCourseForm({ ...courseForm, schedule: v })}
+                      />
                     </div>
                   </div>
                   <div className="enroll-field">

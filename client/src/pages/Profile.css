@@ -6,17 +6,18 @@
 
 .profile-card {
   display: flex;
-  background: var(--bg-card);
+  background: #ffffff;
   border-radius: 12px;
   overflow: hidden;
-  box-shadow: 0 10px 30px rgba(0,0,0,0.4);
+  border: 1px solid rgba(15, 23, 42, 0.1);
+  box-shadow: 0 10px 30px rgba(15, 23, 42, 0.08);
 }
 
 .profile-sidebar {
   width: 300px;
-  background: rgba(255,255,255,0.02);
+  background: #fff8f8;
   padding: 2.5rem;
-  border-right: 1px solid rgba(255,255,255,0.1);
+  border-right: 1px solid rgba(15, 23, 42, 0.08);
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -87,7 +88,7 @@
   font-weight: 500;
 }
 
-.nav-item:hover { background: rgba(255,255,255,0.05); color: white; }
+.nav-item:hover { background: rgba(var(--primary-rgb), 0.08); color: var(--primary); }
 .nav-item.active { background: var(--primary); color: white; }
 
 .profile-content { flex: 1; padding: 3rem; }

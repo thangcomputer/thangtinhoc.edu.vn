@@ -2,6 +2,7 @@ import { useState, useEffect, useMemo } from 'react';
 import { Search, Filter, SlidersHorizontal } from 'lucide-react';
 import api from '../lib/api';
 import CourseCard from '../components/CourseCard';
+import FilterSelect from '../components/FilterSelect';
 import { usePageSeo, SITE_URL, buildBreadcrumbSchema } from '../lib/usePageSeo';
 import './Courses.css';
 
@@ -33,6 +34,14 @@ export default function Courses() {
     ])],
   }), []);
   usePageSeo(pageSeo);
+
+  const categoryOptions = useMemo(
+    () => [
+      { value: '', label: 'Tất cả danh mục' },
+      ...categories.map((c) => ({ value: String(c.id), label: c.name })),
+    ],
+    [categories],
+  );
 
   const fetchCourses = () => {
     setLoading(true);
@@ -88,13 +97,18 @@ export default function Courses() {
 
           <div className="filter-chips">
             <SlidersHorizontal size={16} />
-            <select className="filter-select" value={level} onChange={e => { setLevel(e.target.value); setPage(1); }}>
-              {levels.map(l => <option key={l.value} value={l.value}>{l.label}</option>)}
-            </select>
-            <select className="filter-select" value={categoryId} onChange={e => { setCategoryId(e.target.value); setPage(1); }}>
-              <option value="">Tất cả danh mục</option>
-              {categories.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
-            </select>
+            <FilterSelect
+              aria-label="Lọc theo cấp độ"
+              value={level}
+              options={levels}
+              onChange={(v) => { setLevel(v); setPage(1); }}
+            />
+            <FilterSelect
+              aria-label="Lọc theo danh mục"
+              value={categoryId}
+              options={categoryOptions}
+              onChange={(v) => { setCategoryId(v); setPage(1); }}
+            />
           </div>
         </div>
 

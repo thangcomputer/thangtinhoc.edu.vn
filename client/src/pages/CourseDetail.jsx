@@ -332,7 +332,7 @@ export default function CourseDetail() {
                         <span className={`lesson-num ${isCompleted ? 'done' : ''}`}>
                           {isCompleted ? <CheckCircle size={12} /> : i + 1}
                         </span>
-                        {lesson.isPreview ? <Play size={14} color="#10b981" /> : enrolled ? <Play size={14} color="#6366f1" /> : <Lock size={14} />}
+                        {lesson.isPreview ? <Play size={14} color="#dc2626" /> : enrolled ? <Play size={14} color="#dc2626" /> : <Lock size={14} color="#64748b" />}
                         <span className="lesson-title">{lesson.title}</span>
                         {!enrolled && lesson.isPreview && (
                           <span className="badge badge-success lesson-preview-badge">

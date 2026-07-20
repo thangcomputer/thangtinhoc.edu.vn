@@ -1,40 +1,44 @@
 :root {
-  /* Colors */
-  --primary: #6366f1;
-  --primary-light: #818cf8;
-  --primary-dark: #4f46e5;
-  --primary-rgb: 99, 102, 241;
-  
+  /* Colors — đỏ / trắng tươi */
+  --primary: #dc2626;
+  --primary-light: #ef4444;
+  --primary-dark: #b91c1c;
+  --primary-rgb: 220, 38, 38;
+
   --accent: #f59e0b;
   --accent-light: #fbbf24;
-  --success: #10b981;
-  --danger: #ef4444;
+  --success: #16a34a;
+  --danger: #dc2626;
   --warning: #f59e0b;
 
-  --bg-dark: #020617;
-  --bg-card: #0f172a;
-  --bg-card-hover: #1e293b;
-  --bg-glass: rgba(15, 23, 42, 0.7);
-  --bg-glass-light: rgba(255, 255, 255, 0.03);
+  --bg-dark: #ffffff;
+  --bg-card: #ffffff;
+  --bg-card2: #fff5f5;
+  --bg-card-hover: #fff5f5;
+  --bg-glass: rgba(255, 255, 255, 0.88);
+  --bg-glass-light: rgba(220, 38, 38, 0.04);
+  --bg-soft: #fff8f8;
+  --bg-muted: #f8fafc;
 
-  --text-primary: #f8fafc;
-  --text-secondary: #cbd5e1;
-  --text-muted: #94a3b8;
+  --text-primary: #0f172a;
+  --text-secondary: #334155;
+  --text-muted: #475569;
+  --text: #0f172a;
 
-  --border: rgba(255, 255, 255, 0.08);
-  --border-light: rgba(255, 255, 255, 0.12);
+  --border: rgba(15, 23, 42, 0.08);
+  --border-light: rgba(220, 38, 38, 0.18);
 
   /* Gradients */
-  --gradient-primary: linear-gradient(135deg, #6366f1 0%, #3b82f6 100%);
-  --gradient-glow: linear-gradient(135deg, rgba(99, 102, 241, 0.3) 0%, rgba(59, 130, 246, 0) 100%);
-  --gradient-hero: radial-gradient(circle at top left, #1e1b4b 0%, #020617 40%, #020617 100%);
+  --gradient-primary: linear-gradient(135deg, #dc2626 0%, #f43f5e 100%);
+  --gradient-glow: linear-gradient(135deg, rgba(220, 38, 38, 0.18) 0%, rgba(244, 63, 94, 0) 100%);
+  --gradient-hero: radial-gradient(ellipse 90% 70% at 10% -10%, #fecaca 0%, #ffffff 42%, #fff5f5 100%);
 
   /* Surfaces */
-  --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
-  --shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
-  --shadow-lg: 0 20px 25px -5px rgb(0 0 0 / 0.2), 0 8px 10px -6px rgb(0 0 0 / 0.2);
-  --shadow-primary: 0 20px 40px -10px rgba(99, 102, 241, 0.4);
-  --shadow-glow: 0 0 40px -10px rgba(99, 102, 241, 0.5);
+  --shadow-sm: 0 1px 2px 0 rgb(15 23 42 / 0.05);
+  --shadow: 0 10px 15px -3px rgb(15 23 42 / 0.08), 0 4px 6px -4px rgb(15 23 42 / 0.05);
+  --shadow-lg: 0 20px 25px -5px rgb(15 23 42 / 0.1), 0 8px 10px -6px rgb(15 23 42 / 0.06);
+  --shadow-primary: 0 16px 32px -12px rgba(220, 38, 38, 0.45);
+  --shadow-glow: 0 0 36px -12px rgba(220, 38, 38, 0.35);
 
   /* Utils */
   --radius: 16px;
@@ -226,37 +230,37 @@ button {
   background: var(--gradient-primary);
   color: white;
   box-shadow: var(--shadow-primary);
-  border: 1px solid rgba(255,255,255,0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
 }
 
 .btn-primary:hover {
   transform: translateY(-4px) scale(1.03);
-  box-shadow: 0 20px 40px -10px rgba(var(--primary-rgb), 0.5), 0 0 20px rgba(var(--primary-rgb), 0.2);
+  box-shadow: 0 20px 40px -10px rgba(var(--primary-rgb), 0.45), 0 0 20px rgba(var(--primary-rgb), 0.15);
 }
 
 .btn-outline {
-  border: 2px solid var(--primary-light);
-  color: var(--primary-light);
+  border: 2px solid var(--primary);
+  color: var(--primary);
 }
 
 .btn-outline:hover {
-  background: var(--primary-light);
+  background: var(--primary);
   color: white;
   transform: translateY(-5px);
-  box-shadow: 0 15px 30px rgba(var(--primary-rgb), 0.3);
+  box-shadow: 0 15px 30px rgba(var(--primary-rgb), 0.28);
 }
 
 .btn-ghost {
-  background: rgba(255,255,255,0.03);
+  background: rgba(var(--primary-rgb), 0.04);
   border: 1px solid var(--border);
   color: var(--text-primary);
   backdrop-filter: blur(10px);
 }
 
 .btn-ghost:hover {
-  background: rgba(255,255,255,0.08);
+  background: rgba(var(--primary-rgb), 0.1);
   border-color: var(--primary-light);
-  color: var(--primary-light);
+  color: var(--primary-dark);
 }
 
 .btn-sm { padding: 0.6rem 1.5rem; font-size: 0.85rem; }
@@ -275,14 +279,14 @@ button {
 .card:hover {
   transform: translateY(-15px) scale(1.02);
   border-color: var(--primary-light);
-  box-shadow: 0 40px 80px -20px rgba(0,0,0,0.6), 0 0 50px rgba(var(--primary-rgb), 0.2);
+  box-shadow: 0 28px 56px -20px rgba(15, 23, 42, 0.18), 0 0 40px rgba(var(--primary-rgb), 0.12);
 }
 
 /* Form Styles */
 .form-control {
   width: 100%;
   padding: 1rem 1.5rem;
-  background: rgba(255,255,255,0.03);
+  background: #fff8f8;
   border: 2px solid var(--border);
   border-radius: var(--radius);
   color: var(--text-primary);
@@ -293,9 +297,13 @@ button {
 
 .form-control:focus {
   outline: none;
-  border-color: var(--primary-light);
-  background: rgba(255,255,255,0.06);
-  box-shadow: 0 0 0 4px rgba(var(--primary-rgb), 0.2);
+  border-color: var(--primary);
+  background: #ffffff;
+  box-shadow: 0 0 0 4px rgba(var(--primary-rgb), 0.15);
+}
+
+.form-control::placeholder {
+  color: #94a3b8;
 }
 
 /* Animations */
@@ -348,9 +356,9 @@ button {
   text-transform: uppercase;
 }
 
-.badge-success { background: rgba(16, 185, 129, 0.1); color: #10b981; border: 1px solid rgba(16, 185, 129, 0.2); }
-.badge-warning { background: rgba(245, 158, 11, 0.1); color: #f59e0b; border: 1px solid rgba(245, 158, 11, 0.2); }
-.badge-danger { background: rgba(239, 68, 68, 0.1); color: #ef4444; border: 1px solid rgba(239, 68, 68, 0.2); }
+.badge-success { background: #dcfce7; color: #166534; border: 1px solid #86efac; }
+.badge-warning { background: #fef3c7; color: #92400e; border: 1px solid #fcd34d; }
+.badge-danger { background: #fee2e2; color: #b91c1c; border: 1px solid #fca5a5; }
 
 /* Loader trong trang (khóa học, blog, v.v.) — căn giữa */
 .loader {

@@ -1,5 +1,7 @@
 import { Link } from 'react-router-dom';
-import { BookOpen, CheckCircle2, Sparkles } from 'lucide-react';
+import { CheckCircle2, Sparkles } from 'lucide-react';
+
+const DEFAULT_LOGO = '/logo.webp';
 
 export function AuthField({ label, icon: Icon, children, hint, labelExtra, className = '' }) {
   return (
@@ -38,6 +40,7 @@ export default function AuthShell({
   footer,
   children,
 }) {
+  const logoSrc = siteLogo || DEFAULT_LOGO;
   const items = panelItems.length
     ? panelItems
     : [
@@ -58,9 +61,15 @@ export default function AuthShell({
         <aside className="auth-panel">
           <div className="auth-panel-inner">
             <div className="auth-panel-top">
-              <Link to="/" className="auth-panel-brand">
-                <span className="auth-panel-mark"><BookOpen size={18} /></span>
-                <span>{siteName}</span>
+              <Link to="/" className="auth-panel-brand" aria-label={siteName}>
+                <img
+                  src={logoSrc}
+                  alt={siteName}
+                  className="auth-panel-logo"
+                  width="160"
+                  height="48"
+                  decoding="async"
+                />
               </Link>
               <span className="auth-panel-badge">
                 <Sparkles size={12} /> Học online 1 kèm 1
@@ -89,11 +98,15 @@ export default function AuthShell({
         <div className="auth-card">
           <div className="auth-card-head">
             <Link to="/" className="auth-brand" aria-label={siteName}>
-              <div className="auth-brand-icon">
-                <BookOpen size={22} />
-              </div>
+              <img
+                src={logoSrc}
+                alt={siteName}
+                className="auth-brand-logo"
+                width="180"
+                height="56"
+                decoding="async"
+              />
             </Link>
-            <p className="auth-brand-name">{siteName}</p>
             <h1 className="auth-title">{title}</h1>
             {subtitle && <p className="auth-subtitle">{subtitle}</p>}
           </div>

@@ -14,10 +14,10 @@ const ICON_MAP = {
 };
 
 const TYPE_COLORS = {
-  ORDER:    { bg: 'rgba(16,185,129,0.15)', color: '#34d399' },
-  GRADE:    { bg: 'rgba(251,191,36,0.15)',  color: '#fbbf24' },
-  COMPLETE: { bg: 'rgba(168,85,247,0.15)',  color: '#a855f7' },
-  REPLY:    { bg: 'rgba(99,102,241,0.15)',  color: '#818cf8' },
+  ORDER:    { bg: 'rgba(220, 38, 38, 0.1)', color: '#dc2626' },
+  GRADE:    { bg: 'rgba(245, 158, 11, 0.12)', color: '#d97706' },
+  COMPLETE: { bg: 'rgba(220, 38, 38, 0.08)', color: '#b91c1c' },
+  REPLY:    { bg: 'rgba(244, 63, 94, 0.1)', color: '#e11d48' },
 };
 
 // Use timestamp: any notification newer than lastSeen is unread
@@ -109,7 +109,7 @@ export default function NotificationBell() {
       {open && (
         <div className="nb-dropdown">
           <div className="nb-header">
-            <h4>🔔 Thông Báo</h4>
+            <h4><Bell size={18} /> Thông Báo</h4>
             <div className="nb-header-right">
               {unreadCount > 0 && (
                 <span className="nb-unread-count">{unreadCount} chưa đọc</span>
@@ -136,7 +136,7 @@ export default function NotificationBell() {
               <>
                 {visibleNotifs.map(n => {
                   const isUnread = new Date(n.createdAt) > lastSeen;
-                  const tc = TYPE_COLORS[n.type] || { bg: 'rgba(255,255,255,0.1)', color: '#94a3b8' };
+                  const tc = TYPE_COLORS[n.type] || { bg: 'rgba(220, 38, 38, 0.08)', color: '#dc2626' };
                   return (
                     <div
                       key={n.id}

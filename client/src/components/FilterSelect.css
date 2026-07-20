@@ -1,0 +1,155 @@
+.filter-select {
+  position: relative;
+  min-width: 170px;
+}
+
+.filter-select-trigger {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.6rem;
+  padding: 0.65rem 0.9rem 0.65rem 1rem;
+  background: #ffffff;
+  border: 1.5px solid rgba(220, 38, 38, 0.35);
+  border-radius: 999px;
+  color: #0f172a;
+  font-size: 0.9rem;
+  font-weight: 600;
+  font-family: inherit;
+  cursor: pointer;
+  transition: border-color 0.2s, box-shadow 0.2s, background 0.2s;
+}
+
+.filter-select-trigger:hover {
+  border-color: #dc2626;
+  background: #fff8f8;
+}
+
+.filter-select.is-open .filter-select-trigger {
+  border-color: #dc2626;
+  box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.15);
+}
+
+.filter-select-label {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  text-align: left;
+}
+
+.filter-select-chevron {
+  flex-shrink: 0;
+  color: #dc2626;
+  transition: transform 0.2s;
+}
+
+.filter-select.is-open .filter-select-chevron {
+  transform: rotate(180deg);
+}
+
+.filter-select.is-drop-up .filter-select-menu {
+  top: auto;
+  bottom: calc(100% + 6px);
+}
+
+.filter-select-menu {
+  position: absolute;
+  top: calc(100% + 6px);
+  left: 0;
+  right: 0;
+  z-index: 40;
+  margin: 0;
+  padding: 6px;
+  list-style: none;
+  background: #ffffff;
+  border: 1px solid rgba(220, 38, 38, 0.2);
+  border-radius: 14px;
+  box-shadow: 0 16px 36px rgba(15, 23, 42, 0.12);
+  max-height: 260px;
+  overflow-y: auto;
+  animation: filterSelectIn 0.16s ease;
+}
+
+@keyframes filterSelectIn {
+  from { opacity: 0; transform: translateY(-6px); }
+  to { opacity: 1; transform: none; }
+}
+
+.filter-select-option {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  padding: 0.65rem 0.85rem;
+  border: none;
+  border-radius: 10px;
+  background: transparent;
+  color: #0f172a;
+  font-size: 0.88rem;
+  font-weight: 600;
+  font-family: inherit;
+  text-align: left;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s;
+}
+
+.filter-select-option:hover {
+  background: #fff1f2;
+  color: #b91c1c;
+}
+
+.filter-select-option.is-active {
+  background: #dc2626;
+  color: #ffffff;
+}
+
+.filter-select-option.is-active:hover {
+  background: #b91c1c;
+  color: #ffffff;
+}
+
+.filter-select-option svg {
+  flex-shrink: 0;
+}
+
+/* Form variant — khớp input/textarea */
+.filter-select--form {
+  width: 100%;
+  min-width: 0;
+}
+
+.filter-select--form .filter-select-trigger {
+  padding: 11px 14px;
+  border-radius: 10px;
+  border: 1.5px solid rgba(15, 23, 42, 0.14);
+  background: #fff8f8;
+  font-weight: 500;
+  box-shadow: none;
+}
+
+.filter-select--form .filter-select-trigger:hover {
+  border-color: rgba(220, 38, 38, 0.45);
+  background: #ffffff;
+}
+
+.filter-select--form.is-open .filter-select-trigger {
+  border-color: #dc2626;
+  background: #ffffff;
+  box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.15);
+}
+
+.filter-select--form .filter-select-label:not(.has-value) {
+  color: #94a3b8;
+  font-weight: 500;
+}
+
+.filter-select--form .filter-select-menu {
+  z-index: 50;
+  border-radius: 12px;
+}
+
+@media (max-width: 768px) {
+  .filter-select { width: 100%; min-width: 0; }
+}
