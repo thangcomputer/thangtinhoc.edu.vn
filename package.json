@@ -1,0 +1,15 @@
+{
+  "name": "tinhoc24h",
+  "private": true,
+  "scripts": {
+    "merge:site": "node scripts/merge-site-dist.cjs",
+    "build:merged": "npm run build --prefix client && npm run build --prefix admin && node scripts/merge-site-dist.cjs",
+    "preview:merged": "npm run merge:site && node scripts/local-preview-static.cjs",
+    "verify:local": "node scripts/verify-local.cjs",
+    "verify:local:full": "node scripts/verify-local.cjs --build",
+    "fix:encoding": "node scripts/fix-encoding.cjs"
+  },
+  "dependencies": {
+    "docx": "^9.7.1"
+  }
+}

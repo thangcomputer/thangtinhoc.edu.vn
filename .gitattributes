@@ -1,0 +1,20 @@
+* text=auto eol=lf
+*.sh text eol=lf
+deploy/** text eol=lf
+
+*.js text charset=utf-8
+*.jsx text charset=utf-8
+*.ts text charset=utf-8
+*.tsx text charset=utf-8
+*.cjs text charset=utf-8
+*.mjs text charset=utf-8
+*.json text charset=utf-8
+*.css text charset=utf-8
+*.html text charset=utf-8
+*.md text charset=utf-8
+*.sql text charset=utf-8
+*.prisma text charset=utf-8
+*.yml text charset=utf-8
+*.yaml text charset=utf-8
+*.conf text charset=utf-8
+*.env text charset=utf-8
