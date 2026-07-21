@@ -910,6 +910,12 @@
 .testimonial-quote {
   color: rgba(220, 38, 38, 0.15);
   margin-bottom: 1rem;
+  flex: none;
+}
+.testimonial-quote svg {
+  width: 28px !important;
+  height: 28px !important;
+  flex: none;
 }
 
 .testimonial-stars { margin-bottom: 1.25rem; display: flex; gap: 2px; }
