@@ -209,8 +209,8 @@
 
 .course-price-wrap {
   display: flex;
-  align-items: baseline;
-  gap: 0.5rem;
+  flex-direction: column-reverse;
+  gap: 0.1rem;
 }
 
 .course-price-wrap .price {

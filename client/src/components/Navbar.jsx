@@ -59,13 +59,21 @@ export default function Navbar({ settings }) {
   useEffect(() => {
     setIsOpen(false);
     setUserMenuOpen(false);
-    // Deep link ghi danh: ?enroll=true | mos | exam
+    // Deep link ghi danh:
+    //   enroll=true|1|course → tab học
+    //   enroll=hoc|mos-hoc → tab học + chọn MOS/IC3
+    //   enroll=mos|exam|thi → tab thi + chọn MOS
     const params = new URLSearchParams(location.search);
     const enroll = (params.get('enroll') || '').toLowerCase();
-    if (enroll === 'true' || enroll === '1' || enroll === 'mos' || enroll === 'exam') {
-      if (enroll === 'mos' || enroll === 'exam') {
+    const openCourse = enroll === 'true' || enroll === '1' || enroll === 'course' || enroll === 'hoc' || enroll === 'mos-hoc';
+    const openExam = enroll === 'mos' || enroll === 'exam' || enroll === 'thi' || enroll === 'mos-thi';
+    if (openCourse || openExam) {
+      if (openExam) {
         setEnrollInitialTab('exam');
-        setEnrollPreselectMos(enroll === 'mos' || enroll === 'exam');
+        setEnrollPreselectMos(true);
+      } else if (enroll === 'hoc' || enroll === 'mos-hoc') {
+        setEnrollInitialTab('course');
+        setEnrollPreselectMos(true);
       } else {
         setEnrollInitialTab('course');
         setEnrollPreselectMos(false);

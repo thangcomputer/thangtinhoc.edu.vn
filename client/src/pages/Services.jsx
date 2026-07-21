@@ -49,8 +49,8 @@ const SERVICES = [
     title: 'Học / luyện thi MOS',
     desc: 'Luyện thi MOS Word, Excel, PowerPoint và IC3 — kèm GMetrix, lịch linh hoạt.',
     anchors: ['luyện thi MOS', 'học MOS Word Excel PowerPoint'],
-    primaryCta: { to: '/?enroll=mos', label: 'Đăng ký học MOS' },
-    secondaryCta: { to: '/lien-he', label: 'Liên hệ tư vấn' },
+    primaryCta: { to: '/?enroll=hoc', label: 'Đăng ký học MOS' },
+    secondaryCta: { to: '/?enroll=thi', label: 'Đăng ký thi' },
   },
   {
     id: 'hoc-1-kem-1',
@@ -146,8 +146,8 @@ export default function Services() {
               <Link to="/gioi-thieu">Thầy Thắng Tin Học</Link>.
             </p>
             <div className="services-hero-ctas">
-              <Link to="/?enroll=mos" className="btn btn-primary">Đăng ký học MOS</Link>
-              <Link to="/lien-he" className="btn btn-outline-light">Đăng ký tư vấn</Link>
+              <Link to="/?enroll=hoc" className="btn btn-primary">Đăng ký học MOS</Link>
+              <Link to="/?enroll=thi" className="btn btn-outline-light">Đăng ký thi</Link>
             </div>
           </ScrollReveal>
         </div>
@@ -219,9 +219,9 @@ export default function Services() {
               </div>
 
               <div className="services-hero-ctas gmetrix-ctas">
-                <Link to="/?enroll=mos" className="btn btn-primary">Đăng ký luyện thi MOS</Link>
+                <Link to="/?enroll=thi" className="btn btn-primary">Đăng ký thi MOS</Link>
+                <Link to="/?enroll=hoc" className="btn btn-outline-light">Đăng ký học MOS</Link>
                 <Link to="/lien-he" className="btn btn-outline-light">Liên hệ / Zalo tư vấn</Link>
-                <Link to="/dich-vu#mos" className="btn btn-outline-light">Xem dịch vụ MOS</Link>
               </div>
             </div>
           </ScrollReveal>

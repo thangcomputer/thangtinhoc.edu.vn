@@ -62,7 +62,7 @@ export default function EnrollPopup({ isOpen, onClose, initialTab = 'course', pr
     return () => { document.body.style.overflow = ''; };
   }, [isOpen]);
 
-  // Deep link: ?enroll=mos | exam → tab thi + preselect MOS
+  // Deep link: tab học/thi + preselect MOS khi cần
   useEffect(() => {
     if (!isOpen) return;
     if (initialTab === 'exam') {
@@ -73,12 +73,6 @@ export default function EnrollPopup({ isOpen, onClose, initialTab = 'course', pr
           examType: prev.examType.length
             ? prev.examType
             : ['mos-word', 'mos-excel', 'mos-ppt'],
-        }));
-        setCourseForm((prev) => ({
-          ...prev,
-          courses: prev.courses.includes('Luyện thi chứng chỉ MOS/IC3')
-            ? prev.courses
-            : [...prev.courses, 'Luyện thi chứng chỉ MOS/IC3'],
         }));
       }
     } else {

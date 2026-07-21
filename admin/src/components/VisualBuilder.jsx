@@ -648,39 +648,82 @@ export default function VisualBuilder({
                   style={{ width: '100%', padding: '7px 10px 7px 30px', borderRadius: '6px', border: '1px solid var(--border)', background: 'var(--bg-subtle)', fontSize: '0.72rem', color: 'var(--text)', outline: 'none' }} />
               </div>
 
-              {/* Active sections (on page) */}
-              <div style={{ fontSize: '0.65rem', fontWeight: 700, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: '6px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+              {/* Active sections (on page) — kéo thả để sắp xếp */}
+              <div style={{ fontSize: '0.65rem', fontWeight: 700, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: '6px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 8 }}>
                 <span>Đang sử dụng ({sectionOrder.length})</span>
+                <span style={{ fontWeight: 500, textTransform: 'none', letterSpacing: 0, opacity: 0.85 }}>Kéo để sắp xếp</span>
               </div>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '3px', marginBottom: '16px' }}>
-                {sectionOrder.map(id => {
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '2px', marginBottom: '16px' }}>
+                {sectionOrder.map((id, idx) => {
                   const d = getSectionDef(id); if (!d) return null;
                   const isHidden = !!sectionVisibility[id];
                   const Icon = d.icon;
+                  const isDragging = dragType === 'reorder' && dragPayload === id;
+                  const showDropLine = dragType === 'reorder' && dropTargetIdx === idx && dragSourceIdx !== idx;
                   return (
-                    <div key={id} onClick={() => { setSelectedSection(id); setSidebarTab('settings'); }}
-                      style={{
-                        display: 'flex', alignItems: 'center', gap: '8px', padding: '6px 8px',
-                        borderRadius: '6px', cursor: 'pointer', transition: 'all 0.15s',
-                        background: selectedSection === id ? `${d.color}15` : 'transparent',
-                        border: selectedSection === id ? `1px solid ${d.color}40` : '1px solid transparent',
-                        opacity: isHidden ? 0.4 : 1,
-                      }}>
-                      <div style={{ width: '22px', height: '22px', borderRadius: '5px', background: `${d.color}20`, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                        <Icon size={11} style={{ color: d.color }} />
+                    <div key={id}>
+                      {showDropLine && (
+                        <div style={{ height: 3, margin: '2px 0', borderRadius: 2, background: d.color || '#dc2626' }} />
+                      )}
+                      <div
+                        draggable
+                        onDragStart={(e) => onSectionDragStart(e, idx)}
+                        onDragEnd={onDragEnd}
+                        onDragOver={(e) => {
+                          if (dragType !== 'reorder') return;
+                          e.preventDefault();
+                          e.stopPropagation();
+                          e.dataTransfer.dropEffect = 'move';
+                          setDropTargetIdx(idx);
+                        }}
+                        onDrop={(e) => onDropZoneDrop(e, idx)}
+                        onClick={() => { setSelectedSection(id); setSidebarTab('settings'); }}
+                        style={{
+                          display: 'flex', alignItems: 'center', gap: '6px', padding: '6px 8px',
+                          borderRadius: '6px', cursor: 'grab', transition: 'all 0.15s',
+                          background: selectedSection === id ? `${d.color}15` : 'transparent',
+                          border: selectedSection === id ? `1px solid ${d.color}40` : '1px solid transparent',
+                          opacity: isDragging ? 0.35 : isHidden ? 0.4 : 1,
+                          userSelect: 'none',
+                        }}
+                        title="Kéo để đổi thứ tự"
+                      >
+                        <GripVertical size={12} style={{ color: 'var(--text-muted)', flexShrink: 0, opacity: 0.7 }} />
+                        <div style={{ width: '22px', height: '22px', borderRadius: '5px', background: `${d.color}20`, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                          <Icon size={11} style={{ color: d.color }} />
+                        </div>
+                        <span style={{ flex: 1, fontSize: '0.7rem', fontWeight: 600, color: 'var(--text)', textDecoration: isHidden ? 'line-through' : 'none' }}>{d.label}</span>
+                        <button type="button" onClick={(e) => { e.stopPropagation(); toggleVisibility(id); }}
+                          style={{ background: 'none', border: 'none', cursor: 'pointer', padding: '2px', color: isHidden ? 'var(--danger)' : 'var(--text-muted)' }} title={isHidden ? 'Hiện' : 'Ẩn'}>
+                          {isHidden ? <EyeOff size={11} /> : <Eye size={11} />}
+                        </button>
+                        <button type="button" onClick={(e) => { e.stopPropagation(); removeSection(id); }}
+                          style={{ background: 'none', border: 'none', cursor: 'pointer', padding: '2px', color: 'var(--text-muted)' }} title="Xóa">
+                          <Trash2 size={11} />
+                        </button>
                       </div>
-                      <span style={{ flex: 1, fontSize: '0.7rem', fontWeight: 600, color: 'var(--text)', textDecoration: isHidden ? 'line-through' : 'none' }}>{d.label}</span>
-                      <button onClick={(e) => { e.stopPropagation(); toggleVisibility(id); }}
-                        style={{ background: 'none', border: 'none', cursor: 'pointer', padding: '2px', color: isHidden ? 'var(--danger)' : 'var(--text-muted)' }} title={isHidden ? 'Hiện' : 'Ẩn'}>
-                        {isHidden ? <EyeOff size={11} /> : <Eye size={11} />}
-                      </button>
-                      <button onClick={(e) => { e.stopPropagation(); removeSection(id); }}
-                        style={{ background: 'none', border: 'none', cursor: 'pointer', padding: '2px', color: 'var(--text-muted)' }} title="Xóa">
-                        <Trash2 size={11} />
-                      </button>
                     </div>
                   );
                 })}
+                {dragType === 'reorder' && (
+                  <div
+                    onDragOver={(e) => {
+                      e.preventDefault();
+                      e.stopPropagation();
+                      e.dataTransfer.dropEffect = 'move';
+                      setDropTargetIdx(sectionOrder.length);
+                    }}
+                    onDrop={(e) => onDropZoneDrop(e, sectionOrder.length)}
+                    style={{
+                      height: dropTargetIdx === sectionOrder.length ? 28 : 10,
+                      marginTop: 2,
+                      borderRadius: 6,
+                      border: dropTargetIdx === sectionOrder.length ? '2px dashed #dc2626' : '2px dashed transparent',
+                      background: dropTargetIdx === sectionOrder.length ? 'rgba(220,38,38,0.08)' : 'transparent',
+                      transition: 'height 0.12s',
+                    }}
+                  />
+                )}
               </div>
 
               {/* Available widgets to drag (Elementor-style grid) */}

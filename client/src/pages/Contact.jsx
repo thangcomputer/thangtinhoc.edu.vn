@@ -117,7 +117,7 @@ export default function Contact() {
 
                 {/* Social */}
                 <div className="contact-social">
-                  <h4>Theo dõi chúng tôi</h4>
+                  <h4>Liên hệ trực tiếp với chúng tôi</h4>
                   <div className="social-row">
                     {settings?.facebook_url && (
                       <a href={settings.facebook_url} target="_blank" rel="noreferrer" className="social-link fb">Facebook</a>

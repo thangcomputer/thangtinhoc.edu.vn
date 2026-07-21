@@ -302,10 +302,41 @@ async function main() {
     });
   }
 
+  // MOS / IC3 exam structure posts
+  const { MOS_IC3_POSTS } = require('./seedMosIc3Posts');
+  for (const p of MOS_IC3_POSTS) {
+    await prisma.post.upsert({
+      where: { slug: p.slug },
+      update: {
+        title: p.title,
+        excerpt: p.excerpt,
+        content: p.content,
+        thumbnail: p.thumbnail || null,
+        metaTitle: p.metaTitle,
+        metaDescription: p.metaDescription,
+        focusKeyword: p.focusKeyword,
+        tags: p.tags,
+        tableOfContents: p.tableOfContents,
+        canonicalUrl: p.canonicalUrl,
+        isPublished: true,
+        isFeatured: true,
+        noIndex: false,
+        categoryId: catPost2.id,
+        authorId: admin.id,
+      },
+      create: {
+        ...p,
+        categoryId: catPost2.id,
+        authorId: admin.id,
+      },
+    });
+  }
+
   console.log('✅ Seed completed successfully!');
   console.log('👤 Admin: admin@gmail.com / admin123');
   console.log('👤 User: test@gmail.com / user123');
   console.log('📝 SEO silo posts:', SEO_SILO_POSTS.map((p) => p.slug).join(', '));
+  console.log('📝 MOS/IC3 posts:', MOS_IC3_POSTS.map((p) => p.slug).join(', '));
 }
 
 main()

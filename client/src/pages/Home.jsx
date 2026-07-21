@@ -423,11 +423,11 @@ export default function Home({ settings }) {
                 ))}
               </ul>
               <div className="mos-actions">
-                <Link to="/?enroll=mos" className="btn btn-primary btn-lg">
+                <Link to="/?enroll=hoc" className="btn btn-primary btn-lg">
                   Đăng ký học MOS <ArrowRight size={18} />
                 </Link>
-                <Link to="/dich-vu#gmetrix" className="btn btn-ghost btn-lg">
-                  Xem GMetrix &amp; cấu trúc thi
+                <Link to="/?enroll=thi" className="btn btn-ghost btn-lg">
+                  Đăng ký thi
                 </Link>
               </div>
             </ScrollReveal>
@@ -440,7 +440,7 @@ export default function Home({ settings }) {
                     loading="lazy"
                     decoding="async"
                   />
-                  <Link to="/dich-vu#mos" className="mos-aside-link mos-aside-media-link">
+                  <Link to="https://www.thangtinhoc.edu.vn/blog/cau-truc-de-thi-mos" className="mos-aside-link mos-aside-media-link">
                     Chi tiết dịch vụ MOS <ChevronRight size={16} />
                   </Link>
                 </div>
@@ -458,7 +458,7 @@ export default function Home({ settings }) {
                       <p>Luyện đề · làm quen giao diện · sẵn sàng trước ngày thi</p>
                     </div>
                   </div>
-                  <Link to="/dich-vu#mos" className="mos-aside-link">
+                  <Link to="https://www.thangtinhoc.edu.vn/blog/cau-truc-de-thi-mos" className="mos-aside-link">
                     Chi tiết dịch vụ MOS <ChevronRight size={16} />
                   </Link>
                 </div>
