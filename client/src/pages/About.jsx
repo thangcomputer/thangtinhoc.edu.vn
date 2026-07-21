@@ -172,6 +172,15 @@ export default function About() {
             <Link to="/gioi-thieu#dang-ky" className="about-hero-card-link">
               Đăng ký tư vấn nhanh →
             </Link>
+            <a
+              href="https://www.tiktok.com/@thaythangdaytinhoc"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="about-hero-card-tiktok"
+              aria-label="Theo dõi TikTok @thaythangdaytinhoc"
+            >
+              Theo dõi TikTok @thaythangdaytinhoc →
+            </a>
           </aside>
         </div>
       </section>

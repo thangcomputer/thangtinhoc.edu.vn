@@ -169,6 +169,28 @@
 }
 .about-hero-card-link:hover { text-decoration: underline; }
 
+.about-hero-card-tiktok {
+  margin-top: 14px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 11px 14px;
+  border-radius: 12px;
+  background: #111827;
+  border: 1px solid rgba(15, 23, 42, 0.35);
+  color: #ffffff;
+  font-weight: 800;
+  font-size: 0.9rem;
+  text-decoration: none;
+  transition: transform 0.15s ease, filter 0.15s ease;
+}
+
+.about-hero-card-tiktok:hover {
+  transform: translateY(-1px);
+  filter: brightness(1.05);
+}
+
 @media (max-width: 900px) {
   .about-hero-grid {
     grid-template-columns: 1fr;
