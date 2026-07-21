@@ -1,8 +1,8 @@
 ﻿import { useState, useEffect, useMemo } from 'react';
 import { Link, useOutletContext } from 'react-router-dom';
 import {
-  Award, Users, Target, Heart, Star, Zap, Monitor, Video,
-  Headphones, Route, CheckCircle, Quote, Send, Loader2, Play, X,
+  Users, Target, Heart, Star, Zap, Monitor, Video,
+  Headphones, Route, CheckCircle, Quote, Send, Loader2,
 } from 'lucide-react';
 import toast from 'react-hot-toast';
 import ScrollReveal from '../components/ScrollReveal';
@@ -58,7 +58,6 @@ export default function About() {
   const [courses, setCourses] = useState([]);
   const [form, setForm] = useState({ name: '', phone: '', message: '' });
   const [sending, setSending] = useState(false);
-  const [showTiktokVideo, setShowTiktokVideo] = useState(false);
 
   useEffect(() => {
     if (ctxSettings) setSettings(ctxSettings);
@@ -67,10 +66,6 @@ export default function About() {
   }, [ctxSettings]);
 
   const siteName = settings?.site_name || 'Thắng Tin Học';
-  const tiktokVideoUrl =
-    'https://www.tiktok.com/@thaythangdaytinhoc/video/7603312024449322247';
-  const tiktokVideoId = '7603312024449322247';
-  const tiktokEmbedUrl = `https://www.tiktok.com/embed/v2/${tiktokVideoId}?lang=vi`;
 
   const seo = useMemo(() => ({
     title: 'Thắng Tin Học là ai? | Thầy Thắng Tin Học - Đào tạo tin học văn phòng',
@@ -161,91 +156,53 @@ export default function About() {
             </ul>
           </div>
 
-          <aside className="about-hero-card" aria-label="Điểm nổi bật">
-            <div className="about-hero-card-badge">
-              <Award size={16} /> Thầy Thắng Tin Học
+          <aside className="about-hero-card about-hero-card--tiktok" aria-label="TikTok Live Stream Thầy Thắng">
+            <div className="about-hero-card-media-wrap">
+              
+              <a
+                href="https://www.tiktok.com/@thaythangdaytinhoc/video/7603312024449322247"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="about-hero-card-media"
+                aria-label="Xem TikTok Live Stream @thaythangdaytinhoc"
+              >
+                <img
+                  src="/tiktok-livestream-banner.webp"
+                  alt="Live stream hằng ngày cùng Thầy Thắng — 19H-22H hằng ngày trên TikTok @thaythangdaytinhoc"
+                  width={900}
+                  height={1200}
+                  loading="eager"
+                  decoding="async"
+                />
+              </a>
             </div>
-            <p className="about-hero-card-quote">
-              “Mỗi học viên một lộ trình — mục tiêu là dùng được tin học trong công việc thật.”
-            </p>
-            <ul className="about-hero-card-list">
-              <li><CheckCircle size={16} /> Word · Excel · PowerPoint</li>
-              <li><CheckCircle size={16} /> Học qua UltraViewer / Zoom</li>
-              <li><CheckCircle size={16} /> Lộ trình cá nhân hóa</li>
-              <li><CheckCircle size={16} /> Hỗ trợ sau khóa học</li>
-            </ul>
-            <Link to="/gioi-thieu#dang-ky" className="about-hero-card-link">
-              Đăng ký tư vấn nhanh →
-            </Link>
-            <a
-              href="https://www.tiktok.com/@thaythangdaytinhoc"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="about-hero-card-tiktok"
-              aria-label="Theo dõi TikTok @thaythangdaytinhoc"
-            >
-              Theo dõi TikTok @thaythangdaytinhoc →
-            </a>
-            <button
-              type="button"
-              className="about-hero-card-video-btn"
-              onClick={() => setShowTiktokVideo(true)}
-              aria-label="Xem video TikTok"
-            >
-              <Play size={18} /> Xem video TikTok →
-            </button>
+            <div className="about-hero-card-actions">
+              <a
+                href="https://www.tiktok.com/@thaythangdaytinhoc"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="about-hero-card-tiktok"
+                aria-label="Theo dõi TikTok @thaythangdaytinhoc"
+              >
+                Theo dõi kênh
+              </a>
+              <a
+                href="https://www.tiktok.com/@thaythangdaytinhoc/live"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="about-hero-card-view"
+                aria-label="Xem live stream TikTok"
+              >
+                Xem live
+              </a>
+              <span className="about-live-badge" aria-hidden="true">
+                <span className="about-live-dot" />
+                LIVE
+              </span>
+            </div>
           </aside>
         </div>
       </section>
-
-      {showTiktokVideo && (
-        <div
-          className="about-tiktok-modal-overlay"
-          role="dialog"
-          aria-modal="true"
-          aria-label="Video TikTok"
-          onClick={() => setShowTiktokVideo(false)}
-        >
-          <div
-            className="about-tiktok-modal"
-            onClick={(e) => e.stopPropagation()}
-          >
-            <div className="about-tiktok-modal-header">
-              <h3>Video TikTok</h3>
-              <button
-                type="button"
-                className="about-tiktok-modal-close"
-                onClick={() => setShowTiktokVideo(false)}
-                aria-label="Đóng"
-              >
-                <X size={20} />
-              </button>
-            </div>
-
-            <div className="about-tiktok-modal-video">
-              <iframe
-                title="TikTok video"
-                src={tiktokEmbedUrl}
-                loading="lazy"
-                frameBorder="0"
-                allow="autoplay; fullscreen; picture-in-picture"
-                allowFullScreen
-              />
-            </div>
-
-            <div className="about-tiktok-modal-footer">
-              <a
-                href={tiktokVideoUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="about-tiktok-modal-open"
-              >
-                Mở trên TikTok →
-              </a>
-            </div>
-          </div>
-        </div>
-      )}
 
       <section className="about-intro">
         <div className="container about-intro-grid">
