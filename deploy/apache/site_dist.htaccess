@@ -25,6 +25,11 @@
   RewriteCond %{REQUEST_FILENAME} !-f
   RewriteRule ^blog/.+ /index.html [L]
 
+  # Courses SPA — thu muc /courses/ (anh khoa hoc) trung route React /courses
+  RewriteRule ^courses/?$ /index.html [L]
+  RewriteCond %{REQUEST_FILENAME} !-f
+  RewriteRule ^courses/.+ /index.html [L]
+
   # Public site SPA
   RewriteCond %{REQUEST_FILENAME} !-f
   RewriteCond %{REQUEST_FILENAME} !-d
