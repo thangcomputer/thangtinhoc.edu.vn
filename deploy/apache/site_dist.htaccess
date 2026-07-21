@@ -19,6 +19,12 @@
   RewriteCond %{REQUEST_URI} ^/robots\.txt$
   RewriteRule ^ - [L]
 
+  # Blog SPA — thu muc /blog/ (anh post) trung route React /blog
+  # Khong co rule nay: Apache thay /blog/ la folder -> 403 Forbidden
+  RewriteRule ^blog/?$ /index.html [L]
+  RewriteCond %{REQUEST_FILENAME} !-f
+  RewriteRule ^blog/.+ /index.html [L]
+
   # Public site SPA
   RewriteCond %{REQUEST_FILENAME} !-f
   RewriteCond %{REQUEST_FILENAME} !-d

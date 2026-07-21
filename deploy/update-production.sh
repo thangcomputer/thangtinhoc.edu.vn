@@ -31,6 +31,11 @@ fi
 echo "==> Build frontend (site_dist)..."
 bash deploy/rebuild-frontend.sh
 
+echo "==> Seed MOS/IC3 blog posts (if script exists)..."
+if [ -f server/scripts/seed-mos-ic3-posts.cjs ]; then
+  (cd server && node scripts/seed-mos-ic3-posts.cjs) || echo "CANH BAO: seed MOS/IC3 that bai — chay lai: cd server && node scripts/seed-mos-ic3-posts.cjs"
+fi
+
 echo ""
 echo "=========================================="
 echo " XONG! Kiem tra:"
