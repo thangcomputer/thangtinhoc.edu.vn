@@ -422,13 +422,13 @@
 }
 
 .about-stats { padding: 24px 0 48px; }
-.stats-grid {
+.about-stats-grid {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
   gap: 16px;
   align-items: stretch;
 }
-.stat-card {
+.about-stat-card {
   text-align: center;
   padding: 24px 16px;
   border-radius: 12px;
@@ -444,7 +444,7 @@
   box-sizing: border-box;
   min-height: 110px;
 }
-.stat-num {
+.about-stat-num {
   display: block;
   font-size: 1.35rem;
   font-weight: 800;
@@ -455,7 +455,7 @@
   background-clip: text;
   -webkit-text-fill-color: transparent;
 }
-.stat-label {
+.about-stat-label {
   font-size: 0.85rem;
   color: var(--text-muted);
   font-weight: 600;

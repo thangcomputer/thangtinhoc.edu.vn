@@ -238,7 +238,7 @@ export default function About() {
 
       <section className="about-stats">
         <div className="container">
-          <div className="stats-grid">
+          <div className="about-stats-grid">
             {[
               { num: '1 kèm 1', label: 'Hình thức ưu tiên' },
               { num: 'Online', label: 'Học từ xa toàn quốc' },
@@ -246,9 +246,9 @@ export default function About() {
               { num: 'Ghi hình', label: 'Xem lại buổi học' },
             ].map((s, i) => (
               <ScrollReveal key={s.label} animation="fade-up" delay={i * 80}>
-                <div className="stat-card">
-                  <span className="stat-num">{s.num}</span>
-                  <span className="stat-label">{s.label}</span>
+                <div className="about-stat-card">
+                  <span className="about-stat-num">{s.num}</span>
+                  <span className="about-stat-label">{s.label}</span>
                 </div>
               </ScrollReveal>
             ))}
