@@ -175,8 +175,8 @@ export default function Services() {
                       </>
                     ) : (
                       <>
-                        <Link to="/courses">Khám phá khóa học <ArrowRight size={14} /></Link>
-                        <Link to="/lien-he">Đăng ký học</Link>
+                        <Link to="/courses">Khóa học video miễn phí</Link> |
+                        <Link to="/lien-he">Đăng ký học 1 kèm 1</Link>
                       </>
                     )}
                   </div>

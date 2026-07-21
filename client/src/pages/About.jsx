@@ -141,8 +141,7 @@ export default function About() {
               <span className="about-hero-rest"> là ai?</span>
             </h1>
             <p className="about-hero-desc">
-              Giáo viên đào tạo tin học văn phòng — giúp người mới và nhân viên văn phòng
-              thành thạo Word, Excel, PowerPoint qua học online 1 kèm 1 và học từ xa.
+          Thầy Thắng là thầy giáo dạy Tin học chuyên nghiệp, đồng thời là Nhà sáng tạo nội dung giáo dục công nghệ nổi tiếng trên các nền tảng mạng xã hội, đặc biệt là kênh TikTok <a href="https://www.tiktok.com/@thaythangdaytinhoc" target="_blank" rel="noopener noreferrer"><strong style={{ color: '#ee384f' }}>Thầy Thắng Dạy Tin Học</strong></a>. <br/> Với kinh nghiệm giảng dạy thực chiến cùng phong cách truyền đạt ngắn gọn, trực quan, Thầy Thắng đã đồng hành cùng hàng ngàn học sinh, sinh viên và người đi làm trên toàn quốc (và nước ngoài) làm chủ công nghệ, thi đạt chứng chỉ quốc tế (MOS, IC3) cũng như thành thạo kỹ năng tin học văn phòng.
             </p>
             <div className="about-hero-ctas">
               <Link to="/dich-vu" className="btn btn-primary about-btn-primary">Xem dịch vụ đào tạo</Link>
