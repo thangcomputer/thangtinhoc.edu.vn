@@ -752,7 +752,7 @@
 }
 
 @media (max-width: 768px) {
-  .stats-grid { grid-template-columns: 1fr 1fr; }
+  .about-stats-grid { grid-template-columns: 1fr 1fr; }
   .about-hero h1 { font-size: 1.75rem; }
 }
 
