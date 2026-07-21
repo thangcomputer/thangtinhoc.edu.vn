@@ -23,7 +23,7 @@ const LEARNING_MODES = [
   { icon: Users, title: 'Học 1 kèm 1', desc: 'Lộ trình cá nhân hóa theo mục tiêu và trình độ của từng học viên.' },
   { icon: Video, title: 'Học qua UltraViewer', desc: 'Giáo viên điều khiển và hướng dẫn trực tiếp trên máy của bạn.' },
   { icon: Headphones, title: 'Có ghi hình buổi học', desc: 'Xem lại bài bất cứ khi nào — củng cố kiến thức sau giờ học.' },
-  { icon: Heart, title: 'Hỗ trợ sau khóa', desc: 'Được hỗ trợ khi gặp tình huống thực tế tại công việc.' },
+  { icon: Heart, title: 'Hỗ trợ sau khóa', desc: 'Được hỗ trợ khi gặp tình huống thực tế tại công việc — hỏi lại bất cứ lúc nào.' },
   { icon: Route, title: 'Lộ trình cá nhân hóa', desc: 'Từ người mới bắt đầu đến nâng cao Excel, Word, PowerPoint.' },
 ];
 
@@ -215,7 +215,7 @@ export default function About() {
             {[
               { num: '1 kèm 1', label: 'Hình thức ưu tiên' },
               { num: 'Online', label: 'Học từ xa toàn quốc' },
-              { num: 'UltraViewer', label: 'Hướng dẫn trên máy bạn' },
+              { num: 'UltraViewer', label: 'Hướng dẫn trên máy' },
               { num: 'Ghi hình', label: 'Xem lại buổi học' },
             ].map((s, i) => (
               <ScrollReveal key={s.label} animation="fade-up" delay={i * 80}>

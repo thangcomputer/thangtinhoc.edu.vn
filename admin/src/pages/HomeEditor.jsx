@@ -21,6 +21,7 @@ const TABS = [
   { id: 'hero', label: 'Hero Banner', icon: Layout, desc: 'Banner chính & nội dung chào đón' },
   { id: 'stats', label: 'Thống Kê', icon: BarChart, desc: 'Số liệu ấn tượng trên trang chủ' },
   { id: 'features', label: 'Tính Năng', icon: Monitor, desc: 'Các công cụ & kỹ năng nổi bật' },
+  { id: 'mos', label: 'MOS / Chứng chỉ', icon: Award, desc: 'Khối đăng ký học & luyện thi MOS (cố định)' },
   { id: 'learning-path', label: 'Lộ Trình', icon: Target, desc: '4 bước học tập cho học viên' },
   { id: 'visual-learning', label: 'Học Trực Quan', icon: Laptop, desc: 'Phần kỹ năng máy tính 4.0' },
   { id: 'courses', label: 'Khóa Học', icon: BookOpen, desc: 'Phần khóa học nổi bật trên trang chủ' },
@@ -32,7 +33,7 @@ const TABS = [
 ];
 
 const TAB_GROUPS = [
-  { title: 'Đầu trang', ids: ['hero', 'stats', 'features'] },
+  { title: 'Đầu trang', ids: ['hero', 'stats', 'features', 'mos'] },
   { title: 'Học tập', ids: ['learning-path', 'visual-learning', 'courses'] },
   { title: 'Tin cậy', ids: ['testimonials', 'partners'] },
   { title: 'Cuối trang', ids: ['cta', 'promo', 'footer'] },
@@ -272,7 +273,7 @@ export default function HomeEditor() {
   const [previewTick, setPreviewTick] = useState(0);
 
   // Elementor-style section management
-  const DEFAULT_SECTIONS = ['hero', 'stats', 'features', 'learning-path', 'visual-learning', 'courses', 'testimonials', 'partners', 'cta'];
+  const DEFAULT_SECTIONS = ['hero', 'stats', 'features', 'mos', 'learning-path', 'visual-learning', 'courses', 'testimonials', 'partners', 'cta'];
   const [sectionOrder, setSectionOrder] = useState(DEFAULT_SECTIONS);
   const [sectionVisibility, setSectionVisibility] = useState({});
   const [draggedIdx, setDraggedIdx] = useState(null);
@@ -282,6 +283,7 @@ export default function HomeEditor() {
     'hero': { label: 'Hero Banner', emoji: '✨', color: '#dc2626', gradient: 'linear-gradient(135deg, #0f172a 0%, #2b1010 100%)' },
     'stats': { label: 'Thống Kê', emoji: '📊', color: '#dc2626', gradient: 'linear-gradient(135deg, #2b1010 0%, #0f172a 100%)' },
     'features': { label: 'Tính Năng', emoji: '🏆', color: '#f59e0b', gradient: '#0f172a' },
+    'mos': { label: 'MOS / Chứng chỉ', emoji: '🏅', color: '#dc2626', gradient: '#0f172a' },
     'learning-path': { label: 'Lộ Trình Học', emoji: '🎯', color: '#10b981', gradient: '#0f172a' },
     'visual-learning': { label: 'Học Trực Quan', emoji: '💻', color: '#ef4444', gradient: '#0f172a' },
     'courses': { label: 'Khóa Học Nổi Bật', emoji: '📚', color: '#dc2626', gradient: '#0f172a' },
@@ -716,6 +718,20 @@ export default function HomeEditor() {
                 </div>
               )}
             </div>
+          </div>
+        )}
+
+        {/* ═══ MOS TAB ═══ */}
+        {activeTab === 'mos' && (
+          <div className="animate-fade-in card" style={{ padding: '24px' }}>
+            <h3 style={{ margin: '0 0 8px', display: 'flex', alignItems: 'center', gap: 8 }}>
+              <Award size={18} color="var(--primary)" /> Khối MOS / Chứng chỉ
+            </h3>
+            <p style={{ margin: 0, color: 'var(--text-secondary)', lineHeight: 1.6, fontSize: '0.9rem' }}>
+              Nội dung section này cố định trên website (học MOS, GMetrix, CTA đăng ký).
+              Bạn có thể ẩn/hiện hoặc sắp xếp vị trí trong tab <strong>Sắp xếp trang</strong>.
+              Preview: neo <code>#mos-section</code>.
+            </p>
           </div>
         )}
 

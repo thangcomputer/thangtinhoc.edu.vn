@@ -3,6 +3,7 @@ export const SECTION_PREVIEW_HASH = {
   hero: "#hero",
   stats: "#stats-banner",
   features: "#features-section",
+  mos: "#mos-section",
   "learning-path": "#learning-path",
   "visual-learning": "#visual-learning",
   courses: "#courses-section",

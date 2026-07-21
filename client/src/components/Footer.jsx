@@ -131,6 +131,7 @@ export default function Footer({ settings }) {
                   <li><Link to="/">Trang Chủ</Link></li>
                   <li><Link to="/gioi-thieu">Thắng Tin Học</Link></li>
                   <li><Link to="/dich-vu">Dịch Vụ</Link></li>
+                  <li><Link to="/dich-vu#mos">Luyện thi MOS</Link></li>
                   <li><Link to="/courses">Khóa Học</Link></li>
                   <li><Link to="/blog">Blog</Link></li>
                   <li><Link to="/lien-he">Liên Hệ</Link></li>

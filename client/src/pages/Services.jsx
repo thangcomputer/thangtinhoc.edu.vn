@@ -2,6 +2,7 @@ import { useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import {
   BookOpen, Table, FileText, Presentation, Users, Monitor, Wifi, ArrowRight, CheckCircle,
+  Award, Timer, Laptop,
 } from 'lucide-react';
 import ScrollReveal from '../components/ScrollReveal';
 import SeoBreadcrumb from '../components/SeoBreadcrumb';
@@ -43,6 +44,15 @@ const SERVICES = [
     anchors: ['khóa học PowerPoint', 'mẹo dùng PowerPoint'],
   },
   {
+    id: 'mos',
+    icon: Award,
+    title: 'Học / luyện thi MOS',
+    desc: 'Luyện thi MOS Word, Excel, PowerPoint và IC3 — kèm GMetrix, lịch linh hoạt.',
+    anchors: ['luyện thi MOS', 'học MOS Word Excel PowerPoint'],
+    primaryCta: { to: '/?enroll=mos', label: 'Đăng ký học MOS' },
+    secondaryCta: { to: '/lien-he', label: 'Liên hệ tư vấn' },
+  },
+  {
     id: 'hoc-1-kem-1',
     icon: Users,
     title: 'Học Online 1 kèm 1',
@@ -54,7 +64,7 @@ const SERVICES = [
     icon: Monitor,
     title: 'Học qua UltraViewer',
     desc: 'Giáo viên điều khiển và hướng dẫn trên máy của bạn — hiệu quả như ngồi cạnh nhau.',
-    anchors: ['học online qua UltraViewer'],
+    anchors: ['học online qua UltraViewer', 'điều khiển máy từ xa'],
   },
   {
     id: 'tu-xa',
@@ -65,11 +75,37 @@ const SERVICES = [
   },
 ];
 
+const GMETRIX_POINTS = [
+  'Làm quen giao diện đề gần với kỳ thi MOS thật',
+  'Chấm tự động, luyện lại nhiều lần trước ngày thi',
+  'Kết hợp hướng dẫn 1 kèm 1 đến khi vững tay nghề',
+];
+
+const MOS_STRUCTURE = [
+  {
+    icon: Laptop,
+    title: 'Thi thực hành trên Office',
+    text: 'Mỗi môn Word / Excel / PowerPoint: làm task / dự án trực tiếp trên ứng dụng Office theo đề.',
+  },
+  {
+    icon: Timer,
+    title: 'Thời gian ~50 phút / môn',
+    text: 'Mỗi môn thường khoảng 50 phút; hoàn thành các yêu cầu theo đề trong thời gian quy định.',
+  },
+  {
+    icon: Award,
+    title: 'Điểm đạt theo chuẩn Microsoft',
+    text: 'Ngưỡng đạt theo quy định kỳ thi / trung tâm tổ chức. Phiên bản phổ biến: Office 2019 / Microsoft 365.',
+  },
+];
+
 export default function Services() {
   const seo = useMemo(() => ({
-    title: 'Dịch vụ đào tạo tin học văn phòng | Thắng Tin Học',
-    description: 'Dịch vụ Thắng Tin Học: học tin học văn phòng, Excel, Word, PowerPoint, online 1 kèm 1, UltraViewer và học từ xa. Đăng ký lộ trình phù hợp ngay.',
-    keywords: 'dịch vụ tin học, khóa học tin học văn phòng, học Excel online, học Word online, dạy Excel 1 kèm 1, UltraViewer, học máy tính từ xa, Thắng Tin Học',
+    title: 'Dịch vụ tin học, MOS & GMetrix | Thắng Tin Học',
+    description:
+      'Dịch vụ Thắng Tin Học: tin học văn phòng, Excel, Word, PowerPoint, luyện thi MOS, GMetrix, online 1 kèm 1 và học từ xa. Đăng ký lộ trình phù hợp ngay.',
+    keywords:
+      'dịch vụ tin học, khóa học tin học văn phòng, luyện thi MOS, học MOS, GMetrix, học Excel online, học Word online, dạy Excel 1 kèm 1, UltraViewer, học máy tính từ xa, Thắng Tin Học',
     canonical: `${SITE_URL}/dich-vu`,
     schemas: [
       buildOrganizationSchema(),
@@ -105,11 +141,12 @@ export default function Services() {
             <p className="services-eyebrow">Thắng Tin Học</p>
             <h1>Dịch vụ đào tạo tin học văn phòng</h1>
             <p className="services-lead">
-              Từ học máy tính cho người mới đến Excel nâng cao — học online, học từ xa,
-              1 kèm 1 qua UltraViewer cùng <Link to="/gioi-thieu">Thầy Thắng Tin Học</Link>.
+              Từ học máy tính cho người mới đến Excel nâng cao, luyện thi MOS với GMetrix —
+              học online, học từ xa, 1 kèm 1 qua UltraViewer cùng{' '}
+              <Link to="/gioi-thieu">Thầy Thắng Tin Học</Link>.
             </p>
             <div className="services-hero-ctas">
-              <Link to="/courses" className="btn btn-primary">Xem khóa học</Link>
+              <Link to="/?enroll=mos" className="btn btn-primary">Đăng ký học MOS</Link>
               <Link to="/lien-he" className="btn btn-outline-light">Đăng ký tư vấn</Link>
             </div>
           </ScrollReveal>
@@ -120,7 +157,7 @@ export default function Services() {
         <div className="container">
           <div className="services-grid">
             {SERVICES.map((s, i) => (
-              <ScrollReveal key={s.id} animation="fade-up" delay={i * 50}>
+              <ScrollReveal key={s.id} animation="fade-up" delay={i * 50} className="service-card-wrap">
                 <article className="service-card" id={s.id}>
                   <div className="service-icon"><s.icon size={24} /></div>
                   <h2>{s.title}</h2>
@@ -131,13 +168,63 @@ export default function Services() {
                     ))}
                   </ul>
                   <div className="service-actions">
-                    <Link to="/courses">Khám phá khóa học <ArrowRight size={14} /></Link>
-                    <Link to="/lien-he">Đăng ký học</Link>
+                    {s.primaryCta ? (
+                      <>
+                        <Link to={s.primaryCta.to}>{s.primaryCta.label} <ArrowRight size={14} /></Link>
+                        <Link to={s.secondaryCta?.to || '/lien-he'}>{s.secondaryCta?.label || 'Liên hệ'}</Link>
+                      </>
+                    ) : (
+                      <>
+                        <Link to="/courses">Khám phá khóa học <ArrowRight size={14} /></Link>
+                        <Link to="/lien-he">Đăng ký học</Link>
+                      </>
+                    )}
                   </div>
                 </article>
               </ScrollReveal>
             ))}
           </div>
+        </div>
+      </section>
+
+      <section className="services-gmetrix" id="gmetrix">
+        <div className="container">
+          <ScrollReveal animation="fade-up">
+            <div className="gmetrix-panel">
+              <p className="services-eyebrow">Luyện đề chính thức</p>
+              <h2>GMetrix &amp; cấu trúc thi MOS hiện tại</h2>
+              <p className="gmetrix-lead">
+                <strong>GMetrix</strong> là phần mềm luyện thi theo môi trường gần đề MOS —
+                giúp bạn làm quen giao diện, thao tác và áp lực thời gian trước ngày thi thật.
+              </p>
+
+              <div className="gmetrix-benefits">
+                {GMETRIX_POINTS.map((p) => (
+                  <div key={p} className="gmetrix-benefit">
+                    <CheckCircle size={16} />
+                    <span>{p}</span>
+                  </div>
+                ))}
+              </div>
+
+              <h3 className="gmetrix-subhead">Cấu trúc thi MOS (tóm tắt)</h3>
+              <div className="mos-structure-grid">
+                {MOS_STRUCTURE.map((item) => (
+                  <div key={item.title} className="mos-structure-card">
+                    <div className="mos-structure-icon"><item.icon size={20} /></div>
+                    <h4>{item.title}</h4>
+                    <p>{item.text}</p>
+                  </div>
+                ))}
+              </div>
+
+              <div className="services-hero-ctas gmetrix-ctas">
+                <Link to="/?enroll=mos" className="btn btn-primary">Đăng ký luyện thi MOS</Link>
+                <Link to="/lien-he" className="btn btn-outline-light">Liên hệ / Zalo tư vấn</Link>
+                <Link to="/dich-vu#mos" className="btn btn-outline-light">Xem dịch vụ MOS</Link>
+              </div>
+            </div>
+          </ScrollReveal>
         </div>
       </section>
 

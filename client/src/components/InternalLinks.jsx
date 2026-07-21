@@ -10,6 +10,8 @@ const LINK_POOL = [
   { to: '/dich-vu', text: 'Học Excel Online' },
   { to: '/dich-vu#hoc-1-kem-1', text: 'Đăng ký học 1 kèm 1' },
   { to: '/dich-vu#ultraviewer', text: 'Học online qua UltraViewer' },
+  { to: '/dich-vu#mos', text: 'Luyện thi MOS' },
+  { to: '/dich-vu#gmetrix', text: 'Luyện đề GMetrix' },
   { to: '/courses', text: 'Học cùng Thắng Tin Học' },
   { to: '/lien-he', text: 'Đăng ký tư vấn học tin học' },
   { to: '/blog', text: 'Blog tin học văn phòng' },

@@ -250,6 +250,7 @@
   display: grid;
   grid-template-columns: repeat(4, 1fr);
   gap: 16px;
+  align-items: stretch;
 }
 .stat-card {
   text-align: center;
@@ -258,12 +259,21 @@
   background: #ffffff;
   border: 1px solid rgba(15, 23, 42, 0.1);
   box-shadow: 0 6px 20px rgba(15, 23, 42, 0.05);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  width: 100%;
+  box-sizing: border-box;
+  min-height: 110px;
 }
 .stat-num {
   display: block;
   font-size: 1.35rem;
   font-weight: 800;
-  margin-bottom: 4px;
+  margin-bottom: 6px;
+  line-height: 1.2;
   background: var(--gradient-primary);
   -webkit-background-clip: text;
   background-clip: text;
@@ -273,6 +283,9 @@
   font-size: 0.85rem;
   color: var(--text-muted);
   font-weight: 600;
+  line-height: 1.35;
+  display: block;
+  min-height: 2.7em; /* luôn ~2 dòng → card ngang đều */
 }
 
 .about-values { padding: 48px 0; }
@@ -297,6 +310,7 @@
   display: grid;
   grid-template-columns: repeat(4, 1fr);
   gap: 16px;
+  align-items: stretch;
 }
 .values-grid-6 { grid-template-columns: repeat(3, 1fr); }
 .value-card {
@@ -307,6 +321,12 @@
   border: 1px solid rgba(15, 23, 42, 0.1);
   box-shadow: 0 8px 24px rgba(15, 23, 42, 0.05);
   transition: transform 0.25s, border-color 0.25s, box-shadow 0.25s;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  height: 100%;
+  width: 100%;
+  box-sizing: border-box;
 }
 .value-card:hover {
   transform: translateY(-3px);
@@ -323,17 +343,27 @@
   align-items: center;
   justify-content: center;
   color: #fff;
+  flex-shrink: 0;
 }
 .value-card h3 {
   font-size: 1rem;
   margin: 0 0 6px;
   color: var(--text-primary);
+  line-height: 1.35;
+  min-height: 2.7em;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 .value-card p {
   font-size: 0.85rem;
   color: var(--text-muted);
   margin: 0;
   line-height: 1.55;
+  flex: 1 1 auto;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
 }
 
 .about-courses {
@@ -351,6 +381,7 @@
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   gap: 16px;
+  align-items: stretch;
 }
 .about-testi-card {
   padding: 24px;
@@ -358,16 +389,23 @@
   background: #ffffff;
   border: 1px solid rgba(15, 23, 42, 0.1);
   box-shadow: 0 8px 24px rgba(15, 23, 42, 0.05);
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  width: 100%;
+  box-sizing: border-box;
 }
 .about-testi-card svg {
   color: var(--primary-light);
   margin-bottom: 10px;
+  flex-shrink: 0;
 }
 .about-testi-card p {
   color: var(--text-secondary);
   line-height: 1.6;
   margin: 0 0 14px;
   font-size: 0.92rem;
+  flex: 1 1 auto;
 }
 .about-testi-card strong {
   display: block;

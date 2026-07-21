@@ -529,6 +529,10 @@
   font-weight: 700;
   margin-bottom: 0.6rem;
   color: #0f172a;
+  min-height: 2.6em;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .feature-card-premium p {
@@ -540,6 +544,153 @@
 }
 
 .feature-border { display: none; }
+
+
+/* ═══ MOS ENROLLMENT ═══ */
+.mos-section {
+  background: linear-gradient(180deg, #fff5f5 0%, #ffffff 55%);
+  scroll-margin-top: 100px;
+}
+
+.mos-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1.35fr) minmax(260px, 0.85fr);
+  gap: 40px;
+  align-items: center;
+}
+
+.mos-lead {
+  text-align: left;
+  max-width: 40rem;
+  margin-left: 0;
+}
+
+.mos-copy .section-title,
+.mos-copy .section-tag {
+  text-align: left;
+}
+
+.mos-points {
+  list-style: none;
+  padding: 0;
+  margin: 1.5rem 0 1.75rem;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.mos-points li {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  font-size: 0.95rem;
+  color: #334155;
+  line-height: 1.5;
+}
+
+.mos-points li svg {
+  flex-shrink: 0;
+  color: #dc2626;
+  margin-top: 2px;
+}
+
+.mos-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.mos-badge-card {
+  background: #ffffff;
+  border: 1px solid rgba(220, 38, 38, 0.15);
+  border-radius: 20px;
+  padding: 28px 24px;
+  box-shadow: 0 12px 40px rgba(15, 23, 42, 0.08);
+}
+
+.mos-badge-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 20px;
+}
+
+.mos-pill {
+  display: inline-flex;
+  padding: 6px 12px;
+  border-radius: 999px;
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: #991b1b;
+  background: #fef2f2;
+  border: 1px solid #fecaca;
+}
+
+.mos-aside-stat {
+  display: flex;
+  gap: 14px;
+  align-items: flex-start;
+  padding: 16px;
+  border-radius: 14px;
+  background: #fff7ed;
+  border: 1px solid #fed7aa;
+  margin-bottom: 16px;
+}
+
+.mos-aside-stat svg {
+  color: #ea580c;
+  flex-shrink: 0;
+}
+
+.mos-aside-stat strong {
+  display: block;
+  font-size: 1rem;
+  color: #0f172a;
+  margin-bottom: 4px;
+}
+
+.mos-aside-stat p {
+  margin: 0;
+  font-size: 0.85rem;
+  color: #64748b;
+  line-height: 1.45;
+}
+
+.mos-aside-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-weight: 700;
+  font-size: 0.9rem;
+  color: #dc2626;
+  text-decoration: none;
+}
+
+.mos-aside-link:hover {
+  text-decoration: underline;
+}
+
+@media (max-width: 900px) {
+  .mos-layout {
+    grid-template-columns: 1fr;
+    gap: 28px;
+  }
+  .mos-copy .section-title,
+  .mos-copy .section-tag,
+  .mos-lead {
+    text-align: center;
+  }
+  .mos-lead {
+    margin-left: auto;
+    margin-right: auto;
+  }
+  .mos-points li {
+    justify-content: flex-start;
+  }
+  .mos-actions {
+    justify-content: center;
+  }
+}
 
 
 /* ═══ LEARNING PATH ═══ */
@@ -616,6 +767,10 @@
   font-weight: 700;
   margin-bottom: 0.5rem;
   color: #0f172a;
+  min-height: 2.6em;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .path-card p {

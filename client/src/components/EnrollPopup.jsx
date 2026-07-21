@@ -21,10 +21,25 @@ const SCHEDULE_OPTIONS = [
   { value: 'flexible', label: 'Linh hoạt' },
 ];
 
-export default function EnrollPopup({ isOpen, onClose }) {
+export default function EnrollPopup({ isOpen, onClose, initialTab = 'course', preselectMos = false }) {
   const [tab, setTab] = useState('course');
   const [sending, setSending] = useState(false);
   const [success, setSuccess] = useState(false);
+
+  // Course form
+  const [courseForm, setCourseForm] = useState({
+    fullName: '', phone: '',
+    courses: [], level: '', schedule: '', note: ''
+  });
+
+  // Exam form
+  const [examForm, setExamForm] = useState({
+    fullName: '', phone: '', birthDate: '', idNumber: '',
+    examType: []
+  });
+
+  // Per-exam sub selections: { ic3: { lang: 'Tiếng Việt' }, 'mos-word': { lang: 'Tiếng Anh', ver: 'Office 2019' }}
+  const [examSubs, setExamSubs] = useState({});
 
   // Reset toàn bộ form về trống
   const resetForms = () => {
@@ -47,17 +62,37 @@ export default function EnrollPopup({ isOpen, onClose }) {
     return () => { document.body.style.overflow = ''; };
   }, [isOpen]);
 
-  // Course form
-  const [courseForm, setCourseForm] = useState({
-    fullName: '', phone: '',
-    courses: [], level: '', schedule: '', note: ''
-  });
-
-  // Exam form
-  const [examForm, setExamForm] = useState({
-    fullName: '', phone: '', birthDate: '', idNumber: '',
-    examType: []
-  });
+  // Deep link: ?enroll=mos | exam → tab thi + preselect MOS
+  useEffect(() => {
+    if (!isOpen) return;
+    if (initialTab === 'exam') {
+      setTab('exam');
+      if (preselectMos) {
+        setExamForm((prev) => ({
+          ...prev,
+          examType: prev.examType.length
+            ? prev.examType
+            : ['mos-word', 'mos-excel', 'mos-ppt'],
+        }));
+        setCourseForm((prev) => ({
+          ...prev,
+          courses: prev.courses.includes('Luyện thi chứng chỉ MOS/IC3')
+            ? prev.courses
+            : [...prev.courses, 'Luyện thi chứng chỉ MOS/IC3'],
+        }));
+      }
+    } else {
+      setTab('course');
+      if (preselectMos) {
+        setCourseForm((prev) => ({
+          ...prev,
+          courses: prev.courses.includes('Luyện thi chứng chỉ MOS/IC3')
+            ? prev.courses
+            : [...prev.courses, 'Luyện thi chứng chỉ MOS/IC3'],
+        }));
+      }
+    }
+  }, [isOpen, initialTab, preselectMos]);
 
   const courseOptions = [
     { id: 'Tin học văn phòng cơ bản', icon: '💻' },
@@ -80,9 +115,6 @@ export default function EnrollPopup({ isOpen, onClose }) {
     { id: 'mos-excel', label: 'MOS Excel', icon: '📊', sub: [{ key: 'lang', label: 'Ngôn ngữ', options: ['Tiếng Việt', 'Tiếng Anh'] }, { key: 'ver', label: 'Phiên bản', options: ['Office 2019', 'Microsoft 365'] }] },
     { id: 'mos-ppt', label: 'MOS PowerPoint', icon: '📽️', sub: [{ key: 'lang', label: 'Ngôn ngữ', options: ['Tiếng Việt', 'Tiếng Anh'] }, { key: 'ver', label: 'Phiên bản', options: ['Office 2019', 'Microsoft 365'] }] },
   ];
-
-  // Per-exam sub selections: { ic3: { lang: 'Tiếng Việt' }, 'mos-word': { lang: 'Tiếng Anh', ver: 'Office 2019' }}
-  const [examSubs, setExamSubs] = useState({});
 
   const toggleExam = (id) => {
     setExamForm(prev => ({

@@ -25,6 +25,8 @@ export default function Navbar({ settings }) {
   const [scrolled, setScrolled] = useState(false);
   const [userMenuOpen, setUserMenuOpen] = useState(false);
   const [enrollOpen, setEnrollOpen] = useState(false);
+  const [enrollInitialTab, setEnrollInitialTab] = useState('course');
+  const [enrollPreselectMos, setEnrollPreselectMos] = useState(false);
   const { isAuthenticated, user } = useAuthStore();
   const navigate = useNavigate();
   const location = useLocation();
@@ -57,8 +59,17 @@ export default function Navbar({ settings }) {
   useEffect(() => {
     setIsOpen(false);
     setUserMenuOpen(false);
-    // Tự mở popup đăng ký nếu URL có ?enroll=true
-    if (location.search.includes('enroll=true')) {
+    // Deep link ghi danh: ?enroll=true | mos | exam
+    const params = new URLSearchParams(location.search);
+    const enroll = (params.get('enroll') || '').toLowerCase();
+    if (enroll === 'true' || enroll === '1' || enroll === 'mos' || enroll === 'exam') {
+      if (enroll === 'mos' || enroll === 'exam') {
+        setEnrollInitialTab('exam');
+        setEnrollPreselectMos(enroll === 'mos' || enroll === 'exam');
+      } else {
+        setEnrollInitialTab('course');
+        setEnrollPreselectMos(false);
+      }
       setEnrollOpen(true);
     }
   }, [location]);
@@ -99,6 +110,8 @@ export default function Navbar({ settings }) {
 
   const handleEnrollClick = () => {
     closeDrawer();
+    setEnrollInitialTab('course');
+    setEnrollPreselectMos(false);
     setEnrollOpen(true);
   };
 
@@ -133,7 +146,11 @@ export default function Navbar({ settings }) {
               {link.label}
             </Link>
           ))}
-          <button type="button" className="nav-link enroll-nav-btn" onClick={() => setEnrollOpen(true)}>
+          <button type="button" className="nav-link enroll-nav-btn" onClick={() => {
+            setEnrollInitialTab('course');
+            setEnrollPreselectMos(false);
+            setEnrollOpen(true);
+          }}>
             <PenTool size={14} /> Ghi Danh
           </button>
         </div>
@@ -232,7 +249,16 @@ export default function Navbar({ settings }) {
           </button>
         </div>
       </div>
-      <EnrollPopup isOpen={enrollOpen} onClose={() => setEnrollOpen(false)} />
+      <EnrollPopup
+        isOpen={enrollOpen}
+        onClose={() => {
+          setEnrollOpen(false);
+          setEnrollInitialTab('course');
+          setEnrollPreselectMos(false);
+        }}
+        initialTab={enrollInitialTab}
+        preselectMos={enrollPreselectMos}
+      />
     </nav>
 
     <div

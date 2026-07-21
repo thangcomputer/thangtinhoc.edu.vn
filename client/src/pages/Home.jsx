@@ -5,7 +5,7 @@ import {
   ArrowRight, Star, Users, BookOpen, Award, TrendingUp,
   CheckCircle, Zap, Shield, Clock, ChevronRight, Quote,
   GraduationCap, Monitor, Sparkles,
-  Target, MessageSquare, ChevronDown, ChevronUp,
+  Target, MessageSquare, ChevronDown, ChevronUp, Trophy,
 } from 'lucide-react';
 import api from '../lib/api';
 import { sanitizeHTML } from '../lib/sanitize';
@@ -80,7 +80,7 @@ export default function Home({ settings }) {
     title: `${SITE_NAME} — Học tin học online 1 kèm 1 | Tư vấn Zalo`,
     description: settings?.site_description
       || 'Tuyển sinh học tin học văn phòng online 1 kèm 1 tại Thắng Tin Học. Hướng dẫn tận tâm, sửa bài trực tiếp qua UltraViewer. Nhắn Zalo để được tư vấn lộ trình miễn phí.',
-    keywords: 'học tin học 1 kèm 1, học Excel online, học Word online, UltraViewer, tuyển sinh tin học, Thắng Tin Học, tư vấn Zalo',
+    keywords: 'học tin học 1 kèm 1, học Excel online, học Word online, UltraViewer, tuyển sinh tin học, Thắng Tin Học, tư vấn Zalo, luyện thi MOS, GMetrix',
     canonical: `${SITE_URL}/`,
     schemas: [buildOrganizationSchema(), buildPersonSchema()],
   }), [settings?.site_description]);
@@ -88,11 +88,20 @@ export default function Home({ settings }) {
   usePageSeo(homeSeo);
 
   // Parse section_order & section_visibility early (for courses fetch)
-  const defaultOrder = ['hero', 'features', 'learning-path', 'testimonials', 'cta'];
+  const defaultOrder = ['hero', 'features', 'mos', 'learning-path', 'testimonials', 'cta'];
   let sectionOrder = defaultOrder;
   try {
     const parsed = JSON.parse(settings?.section_order || '[]');
-    if (parsed.length > 0) sectionOrder = parsed;
+    if (parsed.length > 0) {
+      sectionOrder = parsed;
+      // CMS cũ chưa có mos → chèn sau features (hoặc đầu danh sách)
+      if (!sectionOrder.includes('mos')) {
+        const fi = sectionOrder.indexOf('features');
+        sectionOrder = fi >= 0
+          ? [...sectionOrder.slice(0, fi + 1), 'mos', ...sectionOrder.slice(fi + 1)]
+          : ['mos', ...sectionOrder];
+      }
+    }
   } catch (e) { /* keep default */ }
 
   let sectionVisibility = { ...MARKETING_HIDDEN };
@@ -229,6 +238,7 @@ export default function Home({ settings }) {
     hero: 'hero',
     stats: 'stats-banner',
     features: 'features-section',
+    mos: 'mos-section',
     'learning-path': 'learning-path',
     'visual-learning': 'visual-learning',
     courses: 'courses-section',
@@ -383,6 +393,64 @@ export default function Home({ settings }) {
               );
             })}
           </StaggerReveal>
+        </div>
+      </section>
+    ),
+
+    mos: () => (
+      <section className="section-padding mos-section" id="mos-section" key="mos">
+        <div className="container">
+          <div className="mos-layout">
+            <ScrollReveal animation={anim.features} className="mos-copy">
+              <div className="section-tag"><Trophy size={14} /> Chứng chỉ Microsoft</div>
+              <h2 className="section-title">
+                Đăng ký học &amp; luyện thi <span className="highlight">MOS</span>
+              </h2>
+              <p className="section-subtitle mos-lead">
+                Luyện Word, Excel, PowerPoint theo chuẩn Microsoft Office Specialist —
+                kèm 1 kèm 1, luyện đề bằng phần mềm <strong>GMetrix</strong>, thi đúng cấu trúc hiện tại.
+              </p>
+              <ul className="mos-points">
+                {[
+                  'Học MOS Word / Excel / PowerPoint (Office 2019 & Microsoft 365)',
+                  'Luyện thi trên GMetrix — môi trường gần đề thật, chấm tự động',
+                  'Nắm cấu trúc thi thực hành: làm task/dự án trong ~50 phút/môn',
+                  'Giảng viên theo sát đến khi bạn tự tin dự thi',
+                  'Lịch học linh hoạt · online toàn quốc qua UltraViewer',
+                  'Hỗ trợ cả lộ trình IC3 Digital Literacy nếu cần',
+                ].map((t) => (
+                  <li key={t}><CheckCircle size={18} /> <span>{t}</span></li>
+                ))}
+              </ul>
+              <div className="mos-actions">
+                <Link to="/?enroll=mos" className="btn btn-primary btn-lg">
+                  Đăng ký học MOS <ArrowRight size={18} />
+                </Link>
+                <Link to="/dich-vu#gmetrix" className="btn btn-ghost btn-lg">
+                  Xem GMetrix &amp; cấu trúc thi
+                </Link>
+              </div>
+            </ScrollReveal>
+            <ScrollReveal animation="fade-left" delay={120} className="mos-aside">
+              <div className="mos-badge-card">
+                <div className="mos-badge-row">
+                  <span className="mos-pill">MOS Word</span>
+                  <span className="mos-pill">MOS Excel</span>
+                  <span className="mos-pill">MOS PowerPoint</span>
+                </div>
+                <div className="mos-aside-stat">
+                  <Award size={28} />
+                  <div>
+                    <strong>GMetrix Practice</strong>
+                    <p>Luyện đề · làm quen giao diện · sẵn sàng trước ngày thi</p>
+                  </div>
+                </div>
+                <Link to="/dich-vu#mos" className="mos-aside-link">
+                  Chi tiết dịch vụ MOS <ChevronRight size={16} />
+                </Link>
+              </div>
+            </ScrollReveal>
+          </div>
         </div>
       </section>
     ),

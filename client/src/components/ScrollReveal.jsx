@@ -47,7 +47,7 @@ export default function ScrollReveal({
 
   // When animation is 'none', render children directly — no wrapper styles
   if (isNone) {
-    return <div className={className} style={style}>{children}</div>;
+    return <div className={className} style={{ height: '100%', width: '100%', ...style }}>{children}</div>;
   }
 
   const getTransform = (anim, visible) => {
@@ -71,6 +71,8 @@ export default function ScrollReveal({
         transform: getTransform(animation, isVisible),
         transition: `opacity ${duration}ms cubic-bezier(0.22, 1, 0.36, 1) ${delay}ms, transform ${duration}ms cubic-bezier(0.22, 1, 0.36, 1) ${delay}ms`,
         willChange: 'opacity, transform',
+        height: '100%',
+        width: '100%',
         ...style,
       }}
     >
@@ -140,7 +142,7 @@ export function StaggerReveal({
     return (
       <div className={className} style={style}>
         {flatChildren.map((child, i) => (
-          <div key={child.key || i}>{child}</div>
+          <div key={child.key || i} className="stagger-item" style={{ height: '100%', width: '100%', display: 'flex', flexDirection: 'column' }}>{child}</div>
         ))}
       </div>
     );
@@ -167,11 +169,16 @@ export function StaggerReveal({
         return (
           <div 
             key={child.key || i}
+            className="stagger-item"
             style={{
               opacity: isVisible ? 1 : 0,
               transform: getTransform(animation, isVisible),
               transition: `opacity ${duration}ms cubic-bezier(0.22, 1, 0.36, 1) ${itemDelay}ms, transform ${duration}ms cubic-bezier(0.22, 1, 0.36, 1) ${itemDelay}ms`,
               willChange: 'opacity, transform',
+              height: '100%',
+              width: '100%',
+              display: 'flex',
+              flexDirection: 'column',
             }}
           >
             {child}

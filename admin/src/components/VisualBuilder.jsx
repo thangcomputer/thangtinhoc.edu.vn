@@ -4,6 +4,7 @@ import {
   Layout, BarChart, Monitor, Target, Laptop, BookOpen, Quote, Handshake,
   Megaphone, Settings, Layers, X, Grip, Package, Columns,
   Save, RefreshCcw, ArrowUp, ArrowDown, Palette, Search, PanelRightOpen, PanelRightClose,
+  Award,
 } from 'lucide-react';
 import HomeEditorPreview from './HomeEditorPreview';
 
@@ -20,6 +21,7 @@ const SECTION_DEFS = {
   hero: { label: 'Hero Banner', emoji: '✨', icon: Layout, color: '#dc2626', desc: 'Banner chính với tiêu đề & nút CTA' },
   stats: { label: 'Thống Kê', emoji: '📊', icon: BarChart, color: '#dc2626', desc: 'Số liệu ấn tượng' },
   features: { label: 'Tính Năng', emoji: '🏆', icon: Monitor, color: '#f59e0b', desc: 'Các công cụ & kỹ năng' },
+  mos: { label: 'MOS / Chứng chỉ', emoji: '🏅', icon: Award, color: '#dc2626', desc: 'Đăng ký học & luyện thi MOS' },
   'learning-path': { label: 'Lộ Trình', emoji: '🎯', icon: Target, color: '#10b981', desc: '4 bước học tập' },
   'visual-learning': { label: 'Học Trực Quan', emoji: '💻', icon: Laptop, color: '#ef4444', desc: 'Kỹ năng máy tính 4.0' },
   courses: { label: 'Khóa Học', emoji: '📚', icon: BookOpen, color: '#dc2626', desc: 'Khóa học nổi bật' },
@@ -330,6 +332,19 @@ export default function VisualBuilder({
                   <div style={{ fontSize: '0.72rem', fontWeight: 600, color: '#fff' }}>{f.title}</div>
                 </div>
               ))}
+            </div>
+          </div>
+        );
+      case 'mos':
+        return (
+          <div style={{ background: 'linear-gradient(135deg, #fff5f5 0%, #ffffff 100%)', padding: '28px 32px', border: '1px solid rgba(220,38,38,0.2)' }}>
+            <h3 style={{ fontSize: '1rem', fontWeight: 800, color: '#0f172a', margin: '0 0 8px', textAlign: 'center' }}>🏅 Đăng ký học MOS</h3>
+            <p style={{ margin: '0 0 12px', textAlign: 'center', fontSize: '0.75rem', color: '#64748b' }}>
+              Word · Excel · PowerPoint · IC3 · luyện đề GMetrix
+            </p>
+            <div style={{ display: 'flex', justifyContent: 'center', gap: 8 }}>
+              <span style={{ background: '#dc2626', color: '#fff', fontSize: '0.7rem', fontWeight: 700, padding: '6px 12px', borderRadius: 8 }}>Đăng ký ngay</span>
+              <span style={{ border: '1px solid #dc2626', color: '#dc2626', fontSize: '0.7rem', fontWeight: 600, padding: '6px 12px', borderRadius: 8 }}>Cấu trúc thi</span>
             </div>
           </div>
         );

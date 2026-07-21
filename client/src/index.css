@@ -331,6 +331,52 @@ button {
 .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 2.5rem; }
 .grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 2rem; }
 
+/* Card grids: hàng ngang luôn cao đều (kể cả khi bọc ScrollReveal) */
+.stats-grid,
+.values-grid,
+.services-grid,
+.features-grid,
+.path-grid,
+.testimonials-grid,
+.about-testi-grid,
+.mos-structure-grid,
+.recruit-benefits-grid,
+.about-courses-grid {
+  align-items: stretch;
+}
+.stats-grid > *,
+.values-grid > *,
+.services-grid > *,
+.features-grid > *,
+.path-grid > *,
+.testimonials-grid > *,
+.about-testi-grid > *,
+.mos-structure-grid > *,
+.recruit-benefits-grid > *,
+.about-courses-grid > * {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  min-height: 0;
+  width: 100%;
+  align-self: stretch;
+}
+.stats-grid > * > *,
+.values-grid > * > *,
+.services-grid > * > *,
+.features-grid > * > *,
+.path-grid > * > *,
+.testimonials-grid > * > *,
+.about-testi-grid > * > *,
+.mos-structure-grid > * > *,
+.recruit-benefits-grid > * > *,
+.about-courses-grid > * > * {
+  flex: 1 1 auto;
+  width: 100%;
+  height: 100%;
+  box-sizing: border-box;
+}
+
 @media (max-width: 1024px) {
   .grid-4 { grid-template-columns: repeat(2, 1fr); }
   .grid-3 { grid-template-columns: repeat(2, 1fr); }
