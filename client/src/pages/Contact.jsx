@@ -42,6 +42,47 @@ export default function Contact() {
   const zaloHref = useMemo(() => getZaloChatUrl(settings), [settings]);
   const showZalo = isExternalHref(zaloHref);
 
+  // Ưu tiên social_buttons (Admin → Mạng xã hội), fallback field cũ facebook_url / youtube_url / tiktok_url
+  const contactSocials = useMemo(() => {
+    let buttons = [];
+    try {
+      buttons = JSON.parse(settings?.social_buttons || '[]').filter(
+        (b) => b.url && String(b.url).trim() && ['facebook', 'youtube', 'tiktok', 'zalo'].includes(b.icon),
+      );
+    } catch { /* ignore */ }
+
+    const byIcon = (icon) => buttons.find((b) => b.icon === icon);
+
+    const items = [
+      {
+        key: 'facebook',
+        label: 'Facebook',
+        className: 'social-link fb',
+        href: byIcon('facebook')?.url || settings?.facebook_url || '',
+      },
+      {
+        key: 'youtube',
+        label: 'YouTube',
+        className: 'social-link yt',
+        href: byIcon('youtube')?.url || settings?.youtube_url || '',
+      },
+      {
+        key: 'zalo',
+        label: 'Zalo',
+        className: 'social-link zl',
+        href: showZalo ? zaloHref : (byIcon('zalo')?.url || settings?.zalo_url || ''),
+      },
+      {
+        key: 'tiktok',
+        label: 'TikTok',
+        className: 'social-link tk',
+        href: byIcon('tiktok')?.url || settings?.tiktok_url || '',
+      },
+    ];
+
+    return items.filter((i) => isExternalHref(i.href));
+  }, [settings, zaloHref, showZalo]);
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!form.name || !form.phone || !form.message) return toast.error('Vui lòng điền đầy đủ thông tin');
@@ -115,24 +156,25 @@ export default function Contact() {
                   </div>
                 </div>
 
-                {/* Social */}
-                <div className="contact-social">
-                  <h4>Liên hệ trực tiếp với chúng tôi</h4>
-                  <div className="social-row">
-                    {settings?.facebook_url && (
-                      <a href={settings.facebook_url} target="_blank" rel="noreferrer" className="social-link fb">Facebook</a>
-                    )}
-                    {settings?.youtube_url && (
-                      <a href={settings.youtube_url} target="_blank" rel="noreferrer" className="social-link yt">YouTube</a>
-                    )}
-                    {showZalo && (
-                      <a href={zaloHref} target="_blank" rel="noreferrer" className="social-link zl">Zalo</a>
-                    )}
-                    {settings?.tiktok_url && (
-                      <a href={settings.tiktok_url} target="_blank" rel="noreferrer" className="social-link tk">TikTok</a>
-                    )}
+                {/* Social — lấy từ Admin social_buttons (cùng nguồn Footer) */}
+                {contactSocials.length > 0 && (
+                  <div className="contact-social">
+                    <h4>Liên hệ trực tiếp với chúng tôi</h4>
+                    <div className="social-row">
+                      {contactSocials.map((s) => (
+                        <a
+                          key={s.key}
+                          href={s.href}
+                          target="_blank"
+                          rel="noreferrer"
+                          className={s.className}
+                        >
+                          {s.label}
+                        </a>
+                      ))}
+                    </div>
                   </div>
-                </div>
+                )}
               </div>
             </ScrollReveal>
 
