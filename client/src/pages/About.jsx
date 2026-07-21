@@ -2,7 +2,7 @@
 import { Link, useOutletContext } from 'react-router-dom';
 import {
   Award, Users, Target, Heart, Star, Zap, Monitor, Video,
-  Headphones, Route, CheckCircle, Quote, Send, Loader2,
+  Headphones, Route, CheckCircle, Quote, Send, Loader2, Play, X,
 } from 'lucide-react';
 import toast from 'react-hot-toast';
 import ScrollReveal from '../components/ScrollReveal';
@@ -58,6 +58,7 @@ export default function About() {
   const [courses, setCourses] = useState([]);
   const [form, setForm] = useState({ name: '', phone: '', message: '' });
   const [sending, setSending] = useState(false);
+  const [showTiktokVideo, setShowTiktokVideo] = useState(false);
 
   useEffect(() => {
     if (ctxSettings) setSettings(ctxSettings);
@@ -66,6 +67,10 @@ export default function About() {
   }, [ctxSettings]);
 
   const siteName = settings?.site_name || 'Thắng Tin Học';
+  const tiktokVideoUrl =
+    'https://www.tiktok.com/@thaythangdaytinhoc/video/7603312024449322247';
+  const tiktokVideoId = '7603312024449322247';
+  const tiktokEmbedUrl = `https://www.tiktok.com/embed/v2/${tiktokVideoId}?lang=vi`;
 
   const seo = useMemo(() => ({
     title: 'Thắng Tin Học là ai? | Thầy Thắng Tin Học - Đào tạo tin học văn phòng',
@@ -181,9 +186,66 @@ export default function About() {
             >
               Theo dõi TikTok @thaythangdaytinhoc →
             </a>
+            <button
+              type="button"
+              className="about-hero-card-video-btn"
+              onClick={() => setShowTiktokVideo(true)}
+              aria-label="Xem video TikTok"
+            >
+              <Play size={18} /> Xem video TikTok →
+            </button>
           </aside>
         </div>
       </section>
+
+      {showTiktokVideo && (
+        <div
+          className="about-tiktok-modal-overlay"
+          role="dialog"
+          aria-modal="true"
+          aria-label="Video TikTok"
+          onClick={() => setShowTiktokVideo(false)}
+        >
+          <div
+            className="about-tiktok-modal"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="about-tiktok-modal-header">
+              <h3>Video TikTok</h3>
+              <button
+                type="button"
+                className="about-tiktok-modal-close"
+                onClick={() => setShowTiktokVideo(false)}
+                aria-label="Đóng"
+              >
+                <X size={20} />
+              </button>
+            </div>
+
+            <div className="about-tiktok-modal-video">
+              <iframe
+                title="TikTok video"
+                src={tiktokEmbedUrl}
+                loading="lazy"
+                frameBorder="0"
+                allow="autoplay; fullscreen; picture-in-picture"
+                allowFullScreen
+              />
+            </div>
+
+            <div className="about-tiktok-modal-footer">
+              <a
+                href={tiktokVideoUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="about-tiktok-modal-open"
+              >
+                Mở trên TikTok →
+              </a>
+            </div>
+          </div>
+        </div>
+      )}
 
       <section className="about-intro">
         <div className="container about-intro-grid">
