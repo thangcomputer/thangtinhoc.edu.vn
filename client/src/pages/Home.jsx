@@ -1,4 +1,5 @@
 ﻿import { useState, useEffect, useRef, useMemo } from 'react';
+import { createPortal } from 'react-dom';
 import { Link } from 'react-router-dom';
 import {
   ArrowRight, Star, Users, BookOpen, Award, TrendingUp,
@@ -112,10 +113,17 @@ export default function Home({ settings }) {
   }, [showCourses]);
 
   useEffect(() => {
+    if (!showPromo) return undefined;
+    const prev = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+    return () => { document.body.style.overflow = prev; };
+  }, [showPromo]);
+
+  useEffect(() => {
     if (settings?.promo_enabled !== 'true') return undefined;
     const dismissed = sessionStorage.getItem('promo_dismissed');
     if (!dismissed) {
-      const timer = setTimeout(() => setShowPromo(true), 8000);
+      const timer = setTimeout(() => setShowPromo(true), 1200);
       return () => clearTimeout(timer);
     }
     return undefined;
@@ -593,22 +601,22 @@ export default function Home({ settings }) {
         return null;
       })}
 
-      {showPromo && (
-        <div className="promo-overlay" onClick={() => { setShowPromo(false); sessionStorage.setItem('promo_dismissed', '1'); }}>
+      {showPromo && createPortal(
+        <div className="promo-overlay" role="dialog" aria-modal="true" aria-label="Ưu đãi" onClick={() => { setShowPromo(false); sessionStorage.setItem('promo_dismissed', '1'); }}>
           <div className="promo-popup" onClick={e => e.stopPropagation()}>
-            <button type="button" className="promo-close" onClick={() => { setShowPromo(false); sessionStorage.setItem('promo_dismissed', '1'); }}>✕</button>
-            {settings?.promo_image ? (
+            <button type="button" className="promo-close" aria-label="Đóng" onClick={() => { setShowPromo(false); sessionStorage.setItem('promo_dismissed', '1'); }}>✕</button>
+            {(settings?.promo_image || settings?.promo_enabled === 'true') ? (
               <Link
                 to={settings?.promo_link || '/lien-he'}
                 onClick={() => { setShowPromo(false); sessionStorage.setItem('promo_dismissed', '1'); }}
               >
                 <img
-                  src={settings.promo_image}
+                  src={settings?.promo_image || '/promo-popup-1kem1.png'}
                   alt={settings.promo_title || 'Khuyến mãi'}
                   className="promo-image"
-                  width="480"
-                  height="720"
-                  loading="lazy"
+                  width="1200"
+                  height="800"
+                  loading="eager"
                   decoding="async"
                 />
               </Link>
@@ -631,7 +639,8 @@ export default function Home({ settings }) {
               </div>
             )}
           </div>
-        </div>
+        </div>,
+        document.body
       )}
 
       <button

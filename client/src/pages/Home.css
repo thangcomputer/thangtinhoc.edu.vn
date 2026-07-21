@@ -1223,23 +1223,28 @@
 
 /* -- Promo Popup -- */
 .promo-overlay {
-  position: fixed; inset: 0; z-index: 10000;
-  background: rgb(0 0 0 / 0%);
-  backdrop-filter: blur(6px);
-  -webkit-backdrop-filter: blur(6px);
-  display: flex; align-items: center; justify-content: center;
-  padding: 24px;
+  position: fixed;
+  inset: 0;
+  z-index: 100050; /* trên ChatWidget (9999), Navbar, CookieConsent */
+  background: rgba(15, 23, 42, 0.62);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: clamp(12px, 3vw, 28px);
   animation: promoFadeIn 0.3s ease;
+  isolation: isolate;
 }
 @keyframes promoFadeIn { from { opacity: 0; } to { opacity: 1; } }
 .promo-popup {
   position: relative;
-  max-width: 520px;
+  max-width: min(1100px, 96vw);
   width: 100%;
-  overflow: hidden;         /* cắt gọn vào ảnh, không để lộ nền */
+  overflow: visible;
   background: transparent;
   border: none;
-  border-radius: 16px;      /* bo góc cho đẹp */
+  border-radius: 24px;
   box-shadow: none;
   animation: promoZoomIn 0.4s cubic-bezier(0.22, 1, 0.36, 1);
   font-size: 0;
@@ -1249,48 +1254,66 @@
 .promo-popup a { display: block; line-height: 0; font-size: 0; }
 .promo-popup img { display: block; }
 @keyframes promoZoomIn {
-  from { transform: scale(0.85); opacity: 0; }
+  from { transform: scale(0.92); opacity: 0; }
   to { transform: scale(1); opacity: 1; }
 }
 @keyframes promoGlow {
   0%, 100% {
-    box-shadow: 0 0 30px rgba(255, 193, 7, 0.3), 0 0 60px rgba(255, 165, 0, 0.15), 0 0 100px rgba(255, 193, 7, 0.08);
+    filter: drop-shadow(0 12px 28px rgba(15, 23, 42, 0.35));
   }
   50% {
-    box-shadow: 0 0 40px rgba(255, 193, 7, 0.5), 0 0 80px rgba(255, 165, 0, 0.25), 0 0 120px rgba(255, 193, 7, 0.12);
+    filter: drop-shadow(0 16px 36px rgba(249, 115, 22, 0.28));
   }
 }
-@keyframes promoRays {
-  from { transform: translate(-50%, -50%) rotate(0deg); }
-  to { transform: translate(-50%, -50%) rotate(360deg); }
-}
 .promo-close {
-  position: absolute; top: 10px; right: 10px; z-index: 9999999;
-  width: 40px; height: 40px; border-radius: 50%;
-  background: transparent; color: white;
-  border: 2px solid rgba(255,255,255,0.3);
-  font-size: 18px; font-weight: 700;
-  display: flex; align-items: center; justify-content: center;
-  cursor: pointer; transition: all 0.2s;
-  box-shadow: 0 4px 16px rgba(0,0,0,0.4);
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  z-index: 2;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: rgba(15, 23, 42, 0.72);
+  color: white;
+  border: 2px solid rgba(255,255,255,0.35);
+  font-size: 18px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.35);
 }
-.promo-close:hover { background: #ef4444; border-color: #ef4444; transform: scale(1.15); }
+.promo-close:hover { background: #ef4444; border-color: #ef4444; transform: scale(1.1); }
 .promo-image {
   width: 100%;
   height: auto;
-  aspect-ratio: 2 / 3;
-  object-fit: cover;
+  max-height: min(82vh, 780px);
+  aspect-ratio: auto;
+  object-fit: contain;
+  object-position: center;
   display: block;
   cursor: pointer;
-  border-radius: 0;
+  border-radius: 20px;
   transition: transform 0.3s;
-  box-shadow: 
-    0 0 30px rgba(255, 193, 7, 0.3),
-    0 0 60px rgba(255, 165, 0, 0.15),
-    0 0 100px rgba(255, 193, 7, 0.08);
+  background: transparent;
   animation: promoGlow 2.5s ease-in-out infinite;
 }
-.promo-image:hover { transform: scale(1.02); }
+.promo-image:hover { transform: scale(1.01); }
+
+@media (max-width: 640px) {
+  .promo-popup {
+    max-width: 100%;
+  }
+  .promo-image {
+    max-height: min(78vh, 640px);
+  }
+  .promo-close {
+    top: 4px;
+    right: 4px;
+  }
+}
 .promo-html-content {
   background: linear-gradient(135deg, #1e1b4b 0%, #0f172a 100%);
   border: 1px solid rgba(220, 38, 38, 0.25);
