@@ -24,6 +24,8 @@ export function buildSectionSettings(sectionId, ctx) {
       return { ...pick(base, ["anim_stats"]), home_stats: JSON.stringify(stats) };
     case "features":
       return { ...pick(base, ["anim_features"]), home_features: JSON.stringify(features) };
+    case "mos":
+      return pick(base, ["mos_image", "mos_image_alt"]);
     case "learning-path":
       return { ...pick(base, ["anim_learning_path"]), home_learning_path: JSON.stringify(learningPath) };
     case "visual-learning":

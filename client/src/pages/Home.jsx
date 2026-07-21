@@ -432,23 +432,37 @@ export default function Home({ settings }) {
               </div>
             </ScrollReveal>
             <ScrollReveal animation="fade-left" delay={120} className="mos-aside">
-              <div className="mos-badge-card">
-                <div className="mos-badge-row">
-                  <span className="mos-pill">MOS Word</span>
-                  <span className="mos-pill">MOS Excel</span>
-                  <span className="mos-pill">MOS PowerPoint</span>
+              {settings?.mos_image ? (
+                <div className="mos-aside-media">
+                  <img
+                    src={settings.mos_image}
+                    alt={settings.mos_image_alt || 'Luyện thi chứng chỉ MOS — Thắng Tin Học'}
+                    loading="lazy"
+                    decoding="async"
+                  />
+                  <Link to="/dich-vu#mos" className="mos-aside-link mos-aside-media-link">
+                    Chi tiết dịch vụ MOS <ChevronRight size={16} />
+                  </Link>
                 </div>
-                <div className="mos-aside-stat">
-                  <Award size={28} />
-                  <div>
-                    <strong>GMetrix Practice</strong>
-                    <p>Luyện đề · làm quen giao diện · sẵn sàng trước ngày thi</p>
+              ) : (
+                <div className="mos-badge-card">
+                  <div className="mos-badge-row">
+                    <span className="mos-pill">MOS Word</span>
+                    <span className="mos-pill">MOS Excel</span>
+                    <span className="mos-pill">MOS PowerPoint</span>
                   </div>
+                  <div className="mos-aside-stat">
+                    <Award size={28} />
+                    <div>
+                      <strong>GMetrix Practice</strong>
+                      <p>Luyện đề · làm quen giao diện · sẵn sàng trước ngày thi</p>
+                    </div>
+                  </div>
+                  <Link to="/dich-vu#mos" className="mos-aside-link">
+                    Chi tiết dịch vụ MOS <ChevronRight size={16} />
+                  </Link>
                 </div>
-                <Link to="/dich-vu#mos" className="mos-aside-link">
-                  Chi tiết dịch vụ MOS <ChevronRight size={16} />
-                </Link>
-              </div>
+              )}
             </ScrollReveal>
           </div>
         </div>

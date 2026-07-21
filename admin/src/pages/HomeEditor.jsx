@@ -251,6 +251,7 @@ export default function HomeEditor() {
     visual_title: '', visual_subtitle: '', visual_description: '',
     courses_title: '', courses_subtitle: '', courses_btn_text: '',
     promo_enabled: 'false', promo_text: '', promo_title: '',
+    mos_image: '', mos_image_alt: '',
     footer_columns: '[]',
     // Animation settings per section
     anim_hero: 'fade-up', anim_stats: 'fade-up', anim_features: 'fade-up',
@@ -723,15 +724,87 @@ export default function HomeEditor() {
 
         {/* ═══ MOS TAB ═══ */}
         {activeTab === 'mos' && (
-          <div className="animate-fade-in card" style={{ padding: '24px' }}>
-            <h3 style={{ margin: '0 0 8px', display: 'flex', alignItems: 'center', gap: 8 }}>
-              <Award size={18} color="var(--primary)" /> Khối MOS / Chứng chỉ
-            </h3>
-            <p style={{ margin: 0, color: 'var(--text-secondary)', lineHeight: 1.6, fontSize: '0.9rem' }}>
-              Nội dung section này cố định trên website (học MOS, GMetrix, CTA đăng ký).
-              Bạn có thể ẩn/hiện hoặc sắp xếp vị trí trong tab <strong>Sắp xếp trang</strong>.
-              Preview: neo <code>#mos-section</code>.
-            </p>
+          <div className="animate-fade-in">
+            <div className="card" style={{ padding: '24px', marginBottom: 16 }}>
+              <h3 style={{ margin: '0 0 8px', display: 'flex', alignItems: 'center', gap: 8 }}>
+                <Award size={18} color="var(--primary)" /> Khối MOS / Chứng chỉ
+              </h3>
+              <p style={{ margin: 0, color: 'var(--text-secondary)', lineHeight: 1.6, fontSize: '0.9rem' }}>
+                Nội dung chữ bên trái cố định. Ảnh bên phải có thể thay tại đây.
+                Ẩn/sắp xếp section trong tab <strong>Sắp xếp trang</strong> · neo <code>#mos-section</code>.
+              </p>
+            </div>
+
+            <SectionCard title="Ảnh bên phải (MOS)" icon={ImageIcon}>
+              <div className="form-group">
+                <label>Hình ảnh cột phải</label>
+                {settings.mos_image ? (
+                  <div style={{ position: 'relative', marginBottom: 12, borderRadius: 12, overflow: 'hidden', border: '1px solid var(--border)', maxWidth: 360 }}>
+                    <img
+                      src={settings.mos_image}
+                      alt="MOS preview"
+                      style={{ display: 'block', width: '100%', maxHeight: 320, objectFit: 'cover' }}
+                    />
+                    <button
+                      type="button"
+                      className="btn btn-outline btn-sm"
+                      style={{ position: 'absolute', top: 8, right: 8, background: '#fff' }}
+                      onClick={() => { updateSetting('mos_image', ''); toast.success('Đã xóa ảnh MOS'); }}
+                    >
+                      Xóa ảnh
+                    </button>
+                  </div>
+                ) : (
+                  <div style={{
+                    padding: '28px 16px', marginBottom: 12, textAlign: 'center',
+                    background: 'var(--bg-subtle)', borderRadius: 12, border: '2px dashed var(--border)',
+                    color: 'var(--text-muted)', fontSize: '0.88rem',
+                  }}>
+                    Chưa có ảnh — website sẽ hiện thẻ GMetrix mặc định bên phải.
+                  </div>
+                )}
+                <div style={{ display: 'flex', flexWrap: 'wrap', gap: 10, marginBottom: 12 }}>
+                  <label className="btn btn-outline btn-sm" style={{ cursor: 'pointer', margin: 0 }}>
+                    <ImageIcon size={14} /> Tải ảnh lên
+                    <input
+                      type="file"
+                      accept="image/*,.webp"
+                      style={{ display: 'none' }}
+                      onChange={async (e) => {
+                        const file = e.target.files?.[0];
+                        e.target.value = '';
+                        if (!file) return;
+                        try {
+                          toast.loading('Đang tải ảnh...', { id: 'mos-upload' });
+                          const url = await uploadImage(file);
+                          updateSetting('mos_image', url);
+                          toast.success('Đã tải ảnh MOS', { id: 'mos-upload' });
+                        } catch {
+                          toast.error('Lỗi khi tải ảnh', { id: 'mos-upload' });
+                        }
+                      }}
+                    />
+                  </label>
+                </div>
+                <input
+                  type="text"
+                  className="form-control"
+                  placeholder="https://... hoặc /uploads/..."
+                  value={settings.mos_image || ''}
+                  onChange={(e) => updateSetting('mos_image', e.target.value)}
+                />
+              </div>
+              <div className="form-group" style={{ marginBottom: 0 }}>
+                <label>Alt text (SEO / accessibility)</label>
+                <input
+                  type="text"
+                  className="form-control"
+                  placeholder="VD: Học viên luyện thi MOS với Thắng Tin Học"
+                  value={settings.mos_image_alt || ''}
+                  onChange={(e) => updateSetting('mos_image_alt', e.target.value)}
+                />
+              </div>
+            </SectionCard>
           </div>
         )}
 

@@ -608,6 +608,35 @@
   box-shadow: 0 12px 40px rgba(15, 23, 42, 0.08);
 }
 
+.mos-aside-media {
+  background: #ffffff;
+  border: 1px solid rgba(220, 38, 38, 0.15);
+  border-radius: 20px;
+  overflow: hidden;
+  box-shadow: 0 12px 40px rgba(15, 23, 42, 0.08);
+}
+
+.mos-aside-media img {
+  display: block;
+  width: 100%;
+  height: auto;
+  max-height: 480px;
+  object-fit: cover;
+  object-position: center;
+  aspect-ratio: 4 / 5;
+  background: #fff5f5;
+}
+
+.mos-aside-media-link {
+  display: flex;
+  width: 100%;
+  justify-content: center;
+  padding: 14px 16px;
+  margin: 0;
+  border-top: 1px solid rgba(15, 23, 42, 0.06);
+  box-sizing: border-box;
+}
+
 .mos-badge-row {
   display: flex;
   flex-wrap: wrap;

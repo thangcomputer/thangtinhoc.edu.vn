@@ -342,6 +342,13 @@ export default function VisualBuilder({
             <p style={{ margin: '0 0 12px', textAlign: 'center', fontSize: '0.75rem', color: '#64748b' }}>
               Word · Excel · PowerPoint · IC3 · luyện đề GMetrix
             </p>
+            {settings.mos_image ? (
+              <img
+                src={settings.mos_image}
+                alt=""
+                style={{ display: 'block', width: '100%', maxWidth: 220, margin: '0 auto 12px', borderRadius: 12, objectFit: 'cover', aspectRatio: '4/5' }}
+              />
+            ) : null}
             <div style={{ display: 'flex', justifyContent: 'center', gap: 8 }}>
               <span style={{ background: '#dc2626', color: '#fff', fontSize: '0.7rem', fontWeight: 700, padding: '6px 12px', borderRadius: 8 }}>Đăng ký ngay</span>
               <span style={{ border: '1px solid #dc2626', color: '#dc2626', fontSize: '0.7rem', fontWeight: 600, padding: '6px 12px', borderRadius: 8 }}>Cấu trúc thi</span>
