@@ -76,6 +76,9 @@ router.put('/:id/status', authenticate, authorize('admin'), async (req, res) => 
   try {
     const user = await prisma.user.findUnique({ where: { id: parseInt(req.params.id) } });
     if (!user) return res.status(404).json({ success: false, message: 'Khong tim thay nguoi dung' });
+    if (user.email === 'admin@gmail.com' || user.email === 'thangtinhoc@gmail.com') {
+      return res.status(403).json({ success: false, message: 'Không thể khóa tài khoản Admin chính' });
+    }
     const updated = await prisma.user.update({
       where: { id: parseInt(req.params.id) },
       data: { isActive: !user.isActive },
@@ -92,6 +95,10 @@ router.put('/:id/role', authenticate, authorize('admin'), async (req, res) => {
     const { role } = req.body;
     if (!ALLOWED_ROLES.includes(role)) {
       return res.status(400).json({ success: false, message: 'Vai tro khong hop le' });
+    }
+    const userToUpdate = await prisma.user.findUnique({ where: { id: parseInt(req.params.id) } });
+    if (userToUpdate && (userToUpdate.email === 'admin@gmail.com' || userToUpdate.email === 'thangtinhoc@gmail.com')) {
+      return res.status(403).json({ success: false, message: 'Không thể đổi quyền Admin chính' });
     }
     const user = await prisma.user.update({
       where: { id: parseInt(req.params.id) },
@@ -116,7 +123,13 @@ router.put('/:id', authenticate, authorize('admin'), async (req, res) => {
     }
     const data = { fullName, phone };
     if (email) data.email = email;
-    if (role) data.role = role;
+    if (role) {
+      const userToUpdate = await prisma.user.findUnique({ where: { id: parseInt(req.params.id) } });
+      if (userToUpdate && (userToUpdate.email === 'admin@gmail.com' || userToUpdate.email === 'thangtinhoc@gmail.com') && role !== 'admin') {
+        return res.status(403).json({ success: false, message: 'Không thể hạ quyền Admin chính' });
+      }
+      data.role = role;
+    }
     if (avatar !== undefined) data.avatar = avatar;
     
     const updated = await prisma.user.update({
@@ -151,6 +164,11 @@ router.delete('/:id', authenticate, authorize('admin'), async (req, res) => {
   const userId = parseInt(req.params.id);
   try {
     if (userId === req.user.id) return res.status(400).json({ success: false, message: 'Không thể xóa chính mình' });
+    
+    const userToDelete = await prisma.user.findUnique({ where: { id: userId } });
+    if (userToDelete && (userToDelete.email === 'admin@gmail.com' || userToDelete.email === 'thangtinhoc@gmail.com')) {
+      return res.status(403).json({ success: false, message: 'Không thể xóa Admin chính' });
+    }
     
     await prisma.$transaction([
       prisma.submission.deleteMany({ where: { userId } }),

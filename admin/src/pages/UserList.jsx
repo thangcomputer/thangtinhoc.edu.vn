@@ -227,12 +227,16 @@ export default function UserList() {
                       <button type="button" onClick={() => setResettingUser({ ...user, newPassword: '' })} className="btn btn-secondary btn-sm btn-icon" title="Đặt lại mật khẩu">
                         <Key size={14} style={{ color: 'var(--warning)' }} />
                       </button>
-                      <button type="button" onClick={() => toggleStatus(user.id)} className="btn btn-secondary btn-sm btn-icon" title={user.isActive ? 'Khóa' : 'Mở khóa'}>
-                        {user.isActive ? <XCircle size={14} style={{ color: 'var(--danger)' }} /> : <CheckCircle size={14} style={{ color: 'var(--success)' }} />}
-                      </button>
-                      <button type="button" onClick={() => handleDelete(user.id)} className="btn btn-secondary btn-sm btn-icon" title="Xóa" style={{ color: 'var(--danger)' }}>
-                        <Trash2 size={14} />
-                      </button>
+                      {user.email !== 'thangtinhoc@gmail.com' && user.email !== 'admin@gmail.com' && (
+                        <>
+                          <button type="button" onClick={() => toggleStatus(user.id)} className="btn btn-secondary btn-sm btn-icon" title={user.isActive ? 'Khóa' : 'Mở khóa'}>
+                            {user.isActive ? <XCircle size={14} style={{ color: 'var(--danger)' }} /> : <CheckCircle size={14} style={{ color: 'var(--success)' }} />}
+                          </button>
+                          <button type="button" onClick={() => handleDelete(user.id)} className="btn btn-secondary btn-sm btn-icon" title="Xóa" style={{ color: 'var(--danger)' }}>
+                            <Trash2 size={14} />
+                          </button>
+                        </>
+                      )}
                     </div>
                   </td>
                 </tr>
@@ -322,10 +326,14 @@ export default function UserList() {
               <div className="form-group">
                 <label>Vai Trò</label>
                 <select className="form-control" value={editingUser.role}
+                  disabled={editingUser.email === 'thangtinhoc@gmail.com' || editingUser.email === 'admin@gmail.com'}
                   onChange={e => setEditingUser({ ...editingUser, role: e.target.value })}>
                   <option value="user">Học viên</option>
                   <option value="admin">Admin</option>
                 </select>
+                {(editingUser.email === 'thangtinhoc@gmail.com' || editingUser.email === 'admin@gmail.com') && (
+                  <small style={{ color: 'var(--text-muted)', display: 'block', marginTop: '4px' }}>Không thể hạ quyền Admin chính</small>
+                )}
               </div>
               <div className="modal-footer">
                 <button type="button" className="btn btn-secondary" onClick={() => setEditingUser(null)}>Hủy</button>
