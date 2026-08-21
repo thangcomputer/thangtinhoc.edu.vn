@@ -369,7 +369,12 @@ CẤM bịa URL. CẤM viết giáo án lệch chủ đề.`;
       }
     } catch (e) {
       lastErr = e;
-      console.log(`  ⏭️ [2a] Grounding ${modelName}: ${e.message?.slice(0, 100)}`);
+      const msg = e.message || '';
+      if (/api key not valid|unauthorized|429|quota|RESOURCE_EXHAUSTED/i.test(msg)) {
+        console.error(`  ❌ [Fatal AI Error] Grounding: ${msg}`);
+        throw e;
+      }
+      console.log(`  ⏭️ [2a] Grounding ${modelName}: ${msg.slice(0, 100)}`);
     }
   }
   if (lastErr) console.log(`  ⚠️ [2a] Grounding all failed: ${lastErr.message?.slice(0, 120)}`);
@@ -604,10 +609,13 @@ Trả về ĐÚNG một JSON hợp lệ (không markdown fence). Nếu vừa sea
       } catch (err) {
         lastErr = err;
         const msg = err.message || '';
-        if (/429|quota|RESOURCE_EXHAUSTED/i.test(msg) && attempt < 2) {
-          await sleep(6000 * attempt);
-          continue;
+        
+        // Fast fail on fatal errors
+        if (/api key not valid|unauthorized|429|quota|RESOURCE_EXHAUSTED/i.test(msg)) {
+          console.error(`  ❌ [Fatal AI Error] ${msg}`);
+          throw err; // Stop immediately, no sleep, no retry
         }
+
         console.error(`  ❌ Gemini ${modelName}${useGrounding ? ' (grounding)' : ''} attempt ${attempt}: ${msg}`);
         break;
       }
