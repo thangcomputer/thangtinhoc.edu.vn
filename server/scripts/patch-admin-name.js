@@ -1,4 +1,4 @@
-﻿/**
+/**
  * patch-admin-name.js
  * Cap nhat fullName cua admin user trong database.
  * Chay: node server/scripts/patch-admin-name.js
@@ -18,6 +18,7 @@ async function main() {
         { fullName: { contains: "24h" } },
         { fullName: { contains: "tinhoc24h" } },
         { email: "admin@gmail.com" },
+        { email: "thangtinhoc@gmail.com" },
       ],
     },
     data: { fullName: "Thắng Tin Học" },
