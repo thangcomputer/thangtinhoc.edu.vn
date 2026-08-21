@@ -30,9 +30,19 @@ const GEMINI_GROUNDING_MODELS = [
   'gemini-1.5-flash',
 ];
 
+function getGeminiKeys() {
+  const raw = process.env.GEMINI_API_KEYS || process.env.GEMINI_API_KEY || '';
+  return raw.split(',').map(k => k.trim()).filter(k => k.length > 0);
+}
+
+function hasGeminiKey() {
+  return getGeminiKeys().length > 0;
+}
+
 function getGenAI() {
-  const key = process.env.GEMINI_API_KEY?.trim();
-  if (!key) return null;
+  const keys = getGeminiKeys();
+  if (keys.length === 0) return null;
+  const key = keys[Math.floor(Math.random() * keys.length)];
   return new GoogleGenerativeAI(key);
 }
 
@@ -773,7 +783,7 @@ router.post('/generate-post', authenticate, authorize('admin'), async (req, res)
   const temp = aiTemperature(variantIndex);
   const usedSources = [];
   const startTime = Date.now();
-  const hasGemini = !!process.env.GEMINI_API_KEY?.trim();
+  const hasGemini = hasGeminiKey();
 
   console.log(`\n${'═'.repeat(50)}`);
   console.log(`🚀 AI Generate: "${cleanTopic}" v${variantIndex + 1} intent=${detectTopicIntent(cleanTopic)} entity="${resolveTopicEntity(cleanTopic)}" (gemini=${hasGemini})`);
@@ -897,7 +907,7 @@ router.get('/search-info', authenticate, authorize('admin'), (req, res) => {
   res.json({
     engines: {
       gemini: {
-        active: !!process.env.GEMINI_API_KEY?.trim(),
+        active: hasGeminiKey(),
         role: 'Google Search Grounding + đọc trang web + viết bài',
         models: GEMINI_WRITE_MODELS,
         free: 'https://aistudio.google.com/apikey',
