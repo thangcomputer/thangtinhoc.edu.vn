@@ -343,7 +343,7 @@ CẤM bịa URL. CẤM viết giáo án lệch chủ đề.`;
     try {
       const model = genAI.getGenerativeModel({
         model: modelName,
-        tools: [{ googleSearch: {} }],
+        // tools: [{ googleSearch: {} }], // Tạm tắt vì Key miễn phí bị cấm tính năng này (Lỗi 429)
       });
       const r = await model.generateContent(prompt);
       const text = r.response?.text?.() || '';
@@ -595,7 +595,7 @@ ${prompt}`
         const model = genAI.getGenerativeModel({
           model: modelName,
           generationConfig,
-          ...(useGrounding ? { tools: [{ googleSearch: {} }] } : {}),
+          // ...(useGrounding ? { tools: [{ googleSearch: {} }] } : {}), // Tạm tắt do lỗi 429
         });
         const result = await model.generateContent(
           useGrounding
