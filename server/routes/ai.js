@@ -18,16 +18,15 @@ const { detectPromptInjection, validateArticle } = require('../lib/articleValida
 const sleep = (ms) => new Promise(r => setTimeout(r, ms));
 
 const GEMINI_WRITE_MODELS = [
-  'gemini-2.0-flash',
-  'gemini-2.5-flash',
-  'gemini-1.5-flash',
-  'gemini-2.0-flash-lite',
+  'gemini-3.6-flash',
+  'gemini-3.5-flash',
+  'gemini-flash-latest',
 ];
 
 const GEMINI_GROUNDING_MODELS = [
-  'gemini-2.0-flash',
-  'gemini-2.5-flash',
-  'gemini-1.5-flash',
+  'gemini-3.6-flash',
+  'gemini-3.5-flash',
+  'gemini-flash-latest',
 ];
 
 function getGeminiKeys() {
