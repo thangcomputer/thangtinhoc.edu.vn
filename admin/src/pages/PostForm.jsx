@@ -459,7 +459,7 @@ export default function PostForm() {
     const catId = form.categoryId || categories[0]?.id || '';
     setForm({
       title: d.title, slug: d.slug, excerpt: d.excerpt, content: d.content,
-      categoryId: catId, thumbnail: '', isPublished: true, isFeatured: false,
+      categoryId: catId, thumbnail: '', isPublished: false, isFeatured: false,
       noIndex: false, canonicalUrl: '',
       metaTitle: d.metaTitle, metaDescription: d.metaDescription,
       focusKeyword: d.focusKeyword, tags: JSON.stringify(d.tags || []), tableOfContents: '[]',
@@ -469,7 +469,7 @@ export default function PostForm() {
     setAiResults([]);
     setAiTopic('');
     setAiSelectedIdx(-1);
-    toast.success('✅ Đã áp dụng bài viết! Kiểm tra và nhấn Lưu để xuất bản.', { duration: 5000 });
+    toast.success('✅ Đã áp dụng bài viết vào nháp! Kiểm tra nội dung, thêm ảnh bìa rồi nhấn Xuất Bản.', { duration: 6000 });
   };
 
   // Remove one AI result

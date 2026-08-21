@@ -1,4 +1,4 @@
-﻿const express = require('express');
+const express = require('express');
 const router = express.Router();
 const { GoogleGenerativeAI } = require('@google/generative-ai');
 const https = require('https');
@@ -13,6 +13,7 @@ const {
   buildLongFormFallback,
 } = require('../lib/articleQuality');
 const { COPYWRITER_SYSTEM_PROMPT, BRAND, BRAND_PROFILE_FACTS, detectTopicIntent, resolveTopicEntity, isBrandWhoIsTopic, buildIntentAddon } = require('../lib/copywriterPrompt');
+const { detectPromptInjection, validateArticle } = require('../lib/articleValidator');
 
 const sleep = (ms) => new Promise(r => setTimeout(r, ms));
 
@@ -485,7 +486,7 @@ function normalizePostData(raw, cleanTopic) {
   return postData;
 }
 
-function buildSEOPrompt(cleanTopic, researchData, googleContext, variantIndex = 0, avoid = []) {
+function buildSEOPrompt(cleanTopic, researchData, googleContext, variantIndex = 0, avoid = [], topicRaw = '') {
   const year = new Date().getFullYear();
   const intent = detectTopicIntent(cleanTopic);
   const entity = resolveTopicEntity(cleanTopic);
@@ -498,7 +499,7 @@ function buildSEOPrompt(cleanTopic, researchData, googleContext, variantIndex = 
   if (googleContext) dataContext += `=== NGUỒN MẠNG ===\n${googleContext}\n\n`;
 
   const hasSources = !!(researchData || googleContext);
-  const intentAddon = buildIntentAddon(intent);
+  const intentAddon = buildIntentAddon(intent, topicRaw || cleanTopic);
 
   return `Viết bài TIẾNG VIỆT tập trung đúng ý định người đọc — không viết lệch chủ đề, không "bài SEO khuôn".
 
@@ -755,6 +756,16 @@ router.post('/generate-post', authenticate, authorize('admin'), async (req, res)
   }
 
   const cleanTopic = topic.trim();
+
+  // Kiểm tra prompt injection — bảo vệ System Prompt khỏi bị override
+  if (detectPromptInjection(cleanTopic)) {
+    console.log(`  🛡️ Prompt injection detected in topic: "${cleanTopic.slice(0, 80)}"`);
+    return res.status(400).json({
+      success: false,
+      message: 'Chủ đề không hợp lệ. Vui lòng nhập chủ đề bài viết thực sự (VD: "Hàm SUMIF trong Excel").',
+    });
+  }
+
   const variantIndex = Math.max(0, parseInt(rawVariant, 10) || 0);
   const avoid = Array.isArray(rawAvoid)
     ? rawAvoid.filter((a) => a && (a.title || a.excerpt)).slice(0, 6)
@@ -827,7 +838,7 @@ router.post('/generate-post', authenticate, authorize('admin'), async (req, res)
       : `Chủ đề: "${cleanTopic}". Viết từ chuyên môn Tin học văn phòng VN — ví dụ thật, không bịa số liệu.`;
   }
 
-  const seoPrompt = buildSEOPrompt(cleanTopic, researchData, googleContext, variantIndex, avoid);
+  const seoPrompt = buildSEOPrompt(cleanTopic, researchData, googleContext, variantIndex, avoid, cleanTopic);
 
   const finalize = async (postData, writerLabel) => {
     postData = await ensureQualityContent(postData, cleanTopic, writerLabel);
@@ -847,7 +858,18 @@ router.post('/generate-post', authenticate, authorize('admin'), async (req, res)
       g = await generateWithGemini(seoPrompt, { jsonMode: true, temperature: temp, useGrounding: false });
       usedSources.push('gemini');
     }
-    let postData = normalizePostData(parseAIJson(g.text), cleanTopic);
+    // Validate + sanitize response từ AI
+    const rawParsed = parseAIJson(g.text);
+    const validation = validateArticle(rawParsed, cleanTopic);
+    if (!validation.valid) {
+      throw new Error('AI response validation failed: ' + validation.warnings.join('; '));
+    }
+    if (validation.warnings.length > 0) {
+      console.log(`  ⚠️ [3] Validator warnings: ${validation.warnings.join(' | ')}`);
+    }
+    // Merge validated data vào postData (giữ structure cũ cho normalizePostData)
+    const mergedRaw = { ...rawParsed, ...validation.data };
+    let postData = normalizePostData(mergedRaw, cleanTopic);
     postData = await finalize(postData, g.model);
     console.log(`  ✅ [3] ${g.model} OK — ${countWords(postData.content)} words (grounded=${!!g.grounded})`);
     return res.json(buildResponsePayload(postData, cleanTopic, usedSources, startTime, g.model, variantIndex));
