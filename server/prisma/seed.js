@@ -13,15 +13,18 @@ function isTemporaryUrl(url) {
 async function main() {
   console.log('🌱 Starting seed...');
 
-  // Admin user
+  // Admin user — upsert va dam bao ten dung
   const adminPass = await bcrypt.hash('admin123', 10);
   const admin = await prisma.user.upsert({
     where: { email: 'admin@gmail.com' },
-    update: {},
+    update: {
+      // Cap nhat ten neu van con ten cu (tinhoc24h)
+      fullName: 'Thắng Tin Học',
+    },
     create: {
       email: 'admin@gmail.com',
       password: adminPass,
-      fullName: 'Admin Thắng Tin Học',
+      fullName: 'Thắng Tin Học',
       role: 'admin',
     },
   });
