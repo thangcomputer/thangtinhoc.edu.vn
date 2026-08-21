@@ -72,7 +72,7 @@ const uploadMedia = multer({
 });
 
 // Upload buffer lên Cloudinary, trả về { url, publicId }
-function uploadBufferToCloudinary(buffer, folder = 'tinhoc24h') {
+function uploadBufferToCloudinary(buffer, folder = 'thangtinhoc') {
   return new Promise((resolve, reject) => {
     const stream = cloudinary.uploader.upload_stream(
       { folder, resource_type: 'auto' },

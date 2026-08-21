@@ -54,7 +54,7 @@ function resolveUploadPath(filename) {
 }
 
 // Trích public_id từ Cloudinary URL
-// VD: https://res.cloudinary.com/demo/image/upload/v1234/tinhoc24h/abc.jpg → tinhoc24h/abc
+// VD: https://res.cloudinary.com/demo/image/upload/v1234/thangtinhoc/abc.jpg → thangtinhoc/abc
 function extractCloudinaryPublicId(url) {
   const match = url.match(/\/upload\/(?:v\d+\/)?(.+?)\.\w+$/);
   return match ? match[1] : null;
@@ -64,7 +64,7 @@ function extractCloudinaryPublicId(url) {
 async function listCloudinaryImages() {
   const result = await cloudinary.api.resources({
     type: 'upload',
-    prefix: 'tinhoc24h',
+    prefix: 'thangtinhoc',
     max_results: 500,
     resource_type: 'image',
   });
