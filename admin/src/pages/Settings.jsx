@@ -1,4 +1,4 @@
-﻿import { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { 
   Save, Globe, Phone, Mail, MapPin, Upload as UploadIcon,
   ExternalLink, Share2, Loader2, ImageIcon, Clock,
@@ -53,6 +53,7 @@ export default function Settings() {
     zalo_url: '',
     tiktok_url: '',
     site_logo: '',
+    site_favicon: '',
     footer_text: '© 2026 Thắng Tin Học',
     footer_hours_weekday: 'Thứ 2 - Thứ 7: 8:00 - 21:00',
     footer_hours_weekend: 'Chủ Nhật: 8:00 - 17:00',
@@ -126,6 +127,20 @@ export default function Settings() {
       if (!url) throw new Error('Khong nhan duoc URL anh');
       setSettings({ ...settings, site_logo: url });
       toast.success('Đã tải lên Logo mới!');
+    } catch (err) {
+      toast.error(err.response?.data?.message || err.message || 'Lỗi khi tải ảnh');
+    }
+    e.target.value = '';
+  };
+
+  const handleFaviconUpload = async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    try {
+      const url = await uploadAdminFile(file);
+      if (!url) throw new Error('Khong nhan duoc URL anh');
+      setSettings({ ...settings, site_favicon: url });
+      toast.success('Đã tải lên Favicon mới!');
     } catch (err) {
       toast.error(err.response?.data?.message || err.message || 'Lỗi khi tải ảnh');
     }
@@ -350,6 +365,35 @@ export default function Settings() {
                   <UploadIcon size={14} /> Thay Đổi Logo
                   <input type="file" hidden accept="image/*,.webp" onChange={handleLogoUpload} />
                 </label>
+              </div>
+            </div>
+
+            <div className="card" style={{ marginTop: '20px' }}>
+              <div className="card-header">
+                <h3 className="card-title">Favicon</h3>
+              </div>
+              <div className="card-body" style={{ textAlign: 'center' }}>
+                <div style={{ marginBottom: '20px', height: '80px', display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'var(--bg-subtle)', border: '2px dashed var(--border)', borderRadius: 'var(--radius)', overflow: 'hidden' }}>
+                  {settings.site_favicon ? (
+                    <img src={settings.site_favicon} alt="Favicon" style={{ maxHeight: '90%', maxWidth: '90%', objectFit: 'contain' }} />
+                  ) : (
+                    <div style={{ color: 'var(--text-muted)', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '6px' }}>
+                      <ImageIcon size={36} style={{ opacity: 0.3 }} />
+                      <span style={{ fontSize: '0.8rem' }}>Chưa có favicon</span>
+                    </div>
+                  )}
+                </div>
+                <div className="logo-actions">
+                  {settings.site_favicon && (
+                    <button className="btn btn-outline btn-sm btn-danger" onClick={() => setSettings({...settings, site_favicon: ''})}>
+                      Xóa
+                    </button>
+                  )}
+                  <label className="btn btn-outline btn-sm" style={{ cursor: 'pointer' }}>
+                    <UploadIcon size={14} /> Thay Đổi Favicon
+                    <input type="file" hidden accept="image/*,.ico" onChange={handleFaviconUpload} />
+                  </label>
+                </div>
               </div>
             </div>
 

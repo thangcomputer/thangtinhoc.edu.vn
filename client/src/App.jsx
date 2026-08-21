@@ -1,4 +1,4 @@
-﻿import { createBrowserRouter, RouterProvider, Navigate, Outlet, useLocation, useOutletContext } from 'react-router-dom';
+import { createBrowserRouter, RouterProvider, Navigate, Outlet, useLocation, useOutletContext } from 'react-router-dom';
 import { useState, useEffect, lazy, Suspense } from 'react';
 import useAuthStore from './store/authStore';
 import api from './lib/api';
@@ -70,6 +70,16 @@ function LayoutWrapper() {
         const inline = document.createElement('script');
         inline.textContent = `window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','${data.google_analytics_id}');`;
         document.head.appendChild(inline);
+      }
+      
+      if (data?.site_favicon) {
+        let link = document.querySelector("link[rel~='icon']");
+        if (!link) {
+          link = document.createElement('link');
+          link.rel = 'icon';
+          document.head.appendChild(link);
+        }
+        link.href = data.site_favicon;
       }
       // Page-level title/meta is owned by usePageSeo on each route (avoid overriding).
     }).catch(() => { /* render with defaults */ });

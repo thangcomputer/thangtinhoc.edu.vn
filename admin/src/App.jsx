@@ -1,4 +1,4 @@
-import { lazy, Suspense } from 'react';
+import { lazy, Suspense, useEffect } from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import Layout from './components/Layout';
 import AppToaster from './components/AppToaster';
@@ -53,9 +53,27 @@ function LazyPage({ children }) {
   );
 }
 
+import api from './lib/api';
+
 export default function App() {
   useSecurityProtection();
   useIdleLogout();
+
+  useEffect(() => {
+    api.get('/settings').then(res => {
+      const data = res.data.data;
+      if (data?.site_favicon) {
+        let link = document.querySelector("link[rel~='icon']");
+        if (!link) {
+          link = document.createElement('link');
+          link.rel = 'icon';
+          document.head.appendChild(link);
+        }
+        link.href = data.site_favicon;
+      }
+    }).catch(() => {});
+  }, []);
+
   return (
     <ErrorBoundary>
     <BrowserRouter basename={basename}>
