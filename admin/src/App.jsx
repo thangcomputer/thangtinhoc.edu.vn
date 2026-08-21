@@ -60,6 +60,7 @@ export default function App() {
   useIdleLogout();
 
   useEffect(() => {
+    // 1. Fetch settings
     api.get('/settings').then(res => {
       const data = res.data.data;
       if (data?.site_favicon) {
@@ -72,6 +73,15 @@ export default function App() {
         link.href = data.site_favicon;
       }
     }).catch(() => {});
+
+    // 2. Sync auth user state
+    if (useAuthStore.getState().isAuthenticated) {
+      api.get('/auth/me').then(res => {
+        if (res.data && res.data.data) {
+          useAuthStore.getState().updateUser(res.data.data);
+        }
+      }).catch(() => {});
+    }
   }, []);
 
   return (

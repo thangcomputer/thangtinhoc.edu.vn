@@ -7,11 +7,13 @@ import Pagination from '../components/Pagination';
 import EmptyState from '../components/EmptyState';
 import { useConfirm } from '../components/ConfirmProvider';
 import { useFocusTrap } from '../hooks/useFocusTrap';
+import useAuthStore from '../store/authStore';
 
 const emptyCreate = { fullName: '', email: '', phone: '', password: '', role: 'user' };
 
 export default function UserList() {
   const confirm = useConfirm();
+  const { user: authUser, updateUser: updateAuthUser } = useAuthStore();
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
@@ -100,6 +102,10 @@ export default function UserList() {
         role: editingUser.role,
       });
       setUsers(users.map(u => u.id === editingUser.id ? { ...u, ...editingUser } : u));
+      // Cập nhật ngay store nếu đang sửa chính mình
+      if (authUser && authUser.id === editingUser.id) {
+        updateAuthUser({ ...authUser, ...editingUser });
+      }
       toast.success('Cập nhật thành công');
       setEditingUser(null);
     } catch (err) { toast.error(err.response?.data?.message || 'Lỗi khi cập nhật'); }
