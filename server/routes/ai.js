@@ -32,7 +32,10 @@ const GEMINI_GROUNDING_MODELS = [
 
 function getGeminiKeys() {
   const raw = process.env.GEMINI_API_KEYS || process.env.GEMINI_API_KEY || '';
-  return raw.split(',').map(k => k.trim()).filter(k => k.length > 0);
+  return raw.split(',')
+    .map(k => k.trim())
+    // Key của Gemini bắt buộc phải bắt đầu bằng AIzaSy
+    .filter(k => k.length > 0 && k.startsWith('AIzaSy'));
 }
 
 function hasGeminiKey() {
