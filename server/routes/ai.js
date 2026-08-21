@@ -240,12 +240,16 @@ function htmlToPlainText(html) {
 /** Tải HTML công khai → trích text (không crawl sâu / không bypass auth) */
 function fetchUrlText(rawUrl, maxChars = 4500) {
   return new Promise((resolve) => {
+    // Fallback timeout to guarantee resolution
+    const timeoutTimer = setTimeout(() => resolve(null), 10000);
+    const done = (val) => { clearTimeout(timeoutTimer); resolve(val); };
+
     let parsed;
-    try { parsed = new URL(rawUrl); } catch { return resolve(null); }
-    if (!/^https?:$/i.test(parsed.protocol)) return resolve(null);
+    try { parsed = new URL(rawUrl); } catch { return done(null); }
+    if (!/^https?:$/i.test(parsed.protocol)) return done(null);
     // Bỏ trang login / mạng xã hội nặng JS
     if (/facebook\.com|instagram\.com|tiktok\.com|youtube\.com|login|signin/i.test(parsed.hostname + parsed.pathname)) {
-      return resolve(null);
+      return done(null);
     }
 
     const lib = parsed.protocol === 'http:' ? http : https;
@@ -260,16 +264,16 @@ function fetchUrlText(rawUrl, maxChars = 4500) {
       if (res.statusCode >= 300 && res.statusCode < 400 && res.headers.location) {
         const next = new URL(res.headers.location, rawUrl).toString();
         res.resume();
-        return fetchUrlText(next, maxChars).then(resolve);
+        return fetchUrlText(next, maxChars).then(done);
       }
       if (res.statusCode !== 200) {
         res.resume();
-        return resolve(null);
+        return done(null);
       }
       const ctype = String(res.headers['content-type'] || '');
       if (!/html|text|xml/i.test(ctype) && ctype) {
         res.resume();
-        return resolve(null);
+        return done(null);
       }
       let data = '';
       let size = 0;
@@ -283,11 +287,11 @@ function fetchUrlText(rawUrl, maxChars = 4500) {
       });
       res.on('end', () => {
         const text = htmlToPlainText(data).slice(0, maxChars);
-        resolve(text.length > 120 ? text : null);
+        done(text.length > 120 ? text : null);
       });
     });
-    req.on('timeout', () => { req.destroy(); resolve(null); });
-    req.on('error', () => resolve(null));
+    req.on('timeout', () => { req.destroy(); done(null); });
+    req.on('error', () => done(null));
   });
 }
 
@@ -845,8 +849,25 @@ router.post('/generate-post', authenticate, authorize('admin'), async (req, res)
   // [2] Gemini + Google Search: tìm hiểu bài trên mạng
   let researchData = '';
   if (hasGemini) {
-    researchData = await researchTopic(cleanTopic, googleContext);
-    if (researchData) usedSources.push('gemini-web-research');
+    try {
+      researchData = await researchTopic(cleanTopic, googleContext);
+      if (researchData) usedSources.push('gemini-web-research');
+    } catch (err) {
+      if (/api key not valid|unauthorized|ACCESS_TOKEN_TYPE_UNSUPPORTED/i.test(err.message)) {
+        return res.status(401).json({
+          success: false,
+          message: 'API Key không hợp lệ. Vui lòng lấy key AIza... từ Google AI Studio (https://aistudio.google.com/apikey) thay vì dùng token OAuth.'
+        });
+      }
+      if (/429|quota|RESOURCE_EXHAUSTED/i.test(err.message)) {
+        return res.status(429).json({
+          success: false,
+          message: 'API Key đã hết hạn mức (Quota Exceeded). Vui lòng đổi key khác.'
+        });
+      }
+      // If it's some other error, log it and continue without research
+      console.error(`  ⚠️ [Research Error]: ${err.message}`);
+    }
   }
 
   if (!researchData && !googleContext) {
@@ -872,6 +893,9 @@ router.post('/generate-post', authenticate, authorize('admin'), async (req, res)
       usedSources.push('gemini-grounded-write');
     } catch (groundErr) {
       console.log(`  ⏭️ [3] Grounded write fail: ${groundErr.message?.slice(0, 100)} — fallback no-tool`);
+      if (/api key not valid|unauthorized|ACCESS_TOKEN_TYPE_UNSUPPORTED/i.test(groundErr.message)) {
+        throw groundErr; // Rethrow to outer catch
+      }
       g = await generateWithGemini(seoPrompt, { jsonMode: true, temperature: temp, useGrounding: false });
       usedSources.push('gemini');
     }
@@ -892,6 +916,18 @@ router.post('/generate-post', authenticate, authorize('admin'), async (req, res)
     return res.json(buildResponsePayload(postData, cleanTopic, usedSources, startTime, g.model, variantIndex));
   } catch (e) {
     console.error(`  ❌ [3] Gemini write: ${e.message}`);
+    if (/api key not valid|unauthorized|ACCESS_TOKEN_TYPE_UNSUPPORTED/i.test(e.message)) {
+      return res.status(401).json({
+        success: false,
+        message: 'API Key không hợp lệ. Vui lòng lấy key AIza... từ Google AI Studio (https://aistudio.google.com/apikey) thay vì dùng token OAuth.'
+      });
+    }
+    if (/429|quota|RESOURCE_EXHAUSTED/i.test(e.message)) {
+      return res.status(429).json({
+        success: false,
+        message: 'API Key đã hết hạn mức (Quota Exceeded). Vui lòng đổi key khác.'
+      });
+    }
   }
 
   const elapsed = ((Date.now() - startTime) / 1000).toFixed(1);
