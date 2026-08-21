@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { GoogleGenerativeAI } = require('@google/generative-ai');
+// using native fetch for OpenAI compatibility instead of @google/generative-ai
 const https = require('https');
 const http = require('http');
 const { URL } = require('url');
@@ -38,11 +38,10 @@ function hasGeminiKey() {
   return getGeminiKeys().length > 0;
 }
 
-function getGenAI() {
+function getRandomKey() {
   const keys = getGeminiKeys();
   if (keys.length === 0) return null;
-  const key = keys[Math.floor(Math.random() * keys.length)];
-  return new GoogleGenerativeAI(key);
+  return keys[Math.floor(Math.random() * keys.length)];
 }
 
 function httpsGetJson(url, timeoutMs = 12000) {
@@ -318,70 +317,29 @@ async function enrichResultsWithPageText(results, limit = 5) {
  * Gemini + Google Search Grounding: bắt buộc tìm bài trên mạng rồi tóm tắt.
  */
 async function groundedWebDiscovery(cleanTopic, webContext = '') {
-  const genAI = getGenAI();
-  if (!genAI) return '';
+  if (!getRandomKey()) return '';
 
   const year = new Date().getFullYear();
   const intent = detectTopicIntent(cleanTopic);
   const entity = resolveTopicEntity(cleanTopic);
 
-  const prompt = `Bạn PHẢI dùng Google Search để tìm bài viết / trang web thật về chủ đề sau, rồi tổng hợp.
-
-Chủ đề search: "${cleanTopic}"
-Thực thể: "${entity}"
-Ý định bài: ${intent}
-Năm: ${year}
-
-${webContext ? `Gợi ý URL/snippet đã có (đối chiếu thêm bằng Google Search):\n${webContext.slice(0, 5000)}\n` : ''}
-
-YÊU CẦU OUTPUT (tiếng Việt):
-A) Liệt kê 5–8 nguồn tìm được trên mạng: Tiêu đề | URL | 4–6 ý chính (diễn giải, không copy nguyên văn dài).
-B) Tổng hợp kiến thức thống nhất để viết bài (bullet).
-C) Với intent who_is: ưu tiên trang giới thiệu / profile; trả lời rõ "là ai?".
-D) Ghi rõ thông tin nào KHÔNG tìm thấy trên mạng (không bịa).
-
-CẤM bịa URL. CẤM viết giáo án lệch chủ đề.`;
+  const prompt = `Bạn PHẢI dùng Google Search để tìm bài viết / trang web thật về chủ đề sau, rồi tổng hợp.\n\nChủ đề search: "${cleanTopic}"\nThực thể: "${entity}"\nÝ định bài: ${intent}\nNăm: ${year}\n\n${webContext ? `Gợi ý URL/snippet đã có (đối chiếu thêm bằng Google Search):\n${webContext.slice(0, 5000)}\n` : ''}\n\nYÊU CẦU OUTPUT (tiếng Việt):\nA) Liệt kê 5–8 nguồn tìm được trên mạng: Tiêu đề | URL | 4–6 ý chính (diễn giải, không copy nguyên văn dài).\nB) Tổng hợp kiến thức thống nhất để viết bài (bullet).\nC) Với intent who_is: ưu tiên trang giới thiệu / profile; trả lời rõ "là ai?".\nD) Ghi rõ thông tin nào KHÔNG tìm thấy trên mạng (không bịa).\n\nCẤM bịa URL. CẤM viết giáo án lệch chủ đề.`;
 
   let lastErr;
   for (const modelName of GEMINI_GROUNDING_MODELS) {
     try {
-      const model = genAI.getGenerativeModel({
-        model: modelName,
-        // tools: [{ googleSearch: {} }], // Tạm tắt vì Key miễn phí bị cấm tính năng này (Lỗi 429)
-      });
-      const r = await model.generateContent(prompt);
-      const text = r.response?.text?.() || '';
+      const text = await fetchOpenAIChat(prompt, modelName, false, 0.7, 8192);
       if (text.length > 250) {
-        // Trích citation nếu API trả về
-        let cites = '';
-        try {
-          const meta = r.response?.candidates?.[0]?.groundingMetadata;
-          const chunks = meta?.groundingChunks || [];
-          if (chunks.length) {
-            cites = '\n\n=== URL Google Search (grounding) ===\n' + chunks
-              .map((c, i) => {
-                const u = c.web?.uri || c.web?.url || '';
-                const t = c.web?.title || '';
-                return u ? `[G${i + 1}] ${t}\n${u}` : '';
-              })
-              .filter(Boolean)
-              .join('\n');
-          }
-        } catch { /* ignore */ }
         console.log(`  ✅ [2a] Gemini Grounding discovery (${modelName}): ${text.length} chars`);
-        return text + cites;
+        return text;
       }
-    } catch (e) {
-      lastErr = e;
-      const msg = e.message || '';
-      if (/api key not valid|unauthorized|429|quota|RESOURCE_EXHAUSTED/i.test(msg)) {
-        console.error(`  ❌ [Fatal AI Error] Grounding: ${msg}`);
-        throw e;
-      }
-      console.log(`  ⏭️ [2a] Grounding ${modelName}: ${msg.slice(0, 100)}`);
+    } catch (err) {
+      lastErr = err;
+      const msg = err.message || '';
+      console.error(`  ❌ Grounding ${modelName} failed: ${msg}`);
+      if (/api key not valid|unauthorized|429|quota|RESOURCE_EXHAUSTED|Invalid Auth key|ACCESS_TOKEN_TYPE_UNSUPPORTED/i.test(msg)) break;
     }
   }
-  if (lastErr) console.log(`  ⚠️ [2a] Grounding all failed: ${lastErr.message?.slice(0, 120)}`);
   return '';
 }
 
@@ -573,54 +531,62 @@ Nội dung hiện tại:
 ${(postData.content || '').substring(0, 12000)}`;
 }
 
+async function fetchOpenAIChat(prompt, modelName, jsonMode, temperature, maxTokens) {
+  const apiKey = getRandomKey();
+  if (!apiKey) throw new Error('No API Key');
+  const baseURL = process.env.AI_BASE_URL || 'https://generativelanguage.googleapis.com/v1beta/openai';
+  
+  const body = {
+    model: process.env.AI_MODEL || modelName,
+    messages: [{ role: 'user', content: prompt }],
+    temperature: Math.min(0.95, temperature),
+    max_tokens: maxTokens
+  };
+  if (jsonMode) {
+    body.response_format = { type: 'json_object' };
+  }
+
+  const res = await fetch(`${baseURL}/chat/completions`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': 'Bearer ' + apiKey
+    },
+    body: JSON.stringify(body)
+  });
+  const data = await res.json();
+  if (!res.ok) {
+    throw new Error(data.error?.message || 'Unknown error');
+  }
+  return data.choices?.[0]?.message?.content || '';
+}
+
 async function generateWithGemini(prompt, { jsonMode = true, temperature = 0.75, systemHint = true, useGrounding = false } = {}) {
-  const genAI = getGenAI();
-  if (!genAI) return null;
+  if (!getRandomKey()) return null;
 
   const fullPrompt = systemHint
-    ? `${COPYWRITER_SYSTEM_PROMPT}
-
-Target ~${TARGET_ARTICLE_WORDS} Vietnamese words (min ~${MIN_ARTICLE_WORDS}). Bắt buộc dựa trên nguồn mạng / Google Search đã cung cấp. 1+ useful table, 4–8 FAQ, soft CTA. No SEO-template filler.
-
-${prompt}`
+    ? `${COPYWRITER_SYSTEM_PROMPT}\n\nTarget ~${TARGET_ARTICLE_WORDS} Vietnamese words (min ~${MIN_ARTICLE_WORDS}). Bắt buộc dựa trên nguồn mạng / Google Search đã cung cấp. 1+ useful table, 4–8 FAQ, soft CTA. No SEO-template filler.\n\n${prompt}`
     : prompt;
 
-  const generationConfig = {
-    temperature: Math.min(0.95, temperature),
-    maxOutputTokens: 8192,
-    ...(!useGrounding && jsonMode ? { responseMimeType: 'application/json' } : {}),
-  };
+  const finalPrompt = useGrounding
+    ? `${fullPrompt}\n\nTrả về ĐÚNG một JSON hợp lệ (không markdown fence). Nếu vừa search web, hãy lồng ý từ kết quả search vào content và liệt kê URL thật ở mục Nguồn tham khảo.`
+    : fullPrompt;
 
   const models = useGrounding ? GEMINI_GROUNDING_MODELS : GEMINI_WRITE_MODELS;
   let lastErr;
   for (const modelName of models) {
     for (let attempt = 1; attempt <= 2; attempt++) {
       try {
-        const model = genAI.getGenerativeModel({
-          model: modelName,
-          generationConfig,
-          // ...(useGrounding ? { tools: [{ googleSearch: {} }] } : {}), // Tạm tắt do lỗi 429
-        });
-        const result = await model.generateContent(
-          useGrounding
-            ? `${fullPrompt}
-
-Trả về ĐÚNG một JSON hợp lệ (không markdown fence). Nếu vừa search web, hãy lồng ý từ kết quả search vào content và liệt kê URL thật ở mục Nguồn tham khảo.`
-            : fullPrompt
-        );
-        const text = result.response.text();
+        const text = await fetchOpenAIChat(finalPrompt, modelName, jsonMode && !useGrounding, temperature, 8192);
         if (text?.trim()) return { text, model: modelName, grounded: !!useGrounding };
       } catch (err) {
         lastErr = err;
         const msg = err.message || '';
-        
-        // Fast fail on fatal errors
-        if (/api key not valid|unauthorized|429|quota|RESOURCE_EXHAUSTED/i.test(msg)) {
+        if (/api key not valid|unauthorized|429|quota|RESOURCE_EXHAUSTED|Invalid Auth key|ACCESS_TOKEN_TYPE_UNSUPPORTED/i.test(msg)) {
           console.error(`  ❌ [Fatal AI Error] ${msg}`);
-          throw err; // Stop immediately, no sleep, no retry
+          throw err;
         }
-
-        console.error(`  ❌ Gemini ${modelName}${useGrounding ? ' (grounding)' : ''} attempt ${attempt}: ${msg}`);
+        console.error(`  ❌ Gemini ${modelName} attempt ${attempt}: ${msg}`);
         break;
       }
     }
@@ -633,8 +599,7 @@ async function researchTopic(cleanTopic, webContext = '') {
   const grounded = await groundedWebDiscovery(cleanTopic, webContext);
   if (grounded) return grounded;
 
-  const genAI = getGenAI();
-  if (!genAI) return '';
+  if (!getRandomKey()) return '';
 
   const year = new Date().getFullYear();
   const intent = detectTopicIntent(cleanTopic);
@@ -671,7 +636,7 @@ async function ensureQualityContent(postData, cleanTopic, writerLabel) {
   console.log(`  ⚠️ Content thin (${words}/${MIN_ARTICLE_WORDS} words, tables=${tables}) — expanding...`);
   const expandPrompt = buildExpandPrompt(cleanTopic, postData);
 
-  if (getGenAI()) {
+  if (getRandomKey()) {
     try {
       const g = await generateWithGemini(expandPrompt, { jsonMode: true });
       const expanded = normalizePostData(parseAIJson(g.text), cleanTopic);
